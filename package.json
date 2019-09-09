@@ -86,7 +86,7 @@
     "keycode": "^2.2.0",
     "safe-json-parse": "4.0.0",
     "videojs-font": "3.2.0",
-    "videojs-vtt.js": "^0.14.1",
+    "videojs-vtt.js": "https://github.com/gjanblaszczyk/vtt.js.git#demo",
     "xhr": "2.4.0"
   },
   "devDependencies": {
