@@ -1325,6 +1325,7 @@
   var $$ = createQuerier('querySelectorAll');
 
   var Dom = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     isReal: isReal,
     isEl: isEl,
     isInFrame: isInFrame,
@@ -1887,6 +1888,7 @@
   }
 
   var Events = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     fixEvent: fixEvent,
     on: on,
     off: off,
@@ -4982,6 +4984,7 @@
   var TOUCH_ENABLED = isReal() && ('ontouchstart' in window$1 || window$1.navigator.maxTouchPoints || window$1.DocumentTouch && window$1.document instanceof window$1.DocumentTouch);
 
   var browser = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     IS_IPAD: IS_IPAD,
     IS_IPHONE: IS_IPHONE,
     IS_IPOD: IS_IPOD,
@@ -5607,9 +5610,9 @@
       '[': 219,
       '\\': 220,
       ']': 221,
-      "'": 222 // Helper aliases
+      "'": 222
+    }; // Helper aliases
 
-    };
     var aliases = exports.aliases = {
       'windows': 91,
       '⇧': 16,
@@ -5631,12 +5634,11 @@
       'ins': 45,
       'del': 46,
       'cmd': 91
-      /*!
-       * Programatically add the following
-       */
-      // lower case chars
-
     };
+    /*!
+     * Programatically add the following
+     */
+    // lower case chars
 
     for (i = 97; i < 123; i++) {
       codes[String.fromCharCode(i)] = i - 32;
@@ -7299,6 +7301,7 @@
   };
 
   var Url = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     parseUrl: parseUrl,
     getAbsoluteURL: getAbsoluteURL,
     getFileExtension: getFileExtension,
@@ -7609,30 +7612,8 @@
   var defineProperties_1 = defineProperties;
 
   /* globals
-  	Set,
-  	Map,
-  	WeakSet,
-  	WeakMap,
-
-  	Promise,
-
-  	Symbol,
-  	Proxy,
-
   	Atomics,
   	SharedArrayBuffer,
-
-  	ArrayBuffer,
-  	DataView,
-  	Uint8Array,
-  	Float32Array,
-  	Float64Array,
-  	Int8Array,
-  	Int16Array,
-  	Int32Array,
-  	Uint8ClampedArray,
-  	Uint16Array,
-  	Uint32Array,
   */
 
   var undefined$1; // eslint-disable-line no-shadow-restricted-names
@@ -7834,8 +7815,36 @@
     if (!predicate(ES, value)) {
       throw new $TypeError(argumentName + ' must be a ' + recordType);
     }
+  };
 
-    console.log(predicate(ES, value), value);
+  var $TypeError$1 = GetIntrinsic('%TypeError%');
+
+  var isPropertyDescriptor = function IsPropertyDescriptor(ES, Desc) {
+    if (ES.Type(Desc) !== 'Object') {
+      return false;
+    }
+
+    var allowed = {
+      '[[Configurable]]': true,
+      '[[Enumerable]]': true,
+      '[[Get]]': true,
+      '[[Set]]': true,
+      '[[Value]]': true,
+      '[[Writable]]': true
+    };
+
+    for (var key in Desc) {
+      // eslint-disable-line
+      if (src(Desc, key) && !allowed[key]) {
+        return false;
+      }
+    }
+
+    if (ES.IsDataDescriptor(Desc) && ES.IsAccessorDescriptor(Desc)) {
+      throw new $TypeError$1('Property Descriptors may not be both accessor and data descriptors');
+    }
+
+    return true;
   };
 
   var _isNaN = Number.isNaN || function isNaN(a) {
@@ -7963,9 +7972,37 @@
     return ES5internalSlots['[[DefaultValue]]'](input);
   };
 
+  var $Function = GetIntrinsic('%Function%');
+  var $apply = $Function.apply;
+  var $call = $Function.call;
+
+  var callBind = function callBind() {
+    return functionBind.apply($call, arguments);
+  };
+
+  var apply = function applyBind() {
+    return functionBind.apply($apply, arguments);
+  };
+  callBind.apply = apply;
+
   var $Object = GetIntrinsic('%Object%');
-  var $TypeError$1 = GetIntrinsic('%TypeError%');
-  var $String = GetIntrinsic('%String%'); // https://es5.github.io/#x9
+  var $TypeError$2 = GetIntrinsic('%TypeError%');
+  var $String = GetIntrinsic('%String%');
+  var $Number = GetIntrinsic('%Number%');
+  var strSlice = callBind($String.prototype.slice);
+
+  var isPrefixOf = function isPrefixOf(prefix, string) {
+    if (prefix === string) {
+      return true;
+    }
+
+    if (prefix.length > string.length) {
+      return false;
+    }
+
+    return strSlice(string, 0, prefix.length) === prefix;
+  }; // https://es5.github.io/#x9
+
 
   var ES5 = {
     ToPrimitive: es5,
@@ -8014,7 +8051,7 @@
     CheckObjectCoercible: function CheckObjectCoercible(value, optMessage) {
       /* jshint eqnull:true */
       if (value == null) {
-        throw new $TypeError$1(optMessage || 'Cannot call method on ' + value);
+        throw new $TypeError$2(optMessage || 'Cannot call method on ' + value);
       }
 
       return value;
@@ -8060,34 +8097,7 @@
     },
     // https://ecma-international.org/ecma-262/6.0/#sec-property-descriptor-specification-type
     IsPropertyDescriptor: function IsPropertyDescriptor(Desc) {
-      if (this.Type(Desc) !== 'Object') {
-        return false;
-      }
-
-      var allowed = {
-        '[[Configurable]]': true,
-        '[[Enumerable]]': true,
-        '[[Get]]': true,
-        '[[Set]]': true,
-        '[[Value]]': true,
-        '[[Writable]]': true
-      };
-
-      for (var key in Desc) {
-        // eslint-disable-line
-        if (src(Desc, key) && !allowed[key]) {
-          return false;
-        }
-      }
-
-      var isData = src(Desc, '[[Value]]');
-      var IsAccessor = src(Desc, '[[Get]]') || src(Desc, '[[Set]]');
-
-      if (isData && IsAccessor) {
-        throw new $TypeError$1('Property Descriptors may not be both accessor and data descriptors');
-      }
-
-      return true;
+      return isPropertyDescriptor(this, Desc);
     },
     // https://ecma-international.org/ecma-262/5.1/#sec-8.10.1
     IsAccessorDescriptor: function IsAccessorDescriptor(Desc) {
@@ -8154,13 +8164,13 @@
           configurable: !!Desc['[[Configurable]]']
         };
       } else {
-        throw new $TypeError$1('FromPropertyDescriptor must be called with a fully populated Property Descriptor');
+        throw new $TypeError$2('FromPropertyDescriptor must be called with a fully populated Property Descriptor');
       }
     },
     // https://ecma-international.org/ecma-262/5.1/#sec-8.10.5
     ToPropertyDescriptor: function ToPropertyDescriptor(Obj) {
       if (this.Type(Obj) !== 'Object') {
-        throw new $TypeError$1('ToPropertyDescriptor requires an object');
+        throw new $TypeError$2('ToPropertyDescriptor requires an object');
       }
 
       var desc = {};
@@ -8195,17 +8205,136 @@
         var setter = Obj.set;
 
         if (typeof setter !== 'undefined' && !this.IsCallable(setter)) {
-          throw new $TypeError$1('setter must be a function');
+          throw new $TypeError$2('setter must be a function');
         }
 
         desc['[[Set]]'] = setter;
       }
 
       if ((src(desc, '[[Get]]') || src(desc, '[[Set]]')) && (src(desc, '[[Value]]') || src(desc, '[[Writable]]'))) {
-        throw new $TypeError$1('Invalid property descriptor. Cannot both specify accessors and a value or writable attribute');
+        throw new $TypeError$2('Invalid property descriptor. Cannot both specify accessors and a value or writable attribute');
       }
 
       return desc;
+    },
+    // https://www.ecma-international.org/ecma-262/5.1/#sec-11.9.3
+    'Abstract Equality Comparison': function AbstractEqualityComparison(x, y) {
+      var xType = this.Type(x);
+      var yType = this.Type(y);
+
+      if (xType === yType) {
+        return x === y; // ES6+ specified this shortcut anyways.
+      }
+
+      if (x == null && y == null) {
+        return true;
+      }
+
+      if (xType === 'Number' && yType === 'String') {
+        return this['Abstract Equality Comparison'](x, this.ToNumber(y));
+      }
+
+      if (xType === 'String' && yType === 'Number') {
+        return this['Abstract Equality Comparison'](this.ToNumber(x), y);
+      }
+
+      if (xType === 'Boolean') {
+        return this['Abstract Equality Comparison'](this.ToNumber(x), y);
+      }
+
+      if (yType === 'Boolean') {
+        return this['Abstract Equality Comparison'](x, this.ToNumber(y));
+      }
+
+      if ((xType === 'String' || xType === 'Number') && yType === 'Object') {
+        return this['Abstract Equality Comparison'](x, this.ToPrimitive(y));
+      }
+
+      if (xType === 'Object' && (yType === 'String' || yType === 'Number')) {
+        return this['Abstract Equality Comparison'](this.ToPrimitive(x), y);
+      }
+
+      return false;
+    },
+    // https://www.ecma-international.org/ecma-262/5.1/#sec-11.9.6
+    'Strict Equality Comparison': function StrictEqualityComparison(x, y) {
+      var xType = this.Type(x);
+      var yType = this.Type(y);
+
+      if (xType !== yType) {
+        return false;
+      }
+
+      if (xType === 'Undefined' || xType === 'Null') {
+        return true;
+      }
+
+      return x === y; // shortcut for steps 4-7
+    },
+    // https://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+    // eslint-disable-next-line max-statements
+    'Abstract Relational Comparison': function AbstractRelationalComparison(x, y, LeftFirst) {
+      if (this.Type(LeftFirst) !== 'Boolean') {
+        throw new $TypeError$2('Assertion failed: LeftFirst argument must be a Boolean');
+      }
+
+      var px;
+      var py;
+
+      if (LeftFirst) {
+        px = this.ToPrimitive(x, $Number);
+        py = this.ToPrimitive(y, $Number);
+      } else {
+        py = this.ToPrimitive(y, $Number);
+        px = this.ToPrimitive(x, $Number);
+      }
+
+      var bothStrings = this.Type(px) === 'String' && this.Type(py) === 'String';
+
+      if (!bothStrings) {
+        var nx = this.ToNumber(px);
+        var ny = this.ToNumber(py);
+
+        if (_isNaN(nx) || _isNaN(ny)) {
+          return undefined;
+        }
+
+        if (_isFinite(nx) && _isFinite(ny) && nx === ny) {
+          return false;
+        }
+
+        if (nx === 0 && ny === 0) {
+          return false;
+        }
+
+        if (nx === Infinity) {
+          return false;
+        }
+
+        if (ny === Infinity) {
+          return true;
+        }
+
+        if (ny === -Infinity) {
+          return false;
+        }
+
+        if (nx === -Infinity) {
+          return true;
+        }
+
+        return nx < ny; // by now, these are both nonzero, finite, and not equal
+      }
+
+      if (isPrefixOf(py, px)) {
+        return false;
+      }
+
+      if (isPrefixOf(px, py)) {
+        return true;
+      }
+
+      return px < py; // both strings, neither a prefix of the other. shortcut for steps c-f
     }
   };
   var es5$1 = ES5;
@@ -19540,7 +19669,11 @@
         this.trigger('seekableendchange');
       }
 
-      this.pastSeekEnd_ = this.pastSeekEnd() + 0.03;
+      if (this.pastSeekEnd() > this.seekableIncrement_ * 1.5) {
+        this.pastSeekEnd_ = 0;
+      } else {
+        this.pastSeekEnd_ = this.pastSeekEnd() + 0.03;
+      }
 
       if (this.isBehind_() !== this.behindLiveEdge()) {
         this.behindLiveEdge_ = this.isBehind_();
