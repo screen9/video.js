@@ -1332,7 +1332,6 @@ var $ = createQuerier('querySelector');
 var $$ = createQuerier('querySelectorAll');
 
 var Dom = /*#__PURE__*/Object.freeze({
-  __proto__: null,
   isReal: isReal,
   isEl: isEl,
   isInFrame: isInFrame,
@@ -1895,7 +1894,6 @@ function any(elem, type, fn) {
 }
 
 var Events = /*#__PURE__*/Object.freeze({
-  __proto__: null,
   fixEvent: fixEvent,
   on: on,
   off: off,
@@ -4991,7 +4989,6 @@ var IS_WINDOWS = /Windows/i.test(USER_AGENT);
 var TOUCH_ENABLED = isReal() && ('ontouchstart' in window$1 || window$1.navigator.maxTouchPoints || window$1.DocumentTouch && window$1.document instanceof window$1.DocumentTouch);
 
 var browser = /*#__PURE__*/Object.freeze({
-  __proto__: null,
   IS_IPAD: IS_IPAD,
   IS_IPHONE: IS_IPHONE,
   IS_IPOD: IS_IPOD,
@@ -7094,7 +7091,6 @@ var isCrossOrigin = function isCrossOrigin(url) {
 };
 
 var Url = /*#__PURE__*/Object.freeze({
-  __proto__: null,
   parseUrl: parseUrl,
   getAbsoluteURL: getAbsoluteURL,
   getFileExtension: getFileExtension,
@@ -44065,7 +44061,12 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
     var segments = playlist.segments || [];
     var syncPoint = null;
     var lastDistance = null;
-    var totalSegmentTime = 0;
+    var datetimeToDisplayTime = syncController.datetimeToDisplayTime;
+
+    if (segments.length && segments[0].dateTimeObject) {
+      datetimeToDisplayTime -= segments[0].dateTimeObject.getTime() / 1000 + datetimeToDisplayTime;
+    }
+
     currentTime = currentTime || 0;
 
     for (var i = 0; i < segments.length; i++) {
@@ -44073,12 +44074,7 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
 
       if (segment.dateTimeObject) {
         var segmentTime = segment.dateTimeObject.getTime() / 1000;
-        var segmentStart = segmentTime + syncController.datetimeToDisplayTime;
-
-        if (segment.discontinuity) {
-          segmentStart = segmentStart > totalSegmentTime ? totalSegmentTime : segmentStart;
-        }
-
+        var segmentStart = segmentTime + syncController.datetimeToDisplayTime - (segmentTime + datetimeToDisplayTime);
         var distance = Math.abs(currentTime - segmentStart); // Once the distance begins to increase, or if distance is 0, we have passed
         // currentTime and can stop looking for better candidates
 
@@ -44093,7 +44089,7 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
         };
       }
 
-      totalSegmentTime += segment.duration;
+      datetimeToDisplayTime -= segment.duration;
     }
 
     return syncPoint;
@@ -44508,11 +44504,16 @@ var Decrypter = new shimWorker("./decrypter-worker.worker.js", function (window,
   /*! @name @videojs/http-streaming @version 1.11.0-alpha.1 @license Apache-2.0 */
 
   var decrypterWorker = function () {
-    /*! @name pkcs7 @version 1.0.3 @license Apache-2.0 */
+    /*
+     * pkcs7.pad
+     * https://github.com/brightcove/pkcs7
+     *
+     * Copyright (c) 2014 Brightcove
+     * Licensed under the apache2 license.
+     */
 
     /**
      * Returns the subarray of a Uint8Array without PKCS#7 padding.
-     *
      * @param padded {Uint8Array} unencrypted bytes that have been padded
      * @return {Uint8Array} the unpadded bytes
      * @see http://tools.ietf.org/html/rfc5652
