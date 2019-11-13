@@ -9664,23 +9664,14 @@
     consumeCueSettings(input, cue);
   }
 
+  var TEXTAREA_ELEMENT = window.document.createElement("textarea");
   var ESCAPE = {
     "&amp;": "&",
     "&lt;": "<",
     "&gt;": ">",
     "&lrm;": "\u200E",
     "&rlm;": "\u200F",
-    "&nbsp;": "\xA0",
-    "&Aring;": "\xC5",
-    "&aring;": "\xE5",
-    "&Auml;": "\xC4",
-    "&auml;": "\xE4",
-    "&Ouml;": "\xD6",
-    "&ouml;": "\xF6",
-    "&AElig;": "\xC6",
-    "&aelig;": "\xE6",
-    "&Oslash;": "\xD8",
-    "&oslash;": "\xF8"
+    "&nbsp;": "\xA0"
   };
   var TAG_NAME = {
     c: "span",
@@ -9737,10 +9728,13 @@
     }
 
     function unescape(s) {
-      while (m = s.match(/&(amp|lt|gt|lrm|rlm|nbsp|Aring|aring|Auml|auml|Ouml|ouml|AElig|aelig|Oslash|oslash);/)) {
+      while (m = s.match(/&(amp|lt|gt|lrm|rlm|nbsp);/)) {
         s = s.replace(m[0], unescape1);
       }
 
+      TEXTAREA_ELEMENT.innerHTML = s;
+      s = TEXTAREA_ELEMENT.textContent;
+      TEXTAREA_ELEMENT.textContent = "";
       return s;
     }
 
