@@ -48,8 +48,7 @@ class SubsCapsButton extends TextTrackButton {
   createItems() {
     let items = [];
 
-    if (!(this.player().tech_ && this.player().tech_.featuresNativeTextTracks) &&
-      this.player().getChild('textTrackSettings')) {
+    if (this.player().getChild('textTrackSettings')) {
       items.push(new CaptionSettingsMenuItem(this.player_, {kind: this.label_}));
 
       this.hideThreshold_ += 1;
