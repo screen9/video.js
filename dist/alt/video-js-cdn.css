@@ -1074,6 +1074,7 @@ body.vjs-full-window {
 .video-js .vjs-volume-level:before {
   position: absolute;
   font-size: 0.9em;
+  z-index: 1;
 }
 
 .vjs-slider-vertical .vjs-volume-level {
@@ -1082,7 +1083,6 @@ body.vjs-full-window {
 .vjs-slider-vertical .vjs-volume-level:before {
   top: -0.5em;
   left: -0.3em;
-  z-index: 1;
 }
 
 .vjs-slider-horizontal .vjs-volume-level {
