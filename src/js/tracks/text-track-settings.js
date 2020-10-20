@@ -467,7 +467,7 @@ class TextTrackSettings extends ModalDialog {
         this.localize('Reset'),
         `<span class="vjs-control-text"> ${defaultsDescription}</span>`,
         '</button>',
-        `<button type="button" class="vjs-done-button">${this.localize('Done')}</button>`
+        `<button type="button" class="vjs-done-button">${this.localize('Save')}</button>`
       ].join('')
     });
   }
