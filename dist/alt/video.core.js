@@ -20525,7 +20525,7 @@
       var defaultsDescription = this.localize('restore all settings to the default values');
       return createEl('div', {
         className: 'vjs-track-settings-controls',
-        innerHTML: ["<button type=\"button\" class=\"vjs-default-button\" title=\"" + defaultsDescription + "\">", this.localize('Reset'), "<span class=\"vjs-control-text\"> " + defaultsDescription + "</span>", '</button>', "<button type=\"button\" class=\"vjs-done-button\">" + this.localize('Done') + "</button>"].join('')
+        innerHTML: ["<button type=\"button\" class=\"vjs-default-button\" title=\"" + defaultsDescription + "\">", this.localize('Reset'), "<span class=\"vjs-control-text\"> " + defaultsDescription + "</span>", '</button>', "<button type=\"button\" class=\"vjs-done-button\">" + this.localize('Save') + "</button>"].join('')
       });
     };
 
