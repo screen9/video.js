@@ -18374,7 +18374,7 @@
       id: 'captions-font-size-%s',
       label: 'Font Size',
       options: [['0.70', '70%'], ['0.80', '80%'], ['0.90', '90%'], ['1.00', '100%'], ['1.10', '110%'], ['1.20', '120%'], ['1.30', '130%'], ['1.40', '140%'], ['1.50', '150%']],
-      "default": 2,
+      "default": 3,
       parser: function parser(v) {
         return v === '1.00' ? null : Number(v);
       }
