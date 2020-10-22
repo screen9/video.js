@@ -122,7 +122,7 @@ const selectConfigs = {
       ['1.40', '140%'],
       ['1.50', '150%']
     ],
-    default: 2,
+    default: 3,
     parser: (v) => v === '1.00' ? null : Number(v)
   },
 
