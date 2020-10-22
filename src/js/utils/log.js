@@ -4,7 +4,7 @@
  */
 import CreateLogger from './create-logger.js';
 
-const log = CreateLogger('VIDEOJS');
+const log = CreateLogger('AMBER');
 const createLogger = log.createLogger;
 
 export default log;
