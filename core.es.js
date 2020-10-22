@@ -315,7 +315,7 @@ function createLogger(name) {
  * @file log.js
  * @module log
  */
-var log = createLogger('VIDEOJS');
+var log = createLogger('AMBER');
 var createLogger$1 = log.createLogger;
 
 /**
