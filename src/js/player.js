@@ -1916,6 +1916,15 @@ class Player extends Component {
       return;
     }
 
+    if (browser.IS_FIREFOX) {
+      const rect = event.target.getBoundingClientRect();
+      const { x, y } = event;
+
+      if (!(x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)) {
+        return;
+      }
+    }
+
     if (this.paused()) {
       silencePromise(this.play());
     } else {
