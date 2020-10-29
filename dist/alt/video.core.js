@@ -20646,6 +20646,18 @@
       }
     }
     /**
+     * Sets the focus to the first element in the text track settings window
+     */
+    ;
+
+    _proto.focus = function focus() {
+      try {
+        this.focusableEls_()[0].focus();
+      } catch (err) {
+        log.debug(err);
+      }
+    }
+    /**
      * conditionally blur the element and refocus the captions button
      *
      * @private
@@ -25444,6 +25456,16 @@
 
       if (!this.controls_) {
         return;
+      }
+
+      if (IS_FIREFOX) {
+        var rect = event.target.getBoundingClientRect();
+        var x = event.x,
+            y = event.y;
+
+        if (!(x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)) {
+          return;
+        }
       }
 
       if (this.paused()) {
