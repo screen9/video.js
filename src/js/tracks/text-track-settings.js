@@ -583,6 +583,17 @@ class TextTrackSettings extends ModalDialog {
   }
 
   /**
+   * Sets the focus to the first element in the text track settings window
+   */
+  focus() {
+    try {
+      this.focusableEls_()[0].focus();
+    } catch (err) {
+      log.debug(err);
+    }
+  }
+
+  /**
    * conditionally blur the element and refocus the captions button
    *
    * @private
