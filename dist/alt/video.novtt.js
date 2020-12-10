@@ -16605,6 +16605,27 @@
       return _this;
     }
     /**
+     * Sets the value of `mode` on the track element.
+     *
+     * @param {TextTrack} track
+     *        The track that we want to change the `mode` value
+     * @param {string} mode
+     *        The new track mode.
+     */
+
+
+    var _proto = TextTrackMenuItem.prototype;
+
+    _proto.setTrackMode = function setTrackMode(track, mode) {
+      track.mode = mode;
+
+      if (!('trigger' in track)) {
+        var event = document.createEvent('Event');
+        event.initEvent('modechange', true, true);
+        track.dispatchEvent(event);
+      }
+    }
+    /**
      * This gets called when an `TextTrackMenuItem` is "clicked". See
      * {@link ClickableComponent} for more detailed information on what a click can be.
      *
@@ -16615,9 +16636,7 @@
      * @listens tap
      * @listens click
      */
-
-
-    var _proto = TextTrackMenuItem.prototype;
+    ;
 
     _proto.handleClick = function handleClick(event) {
       var referenceTrack = this.track;
@@ -16641,12 +16660,12 @@
 
         if (track === referenceTrack) {
           if (track.mode !== 'showing') {
-            track.mode = 'showing';
+            this.setTrackMode(track, 'showing');
           } // If this text track is not the component's track and it is not
           // disabled, set it to disabled.
 
         } else if (track.mode !== 'disabled') {
-          track.mode = 'disabled';
+          this.setTrackMode(track, 'disabled');
         }
       }
     }
@@ -17461,7 +17480,7 @@
     _proto.createItems = function createItems() {
       var items = [];
 
-      if (!(this.player().tech_ && this.player().tech_.featuresNativeTextTracks) && this.player().getChild('textTrackSettings')) {
+      if (this.player().getChild('textTrackSettings')) {
         items.push(new CaptionSettingsMenuItem(this.player_, {
           kind: this.kind_
         }));
@@ -17586,7 +17605,7 @@
     _proto.createItems = function createItems() {
       var items = [];
 
-      if (!(this.player().tech_ && this.player().tech_.featuresNativeTextTracks) && this.player().getChild('textTrackSettings')) {
+      if (this.player().getChild('textTrackSettings')) {
         items.push(new CaptionSettingsMenuItem(this.player_, {
           kind: this.label_
         }));
