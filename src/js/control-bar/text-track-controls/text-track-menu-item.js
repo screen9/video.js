@@ -86,6 +86,24 @@ class TextTrackMenuItem extends MenuItem {
   }
 
   /**
+   * Sets the value of `mode` on the track element.
+   *
+   * @param {TextTrack} track
+   *        The track that we want to change the `mode` value
+   * @param {string} mode
+   *        The new track mode.
+   */
+  setTrackMode(track, mode) {
+    track.mode = mode;
+    if (!('trigger' in track)) {
+      const event = document.createEvent('Event');
+
+      event.initEvent('modechange', true, true);
+      track.dispatchEvent(event);
+    }
+  }
+
+  /**
    * This gets called when an `TextTrackMenuItem` is "clicked". See
    * {@link ClickableComponent} for more detailed information on what a click can be.
    *
@@ -119,13 +137,13 @@ class TextTrackMenuItem extends MenuItem {
       // set it to showing.
       if (track === referenceTrack) {
         if (track.mode !== 'showing') {
-          track.mode = 'showing';
+          this.setTrackMode(track, 'showing');
         }
 
       // If this text track is not the component's track and it is not
       // disabled, set it to disabled.
       } else if (track.mode !== 'disabled') {
-        track.mode = 'disabled';
+        this.setTrackMode(track, 'disabled');
       }
     }
   }
