@@ -16903,7 +16903,7 @@ var CaptionsButton = /*#__PURE__*/function (_TextTrackButton) {
   _proto.createItems = function createItems() {
     var items = [];
 
-    if (this.player().getChild('textTrackSettings')) {
+    if (!(this.player().tech_ && this.player().tech_.featuresNativeTextTracks) && this.player().getChild('textTrackSettings')) {
       items.push(new CaptionSettingsMenuItem(this.player_, {
         kind: this.kind_
       }));
