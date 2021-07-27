@@ -3,11 +3,13 @@
  */
 import window from 'global/window';
 import Component from '../component';
+import document from 'global/document';
 import ModalDialog from '../modal-dialog';
 import {createEl} from '../utils/dom';
 import * as Fn from '../utils/fn';
 import * as Obj from '../utils/obj';
 import log from '../utils/log';
+import keycode from 'keycode';
 
 const LOCAL_STORAGE_KEY = 'vjs-text-track-settings';
 
@@ -612,6 +614,56 @@ class TextTrackSettings extends ModalDialog {
     }
   }
 
+  /**
+   * Keydown handler. Attached when modal is focused.
+   *
+   * @listens keydown
+   */
+  handleKeyDown(event) {
+    const key = event.key;
+
+    if (!(key === 'ArrowDown' || key === 'Down' ||
+      key === 'ArrowUp' || key === 'Up' ||
+      key === 'ArrowLeft' || key === 'Left' ||
+      key === 'ArrowRight' || key === 'Right')) {
+      // Do not allow keydowns to reach out of the modal dialog.
+      event.stopPropagation();
+    }
+
+    if (keycode.isEventKey(event, 'Escape') && this.closeable()) {
+      event.preventDefault();
+      this.close();
+      return;
+    }
+
+    // exit early if it isn't a tab key
+    if (!keycode.isEventKey(event, 'Tab')) {
+      return;
+    }
+
+    const focusableEls = this.focusableEls_();
+    const activeEl = this.el_.querySelector(':focus');
+    let focusIndex;
+
+    for (let i = 0; i < focusableEls.length; i++) {
+      if (activeEl === focusableEls[i]) {
+        focusIndex = i;
+        break;
+      }
+    }
+
+    if (document.activeElement === this.el_) {
+      focusIndex = 0;
+    }
+
+    if (event.shiftKey && focusIndex === 0) {
+      focusableEls[focusableEls.length - 1].focus();
+      event.preventDefault();
+    } else if (!event.shiftKey && focusIndex === focusableEls.length - 1) {
+      focusableEls[0].focus();
+      event.preventDefault();
+    }
+  }
 }
 
 Component.registerComponent('TextTrackSettings', TextTrackSettings);
