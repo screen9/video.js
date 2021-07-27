@@ -313,6 +313,10 @@
   var log = createLogger('AMBER');
   var createLogger$1 = log.createLogger;
 
+  function unwrapExports (x) {
+  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+  }
+
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
@@ -333,11 +337,15 @@
         return target;
       };
 
+      module.exports["default"] = module.exports, module.exports.__esModule = true;
       return _extends.apply(this, arguments);
     }
 
     module.exports = _extends;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
+
+  var _extends = unwrapExports(_extends_1);
 
   /**
    * @file obj.js
@@ -443,7 +451,7 @@
     }
 
     if (Object.assign) {
-      return _extends_1.apply(void 0, [target].concat(sources));
+      return _extends.apply(void 0, [target].concat(sources));
     }
 
     sources.forEach(function (source) {
@@ -5025,15 +5033,19 @@
   Component.prototype.supportsRaf_ = typeof window$1.requestAnimationFrame === 'function' && typeof window$1.cancelAnimationFrame === 'function';
   Component.registerComponent('Component', Component);
 
-  function _assertThisInitialized(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  var assertThisInitialized = createCommonjsModule(function (module) {
+    function _assertThisInitialized(self) {
+      if (self === void 0) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }
+
+      return self;
     }
 
-    return self;
-  }
-
-  var assertThisInitialized = _assertThisInitialized;
+    module.exports = _assertThisInitialized;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  var _assertThisInitialized = unwrapExports(assertThisInitialized);
 
   var _typeof_1 = createCommonjsModule(function (module) {
     function _typeof(obj) {
@@ -5043,36 +5055,82 @@
         module.exports = _typeof = function _typeof(obj) {
           return typeof obj;
         };
+
+        module.exports["default"] = module.exports, module.exports.__esModule = true;
       } else {
         module.exports = _typeof = function _typeof(obj) {
           return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
+
+        module.exports["default"] = module.exports, module.exports.__esModule = true;
       }
 
       return _typeof(obj);
     }
 
     module.exports = _typeof;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
+
+  unwrapExports(_typeof_1);
+
+  var possibleConstructorReturn = createCommonjsModule(function (module) {
+    var _typeof = _typeof_1["default"];
+
+    function _possibleConstructorReturn(self, call) {
+      if (call && (_typeof(call) === "object" || typeof call === "function")) {
+        return call;
+      }
+
+      return assertThisInitialized(self);
+    }
+
+    module.exports = _possibleConstructorReturn;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  unwrapExports(possibleConstructorReturn);
 
   var getPrototypeOf = createCommonjsModule(function (module) {
     function _getPrototypeOf(o) {
       module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
         return o.__proto__ || Object.getPrototypeOf(o);
       };
+      module.exports["default"] = module.exports, module.exports.__esModule = true;
       return _getPrototypeOf(o);
     }
 
     module.exports = _getPrototypeOf;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
+  unwrapExports(getPrototypeOf);
 
-  function _inheritsLoose(subClass, superClass) {
-    subClass.prototype = Object.create(superClass.prototype);
-    subClass.prototype.constructor = subClass;
-    subClass.__proto__ = superClass;
-  }
+  var setPrototypeOf = createCommonjsModule(function (module) {
+    function _setPrototypeOf(o, p) {
+      module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
 
-  var inheritsLoose = _inheritsLoose;
+      module.exports["default"] = module.exports, module.exports.__esModule = true;
+      return _setPrototypeOf(o, p);
+    }
+
+    module.exports = _setPrototypeOf;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  unwrapExports(setPrototypeOf);
+
+  var inheritsLoose = createCommonjsModule(function (module) {
+    function _inheritsLoose(subClass, superClass) {
+      subClass.prototype = Object.create(superClass.prototype);
+      subClass.prototype.constructor = subClass;
+      setPrototypeOf(subClass, superClass);
+    }
+
+    module.exports = _inheritsLoose;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  var _inheritsLoose = unwrapExports(inheritsLoose);
 
   /**
    * @file browser.js
@@ -5994,7 +6052,7 @@
    */
 
   var ModalDialog = /*#__PURE__*/function (_Component) {
-    inheritsLoose(ModalDialog, _Component);
+    _inheritsLoose(ModalDialog, _Component);
 
     /**
      * Create an instance of this class.
@@ -6514,7 +6572,7 @@
    */
 
   var TrackList = /*#__PURE__*/function (_EventTarget) {
-    inheritsLoose(TrackList, _EventTarget);
+    _inheritsLoose(TrackList, _EventTarget);
 
     /**
      * Create an instance of this class
@@ -6540,7 +6598,7 @@
        * @instance
        */
 
-      Object.defineProperty(assertThisInitialized(_this), 'length', {
+      Object.defineProperty(_assertThisInitialized(_this), 'length', {
         get: function get() {
           return this.tracks_.length;
         }
@@ -6723,7 +6781,7 @@
 
 
   var AudioTrackList = /*#__PURE__*/function (_TrackList) {
-    inheritsLoose(AudioTrackList, _TrackList);
+    _inheritsLoose(AudioTrackList, _TrackList);
 
     /**
      * Create an instance of this class.
@@ -6843,7 +6901,7 @@
 
 
   var VideoTrackList = /*#__PURE__*/function (_TrackList) {
-    inheritsLoose(VideoTrackList, _TrackList);
+    _inheritsLoose(VideoTrackList, _TrackList);
 
     /**
      * Create an instance of this class.
@@ -6874,7 +6932,7 @@
        *         The current index of the selected {@link VideoTrack`}.
        */
 
-      Object.defineProperty(assertThisInitialized(_this), 'selectedIndex', {
+      Object.defineProperty(_assertThisInitialized(_this), 'selectedIndex', {
         get: function get() {
           for (var _i = 0; _i < this.length; _i++) {
             if (this[_i].selected) {
@@ -6954,7 +7012,7 @@
    */
 
   var TextTrackList = /*#__PURE__*/function (_TrackList) {
-    inheritsLoose(TextTrackList, _TrackList);
+    _inheritsLoose(TextTrackList, _TrackList);
 
     function TextTrackList() {
       return _TrackList.apply(this, arguments) || this;
@@ -7331,7 +7389,7 @@
    */
 
   var Track = /*#__PURE__*/function (_EventTarget) {
-    inheritsLoose(Track, _EventTarget);
+    _inheritsLoose(Track, _EventTarget);
 
     /**
      * Create an instance of this class.
@@ -7405,7 +7463,7 @@
        */
 
       var _loop = function _loop(key) {
-        Object.defineProperty(assertThisInitialized(_this), key, {
+        Object.defineProperty(_assertThisInitialized(_this), key, {
           get: function get() {
             return trackProps[key];
           },
@@ -8015,7 +8073,7 @@
 
 
   var TextTrack = /*#__PURE__*/function (_Track) {
-    inheritsLoose(TextTrack, _Track);
+    _inheritsLoose(TextTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8081,7 +8139,7 @@
       var cues = new TextTrackCueList(_this.cues_);
       var activeCues = new TextTrackCueList(_this.activeCues_);
       var changed = false;
-      var timeupdateHandler = bind(assertThisInitialized(_this), function () {
+      var timeupdateHandler = bind(_assertThisInitialized(_this), function () {
         // Accessing this.activeCues for the side-effects of updating itself
         // due to its nature as a getter function. Do not remove or cues will
         // stop updating!
@@ -8100,7 +8158,7 @@
         }, true);
       }
 
-      Object.defineProperties(assertThisInitialized(_this), {
+      Object.defineProperties(_assertThisInitialized(_this), {
         /**
          * @memberof TextTrack
          * @member {boolean} default
@@ -8244,7 +8302,7 @@
         }
 
         if (_this.preload_ || default_ || settings.kind !== 'subtitles' && settings.kind !== 'captions') {
-          loadTrack(_this.src, assertThisInitialized(_this));
+          loadTrack(_this.src, _assertThisInitialized(_this));
         }
       } else {
         _this.loaded_ = true;
@@ -8332,7 +8390,7 @@
    */
 
   var AudioTrack = /*#__PURE__*/function (_Track) {
-    inheritsLoose(AudioTrack, _Track);
+    _inheritsLoose(AudioTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8378,7 +8436,7 @@
        * @fires VideoTrack#selectedchange
        */
 
-      Object.defineProperty(assertThisInitialized(_this), 'enabled', {
+      Object.defineProperty(_assertThisInitialized(_this), 'enabled', {
         get: function get() {
           return enabled;
         },
@@ -8425,7 +8483,7 @@
    */
 
   var VideoTrack = /*#__PURE__*/function (_Track) {
-    inheritsLoose(VideoTrack, _Track);
+    _inheritsLoose(VideoTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8470,7 +8528,7 @@
        * @fires VideoTrack#selectedchange
        */
 
-      Object.defineProperty(assertThisInitialized(_this), 'selected', {
+      Object.defineProperty(_assertThisInitialized(_this), 'selected', {
         get: function get() {
           return selected;
         },
@@ -8526,7 +8584,7 @@
    */
 
   var HTMLTrackElement = /*#__PURE__*/function (_EventTarget) {
-    inheritsLoose(HTMLTrackElement, _EventTarget);
+    _inheritsLoose(HTMLTrackElement, _EventTarget);
 
     /**
      * Create an instance of this class.
@@ -8577,7 +8635,7 @@
       _this.srclang = track.language;
       _this.label = track.label;
       _this["default"] = track["default"];
-      Object.defineProperties(assertThisInitialized(_this), {
+      Object.defineProperties(_assertThisInitialized(_this), {
         /**
          * @memberof HTMLTrackElement
          * @member {HTMLTrackElement~ReadyState} readyState
@@ -8614,7 +8672,7 @@
 
         _this.trigger({
           type: 'load',
-          target: assertThisInitialized(_this)
+          target: _assertThisInitialized(_this)
         });
       });
       return _this;
@@ -8674,7 +8732,7 @@
     }
   };
 
-  var ALL = _extends_1({}, NORMAL, REMOTE);
+  var ALL = _extends({}, NORMAL, REMOTE);
 
   REMOTE.names = Object.keys(REMOTE);
   NORMAL.names = Object.keys(NORMAL);
@@ -8751,7 +8809,7 @@
 
 
   var Tech = /*#__PURE__*/function (_Component) {
-    inheritsLoose(Tech, _Component);
+    _inheritsLoose(Tech, _Component);
 
     /**
     * Create an instance of this Tech.
@@ -10635,7 +10693,7 @@
    */
 
   var MediaLoader = /*#__PURE__*/function (_Component) {
-    inheritsLoose(MediaLoader, _Component);
+    _inheritsLoose(MediaLoader, _Component);
 
     /**
      * Create an instance of this class.
@@ -10699,7 +10757,7 @@
    */
 
   var ClickableComponent = /*#__PURE__*/function (_Component) {
-    inheritsLoose(ClickableComponent, _Component);
+    _inheritsLoose(ClickableComponent, _Component);
 
     /**
      * Creates an instance of this class.
@@ -10948,7 +11006,7 @@
    */
 
   var PosterImage = /*#__PURE__*/function (_ClickableComponent) {
-    inheritsLoose(PosterImage, _ClickableComponent);
+    _inheritsLoose(PosterImage, _ClickableComponent);
 
     /**
      * Create an instance of this class.
@@ -10966,7 +11024,7 @@
 
       _this.update();
 
-      player.on('posterchange', bind(assertThisInitialized(_this), _this.update));
+      player.on('posterchange', bind(_assertThisInitialized(_this), _this.update));
       return _this;
     }
     /**
@@ -11150,7 +11208,7 @@
 
 
   var TextTrackDisplay = /*#__PURE__*/function (_Component) {
-    inheritsLoose(TextTrackDisplay, _Component);
+    _inheritsLoose(TextTrackDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -11168,15 +11226,15 @@
       var _this;
 
       _this = _Component.call(this, player, options, ready) || this;
-      var updateDisplayHandler = bind(assertThisInitialized(_this), _this.updateDisplay);
-      player.on('loadstart', bind(assertThisInitialized(_this), _this.toggleDisplay));
+      var updateDisplayHandler = bind(_assertThisInitialized(_this), _this.updateDisplay);
+      player.on('loadstart', bind(_assertThisInitialized(_this), _this.toggleDisplay));
       player.on('texttrackchange', updateDisplayHandler);
-      player.on('loadedmetadata', bind(assertThisInitialized(_this), _this.preselectTrack)); // This used to be called during player init, but was causing an error
+      player.on('loadedmetadata', bind(_assertThisInitialized(_this), _this.preselectTrack)); // This used to be called during player init, but was causing an error
       // if a track should show by default and the display hadn't loaded yet.
       // Should probably be moved to an external track loader when we support
       // tracks that don't need a display.
 
-      player.ready(bind(assertThisInitialized(_this), function () {
+      player.ready(bind(_assertThisInitialized(_this), function () {
         if (player.tech_ && player.tech_.featuresNativeTextTracks) {
           this.hide();
           return;
@@ -11499,7 +11557,7 @@
    */
 
   var LoadingSpinner = /*#__PURE__*/function (_Component) {
-    inheritsLoose(LoadingSpinner, _Component);
+    _inheritsLoose(LoadingSpinner, _Component);
 
     function LoadingSpinner() {
       return _Component.apply(this, arguments) || this;
@@ -11542,7 +11600,7 @@
    */
 
   var Button = /*#__PURE__*/function (_ClickableComponent) {
-    inheritsLoose(Button, _ClickableComponent);
+    _inheritsLoose(Button, _ClickableComponent);
 
     function Button() {
       return _ClickableComponent.apply(this, arguments) || this;
@@ -11678,7 +11736,7 @@
    */
 
   var BigPlayButton = /*#__PURE__*/function (_Button) {
-    inheritsLoose(BigPlayButton, _Button);
+    _inheritsLoose(BigPlayButton, _Button);
 
     function BigPlayButton(player, options) {
       var _this;
@@ -11783,7 +11841,7 @@
    */
 
   var CloseButton = /*#__PURE__*/function (_Button) {
-    inheritsLoose(CloseButton, _Button);
+    _inheritsLoose(CloseButton, _Button);
 
     /**
     * Creates an instance of the this class.
@@ -11884,7 +11942,7 @@
    */
 
   var PlayToggle = /*#__PURE__*/function (_Button) {
-    inheritsLoose(PlayToggle, _Button);
+    _inheritsLoose(PlayToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -12134,7 +12192,7 @@
    */
 
   var TimeDisplay = /*#__PURE__*/function (_Component) {
-    inheritsLoose(TimeDisplay, _Component);
+    _inheritsLoose(TimeDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -12280,7 +12338,7 @@
    */
 
   var CurrentTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
+    _inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
 
     function CurrentTimeDisplay() {
       return _TimeDisplay.apply(this, arguments) || this;
@@ -12350,7 +12408,7 @@
    */
 
   var DurationDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    inheritsLoose(DurationDisplay, _TimeDisplay);
+    _inheritsLoose(DurationDisplay, _TimeDisplay);
 
     /**
      * Creates an instance of this class.
@@ -12444,7 +12502,7 @@
    */
 
   var TimeDivider = /*#__PURE__*/function (_Component) {
-    inheritsLoose(TimeDivider, _Component);
+    _inheritsLoose(TimeDivider, _Component);
 
     function TimeDivider() {
       return _Component.apply(this, arguments) || this;
@@ -12482,7 +12540,7 @@
    */
 
   var RemainingTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    inheritsLoose(RemainingTimeDisplay, _TimeDisplay);
+    _inheritsLoose(RemainingTimeDisplay, _TimeDisplay);
 
     /**
      * Creates an instance of this class.
@@ -12591,7 +12649,7 @@
    */
 
   var LiveDisplay = /*#__PURE__*/function (_Component) {
-    inheritsLoose(LiveDisplay, _Component);
+    _inheritsLoose(LiveDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -12674,7 +12732,7 @@
    */
 
   var SeekToLive = /*#__PURE__*/function (_Button) {
-    inheritsLoose(SeekToLive, _Button);
+    _inheritsLoose(SeekToLive, _Button);
 
     /**
      * Creates an instance of this class.
@@ -12798,7 +12856,7 @@
    */
 
   var Slider = /*#__PURE__*/function (_Component) {
-    inheritsLoose(Slider, _Component);
+    _inheritsLoose(Slider, _Component);
 
     /**
     * Create an instance of this class
@@ -13172,7 +13230,7 @@
 
 
   var LoadProgressBar = /*#__PURE__*/function (_Component) {
-    inheritsLoose(LoadProgressBar, _Component);
+    _inheritsLoose(LoadProgressBar, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13309,7 +13367,7 @@
    */
 
   var TimeTooltip = /*#__PURE__*/function (_Component) {
-    inheritsLoose(TimeTooltip, _Component);
+    _inheritsLoose(TimeTooltip, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13324,7 +13382,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13467,7 +13525,7 @@
    */
 
   var PlayProgressBar = /*#__PURE__*/function (_Component) {
-    inheritsLoose(PlayProgressBar, _Component);
+    _inheritsLoose(PlayProgressBar, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13482,7 +13540,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13556,7 +13614,7 @@
    */
 
   var MouseTimeDisplay = /*#__PURE__*/function (_Component) {
-    inheritsLoose(MouseTimeDisplay, _Component);
+    _inheritsLoose(MouseTimeDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13571,7 +13629,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13637,7 +13695,7 @@
    */
 
   var SeekBar = /*#__PURE__*/function (_Slider) {
-    inheritsLoose(SeekBar, _Slider);
+    _inheritsLoose(SeekBar, _Slider);
 
     /**
      * Creates an instance of this class.
@@ -14097,7 +14155,7 @@
    */
 
   var ProgressControl = /*#__PURE__*/function (_Component) {
-    inheritsLoose(ProgressControl, _Component);
+    _inheritsLoose(ProgressControl, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14112,8 +14170,8 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.handleMouseMove = throttle(bind(assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
-      _this.throttledHandleMouseSeek = throttle(bind(assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
+      _this.handleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
+      _this.throttledHandleMouseSeek = throttle(bind(_assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
 
       _this.enable();
 
@@ -14325,7 +14383,7 @@
    */
 
   var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
-    inheritsLoose(PictureInPictureToggle, _Button);
+    _inheritsLoose(PictureInPictureToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -14441,7 +14499,7 @@
    */
 
   var FullscreenToggle = /*#__PURE__*/function (_Button) {
-    inheritsLoose(FullscreenToggle, _Button);
+    _inheritsLoose(FullscreenToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -14564,7 +14622,7 @@
    */
 
   var VolumeLevel = /*#__PURE__*/function (_Component) {
-    inheritsLoose(VolumeLevel, _Component);
+    _inheritsLoose(VolumeLevel, _Component);
 
     function VolumeLevel() {
       return _Component.apply(this, arguments) || this;
@@ -14597,7 +14655,7 @@
    */
 
   var VolumeLevelTooltip = /*#__PURE__*/function (_Component) {
-    inheritsLoose(VolumeLevelTooltip, _Component);
+    _inheritsLoose(VolumeLevelTooltip, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14612,7 +14670,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -14742,7 +14800,7 @@
    */
 
   var MouseVolumeLevelDisplay = /*#__PURE__*/function (_Component) {
-    inheritsLoose(MouseVolumeLevelDisplay, _Component);
+    _inheritsLoose(MouseVolumeLevelDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14757,7 +14815,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -14828,7 +14886,7 @@
    */
 
   var VolumeBar = /*#__PURE__*/function (_Slider) {
-    inheritsLoose(VolumeBar, _Slider);
+    _inheritsLoose(VolumeBar, _Slider);
 
     /**
      * Creates an instance of this class.
@@ -15045,7 +15103,7 @@
    */
 
   var VolumeControl = /*#__PURE__*/function (_Component) {
-    inheritsLoose(VolumeControl, _Component);
+    _inheritsLoose(VolumeControl, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15073,8 +15131,8 @@
 
       _this = _Component.call(this, player, options) || this; // hide this control if volume support is missing
 
-      checkVolumeSupport(assertThisInitialized(_this), player);
-      _this.throttledHandleMouseMove = throttle(bind(assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
+      checkVolumeSupport(_assertThisInitialized(_this), player);
+      _this.throttledHandleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
 
       _this.on('mousedown', _this.handleMouseDown);
 
@@ -15223,7 +15281,7 @@
    */
 
   var MuteToggle = /*#__PURE__*/function (_Button) {
-    inheritsLoose(MuteToggle, _Button);
+    _inheritsLoose(MuteToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -15239,7 +15297,7 @@
 
       _this = _Button.call(this, player, options) || this; // hide this control if volume support is missing
 
-      checkMuteSupport(assertThisInitialized(_this), player);
+      checkMuteSupport(_assertThisInitialized(_this), player);
 
       _this.on(player, ['loadstart', 'volumechange'], _this.update);
 
@@ -15377,7 +15435,7 @@
    */
 
   var VolumePanel = /*#__PURE__*/function (_Component) {
-    inheritsLoose(VolumePanel, _Component);
+    _inheritsLoose(VolumePanel, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15593,7 +15651,7 @@
    */
 
   var Menu = /*#__PURE__*/function (_Component) {
-    inheritsLoose(Menu, _Component);
+    _inheritsLoose(Menu, _Component);
 
     /**
      * Create an instance of this class.
@@ -15619,8 +15677,8 @@
       _this.on('keydown', _this.handleKeyDown); // All the menu item instances share the same blur handler provided by the menu container.
 
 
-      _this.boundHandleBlur_ = bind(assertThisInitialized(_this), _this.handleBlur);
-      _this.boundHandleTapClick_ = bind(assertThisInitialized(_this), _this.handleTapClick);
+      _this.boundHandleBlur_ = bind(_assertThisInitialized(_this), _this.handleBlur);
+      _this.boundHandleTapClick_ = bind(_assertThisInitialized(_this), _this.handleTapClick);
       return _this;
     }
     /**
@@ -15884,7 +15942,7 @@
    */
 
   var MenuButton = /*#__PURE__*/function (_Component) {
-    inheritsLoose(MenuButton, _Component);
+    _inheritsLoose(MenuButton, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15932,7 +15990,7 @@
 
         _this.menu.show();
 
-        on(document, 'keyup', bind(assertThisInitialized(_this), _this.handleMenuKeyUp));
+        on(document, 'keyup', bind(_assertThisInitialized(_this), _this.handleMenuKeyUp));
       });
 
       _this.on('mouseleave', _this.handleMouseLeave);
@@ -16321,7 +16379,7 @@
    */
 
   var TrackButton = /*#__PURE__*/function (_MenuButton) {
-    inheritsLoose(TrackButton, _MenuButton);
+    _inheritsLoose(TrackButton, _MenuButton);
 
     /**
      * Creates an instance of this class.
@@ -16343,10 +16401,10 @@
       }
 
       if (!tracks) {
-        return assertThisInitialized(_this);
+        return _assertThisInitialized(_this);
       }
 
-      var updateHandler = bind(assertThisInitialized(_this), _this.update);
+      var updateHandler = bind(_assertThisInitialized(_this), _this.update);
       tracks.addEventListener('removetrack', updateHandler);
       tracks.addEventListener('addtrack', updateHandler);
 
@@ -16385,7 +16443,7 @@
    */
 
   var MenuItem = /*#__PURE__*/function (_ClickableComponent) {
-    inheritsLoose(MenuItem, _ClickableComponent);
+    _inheritsLoose(MenuItem, _ClickableComponent);
 
     /**
      * Creates an instance of the this class.
@@ -16521,7 +16579,7 @@
    */
 
   var TextTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    inheritsLoose(TextTrackMenuItem, _MenuItem);
+    _inheritsLoose(TextTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -16551,7 +16609,7 @@
           args[_key] = arguments[_key];
         }
 
-        _this.handleTracksChange.apply(assertThisInitialized(_this), args);
+        _this.handleTracksChange.apply(_assertThisInitialized(_this), args);
       };
 
       var selectedLanguageChangeHandler = function selectedLanguageChangeHandler() {
@@ -16559,7 +16617,7 @@
           args[_key2] = arguments[_key2];
         }
 
-        _this.handleSelectedLanguageChange.apply(assertThisInitialized(_this), args);
+        _this.handleSelectedLanguageChange.apply(_assertThisInitialized(_this), args);
       };
 
       player.on(['loadstart', 'texttrackchange'], changeHandler);
@@ -16723,7 +16781,7 @@
    */
 
   var OffTextTrackMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    inheritsLoose(OffTextTrackMenuItem, _TextTrackMenuItem);
+    _inheritsLoose(OffTextTrackMenuItem, _TextTrackMenuItem);
 
     /**
      * Creates an instance of this class.
@@ -16826,7 +16884,7 @@
    */
 
   var TextTrackButton = /*#__PURE__*/function (_TrackButton) {
-    inheritsLoose(TextTrackButton, _TrackButton);
+    _inheritsLoose(TextTrackButton, _TrackButton);
 
     /**
      * Creates an instance of this class.
@@ -16921,7 +16979,7 @@
    */
 
   var ChaptersTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    inheritsLoose(ChaptersTrackMenuItem, _MenuItem);
+    _inheritsLoose(ChaptersTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -16946,7 +17004,7 @@
       _this = _MenuItem.call(this, player, options) || this;
       _this.track = track;
       _this.cue = cue;
-      track.addEventListener('cuechange', bind(assertThisInitialized(_this), _this.update));
+      track.addEventListener('cuechange', bind(_assertThisInitialized(_this), _this.update));
       return _this;
     }
     /**
@@ -17001,7 +17059,7 @@
    */
 
   var ChaptersButton = /*#__PURE__*/function (_TextTrackButton) {
-    inheritsLoose(ChaptersButton, _TextTrackButton);
+    _inheritsLoose(ChaptersButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17204,7 +17262,7 @@
    */
 
   var DescriptionsButton = /*#__PURE__*/function (_TextTrackButton) {
-    inheritsLoose(DescriptionsButton, _TextTrackButton);
+    _inheritsLoose(DescriptionsButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17223,7 +17281,7 @@
 
       _this = _TextTrackButton.call(this, player, options, ready) || this;
       var tracks = player.textTracks();
-      var changeHandler = bind(assertThisInitialized(_this), _this.handleTracksChange);
+      var changeHandler = bind(_assertThisInitialized(_this), _this.handleTracksChange);
       tracks.addEventListener('change', changeHandler);
 
       _this.on('dispose', function () {
@@ -17308,7 +17366,7 @@
    */
 
   var SubtitlesButton = /*#__PURE__*/function (_TextTrackButton) {
-    inheritsLoose(SubtitlesButton, _TextTrackButton);
+    _inheritsLoose(SubtitlesButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17371,7 +17429,7 @@
    */
 
   var CaptionSettingsMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    inheritsLoose(CaptionSettingsMenuItem, _TextTrackMenuItem);
+    _inheritsLoose(CaptionSettingsMenuItem, _TextTrackMenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17435,7 +17493,7 @@
    */
 
   var CaptionsButton = /*#__PURE__*/function (_TextTrackButton) {
-    inheritsLoose(CaptionsButton, _TextTrackButton);
+    _inheritsLoose(CaptionsButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17519,7 +17577,7 @@
    */
 
   var SubsCapsMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    inheritsLoose(SubsCapsMenuItem, _TextTrackMenuItem);
+    _inheritsLoose(SubsCapsMenuItem, _TextTrackMenuItem);
 
     function SubsCapsMenuItem() {
       return _TextTrackMenuItem.apply(this, arguments) || this;
@@ -17555,7 +17613,7 @@
    */
 
   var SubsCapsButton = /*#__PURE__*/function (_TextTrackButton) {
-    inheritsLoose(SubsCapsButton, _TextTrackButton);
+    _inheritsLoose(SubsCapsButton, _TextTrackButton);
 
     function SubsCapsButton(player, options) {
       var _this;
@@ -17645,7 +17703,7 @@
    */
 
   var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    inheritsLoose(AudioTrackMenuItem, _MenuItem);
+    _inheritsLoose(AudioTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17674,7 +17732,7 @@
           args[_key] = arguments[_key];
         }
 
-        _this.handleTracksChange.apply(assertThisInitialized(_this), args);
+        _this.handleTracksChange.apply(_assertThisInitialized(_this), args);
       };
 
       tracks.addEventListener('change', changeHandler);
@@ -17752,7 +17810,7 @@
    */
 
   var AudioTrackButton = /*#__PURE__*/function (_TrackButton) {
-    inheritsLoose(AudioTrackButton, _TrackButton);
+    _inheritsLoose(AudioTrackButton, _TrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17842,7 +17900,7 @@
    */
 
   var PlaybackRateMenuItem = /*#__PURE__*/function (_MenuItem) {
-    inheritsLoose(PlaybackRateMenuItem, _MenuItem);
+    _inheritsLoose(PlaybackRateMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17925,7 +17983,7 @@
    */
 
   var PlaybackRateMenuButton = /*#__PURE__*/function (_MenuButton) {
-    inheritsLoose(PlaybackRateMenuButton, _MenuButton);
+    _inheritsLoose(PlaybackRateMenuButton, _MenuButton);
 
     /**
      * Creates an instance of this class.
@@ -18129,7 +18187,7 @@
    */
 
   var Spacer = /*#__PURE__*/function (_Component) {
-    inheritsLoose(Spacer, _Component);
+    _inheritsLoose(Spacer, _Component);
 
     function Spacer() {
       return _Component.apply(this, arguments) || this;
@@ -18172,7 +18230,7 @@
    */
 
   var CustomControlSpacer = /*#__PURE__*/function (_Spacer) {
-    inheritsLoose(CustomControlSpacer, _Spacer);
+    _inheritsLoose(CustomControlSpacer, _Spacer);
 
     function CustomControlSpacer() {
       return _Spacer.apply(this, arguments) || this;
@@ -18220,7 +18278,7 @@
    */
 
   var ControlBar = /*#__PURE__*/function (_Component) {
-    inheritsLoose(ControlBar, _Component);
+    _inheritsLoose(ControlBar, _Component);
 
     function ControlBar() {
       return _Component.apply(this, arguments) || this;
@@ -18269,7 +18327,7 @@
    */
 
   var ErrorDisplay = /*#__PURE__*/function (_ModalDialog) {
-    inheritsLoose(ErrorDisplay, _ModalDialog);
+    _inheritsLoose(ErrorDisplay, _ModalDialog);
 
     /**
      * Creates an instance of this class.
@@ -18326,7 +18384,7 @@
    */
 
 
-  ErrorDisplay.prototype.options_ = _extends_1({}, ModalDialog.prototype.options_, {
+  ErrorDisplay.prototype.options_ = _extends({}, ModalDialog.prototype.options_, {
     pauseOnOpen: false,
     fillAlways: true,
     temporary: false,
@@ -18504,7 +18562,7 @@
 
 
   var TextTrackSettings = /*#__PURE__*/function (_ModalDialog) {
-    inheritsLoose(TextTrackSettings, _ModalDialog);
+    _inheritsLoose(TextTrackSettings, _ModalDialog);
 
     /**
      * Creates an instance of this class.
@@ -18520,7 +18578,7 @@
 
       options.temporary = false;
       _this = _ModalDialog.call(this, player, options) || this;
-      _this.updateDisplay = bind(assertThisInitialized(_this), _this.updateDisplay); // fill the modal and pretend we have opened it
+      _this.updateDisplay = bind(_assertThisInitialized(_this), _this.updateDisplay); // fill the modal and pretend we have opened it
 
       _this.fill();
 
@@ -18839,6 +18897,55 @@
       } else if (ccBtn) {
         ccBtn.focus();
       }
+    }
+    /**
+     * Keydown handler. Attached when modal is focused.
+     *
+     * @listens keydown
+     */
+    ;
+
+    _proto.handleKeyDown = function handleKeyDown(event) {
+      var key = event.key;
+
+      if (!(key === 'ArrowDown' || key === 'Down' || key === 'ArrowUp' || key === 'Up' || key === 'ArrowLeft' || key === 'Left' || key === 'ArrowRight' || key === 'Right')) {
+        // Do not allow keydowns to reach out of the modal dialog.
+        event.stopPropagation();
+      }
+
+      if (keycode.isEventKey(event, 'Escape') && this.closeable()) {
+        event.preventDefault();
+        this.close();
+        return;
+      } // exit early if it isn't a tab key
+
+
+      if (!keycode.isEventKey(event, 'Tab')) {
+        return;
+      }
+
+      var focusableEls = this.focusableEls_();
+      var activeEl = this.el_.querySelector(':focus');
+      var focusIndex;
+
+      for (var i = 0; i < focusableEls.length; i++) {
+        if (activeEl === focusableEls[i]) {
+          focusIndex = i;
+          break;
+        }
+      }
+
+      if (document.activeElement === this.el_) {
+        focusIndex = 0;
+      }
+
+      if (event.shiftKey && focusIndex === 0) {
+        focusableEls[focusableEls.length - 1].focus();
+        event.preventDefault();
+      } else if (!event.shiftKey && focusIndex === focusableEls.length - 1) {
+        focusableEls[0].focus();
+        event.preventDefault();
+      }
     };
 
     return TextTrackSettings;
@@ -18864,7 +18971,7 @@
    */
 
   var ResizeManager = /*#__PURE__*/function (_Component) {
-    inheritsLoose(ResizeManager, _Component);
+    _inheritsLoose(ResizeManager, _Component);
 
     /**
      * Create the ResizeManager.
@@ -18899,7 +19006,7 @@
       _this.resizeObserver_ = null;
       _this.debouncedHandler_ = debounce(function () {
         _this.resizeHandler();
-      }, 100, false, assertThisInitialized(_this));
+      }, 100, false, _assertThisInitialized(_this));
 
       if (RESIZE_OBSERVER_AVAILABLE) {
         _this.resizeObserver_ = new _this.ResizeObserver(_this.debouncedHandler_);
@@ -19012,7 +19119,7 @@
    */
 
   var LiveTracker = /*#__PURE__*/function (_Component) {
-    inheritsLoose(LiveTracker, _Component);
+    _inheritsLoose(LiveTracker, _Component);
 
     /**
      * Creates an instance of this class.
@@ -19735,7 +19842,7 @@
    */
 
   var Html5 = /*#__PURE__*/function (_Tech) {
-    inheritsLoose(Html5, _Tech);
+    _inheritsLoose(Html5, _Tech);
 
     /**
     * Create an instance of this Tech.
@@ -21985,7 +22092,7 @@
    */
 
   var Player = /*#__PURE__*/function (_Component) {
-    inheritsLoose(Player, _Component);
+    _inheritsLoose(Player, _Component);
 
     /**
      * Create an instance of this class.
@@ -22045,8 +22152,8 @@
 
       _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
 
-      _this.boundDocumentFullscreenChange_ = bind(assertThisInitialized(_this), _this.documentFullscreenChange_);
-      _this.boundFullWindowOnEscKey_ = bind(assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
+      _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_this), _this.documentFullscreenChange_);
+      _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
 
       _this.isFullscreen_ = false; // create logger
 
@@ -22133,7 +22240,7 @@
       _this.scrubbing_ = false;
       _this.el_ = _this.createEl(); // Make this an evented object and use `el_` as its event bus.
 
-      evented(assertThisInitialized(_this), {
+      evented(_assertThisInitialized(_this), {
         eventBusKey: 'el_'
       }); // listen to document and player fullscreenchange handlers so we receive those events
       // before a user can receive them so we can update isFullscreen appropriately.
@@ -22214,7 +22321,7 @@
       } // Make player easily findable by ID
 
 
-      Player.players[_this.id_] = assertThisInitialized(_this); // Add a major version class to aid css in plugins
+      Player.players[_this.id_] = _assertThisInitialized(_this); // Add a major version class to aid css in plugins
 
       var majorVersion = version.split('.')[0];
 
@@ -26838,38 +26945,30 @@
 
   Component.registerComponent('Player', Player);
 
-  var setPrototypeOf = createCommonjsModule(function (module) {
-    function _setPrototypeOf(o, p) {
-      module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-      };
+  var isNativeReflectConstruct = createCommonjsModule(function (module) {
+    function _isNativeReflectConstruct() {
+      if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+      if (Reflect.construct.sham) return false;
+      if (typeof Proxy === "function") return true;
 
-      return _setPrototypeOf(o, p);
+      try {
+        Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
 
-    module.exports = _setPrototypeOf;
+    module.exports = _isNativeReflectConstruct;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
-
-  function _isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-
-    try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  var isNativeReflectConstruct = _isNativeReflectConstruct;
+  unwrapExports(isNativeReflectConstruct);
 
   var construct = createCommonjsModule(function (module) {
     function _construct(Parent, args, Class) {
       if (isNativeReflectConstruct()) {
         module.exports = _construct = Reflect.construct;
+        module.exports["default"] = module.exports, module.exports.__esModule = true;
       } else {
         module.exports = _construct = function _construct(Parent, args, Class) {
           var a = [null];
@@ -26879,13 +26978,17 @@
           if (Class) setPrototypeOf(instance, Class.prototype);
           return instance;
         };
+
+        module.exports["default"] = module.exports, module.exports.__esModule = true;
       }
 
       return _construct.apply(null, arguments);
     }
 
     module.exports = _construct;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
+  var _construct = unwrapExports(construct);
 
   /**
    * The base plugin name.
@@ -27058,7 +27161,7 @@
         args[_key] = arguments[_key];
       }
 
-      var instance = construct(PluginSubClass, [this].concat(args)); // The plugin is replaced by a function that returns the current instance.
+      var instance = _construct(PluginSubClass, [this].concat(args)); // The plugin is replaced by a function that returns the current instance.
 
 
       this[name] = function () {
@@ -27438,22 +27541,26 @@
    *           plugin class/constructor.
    */
 
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
+  var inherits = createCommonjsModule(function (module) {
+    function _inherits(subClass, superClass) {
+      if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function");
+      }
+
+      subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+          value: subClass,
+          writable: true,
+          configurable: true
+        }
+      });
+      if (superClass) setPrototypeOf(subClass, superClass);
     }
 
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) setPrototypeOf(subClass, superClass);
-  }
-
-  var inherits = _inherits;
+    module.exports = _inherits;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  var _inherits = unwrapExports(inherits);
 
   /**
    * @file extend.js
@@ -27502,7 +27609,7 @@
       subClass = subClassMethods;
     }
 
-    inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
+    _inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
 
 
     if (superClass) {

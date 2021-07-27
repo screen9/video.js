@@ -18266,6 +18266,55 @@ var TextTrackSettings = /*#__PURE__*/function (_ModalDialog) {
     } else if (ccBtn) {
       ccBtn.focus();
     }
+  }
+  /**
+   * Keydown handler. Attached when modal is focused.
+   *
+   * @listens keydown
+   */
+  ;
+
+  _proto.handleKeyDown = function handleKeyDown(event) {
+    var key = event.key;
+
+    if (!(key === 'ArrowDown' || key === 'Down' || key === 'ArrowUp' || key === 'Up' || key === 'ArrowLeft' || key === 'Left' || key === 'ArrowRight' || key === 'Right')) {
+      // Do not allow keydowns to reach out of the modal dialog.
+      event.stopPropagation();
+    }
+
+    if (keycode.isEventKey(event, 'Escape') && this.closeable()) {
+      event.preventDefault();
+      this.close();
+      return;
+    } // exit early if it isn't a tab key
+
+
+    if (!keycode.isEventKey(event, 'Tab')) {
+      return;
+    }
+
+    var focusableEls = this.focusableEls_();
+    var activeEl = this.el_.querySelector(':focus');
+    var focusIndex;
+
+    for (var i = 0; i < focusableEls.length; i++) {
+      if (activeEl === focusableEls[i]) {
+        focusIndex = i;
+        break;
+      }
+    }
+
+    if (document.activeElement === this.el_) {
+      focusIndex = 0;
+    }
+
+    if (event.shiftKey && focusIndex === 0) {
+      focusableEls[focusableEls.length - 1].focus();
+      event.preventDefault();
+    } else if (!event.shiftKey && focusIndex === focusableEls.length - 1) {
+      focusableEls[0].focus();
+      event.preventDefault();
+    }
   };
 
   return TextTrackSettings;
