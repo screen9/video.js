@@ -20901,7 +20901,7 @@
       return _Component.prototype.createEl.call(this, 'iframe', {
         className: 'vjs-resize-manager',
         tabIndex: -1,
-        title: 'Resize manager'
+        title: 'No content'
       }, {
         'aria-hidden': 'true'
       });
@@ -27061,7 +27061,7 @@
         this.setTimeout(function () {
           this.error({
             code: 4,
-            message: this.localize(this.options_.notSupportedMessage)
+            message: this.options_.notSupportedMessage
           });
         }, 0);
         return;
@@ -27092,7 +27092,7 @@
           _this13.setTimeout(function () {
             this.error({
               code: 4,
-              message: this.localize(this.options_.notSupportedMessage)
+              message: this.options_.notSupportedMessage
             });
           }, 0); // we could not find an appropriate tech, but let's still notify the delegate that this is it
           // this needs a better comment about why this is needed
