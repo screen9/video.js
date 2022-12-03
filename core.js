@@ -10566,6 +10566,22 @@ function tryUpdateStyle(el, style, rule) {
   }
 }
 /**
+ * Converts the CSS top/right/bottom/left property numeric value to string in pixels.
+ *
+ * @param {number} position
+ *        The CSS top/right/bottom/left property value.
+ *
+ * @return {string}
+ *          The CSS property value that was created, like '10px'.
+ *
+ * @private
+ */
+
+
+function getCSSPositionValue(position) {
+  return position ? position + "px" : '';
+}
+/**
  * The component for displaying text track cues.
  *
  * @extends Component
@@ -10591,10 +10607,26 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options, ready) || this;
-    var updateDisplayHandler = bind(_assertThisInitialized(_this), _this.updateDisplay);
-    player.on('loadstart', bind(_assertThisInitialized(_this), _this.toggleDisplay));
-    player.on('texttrackchange', updateDisplayHandler);
-    player.on('loadedmetadata', bind(_assertThisInitialized(_this), _this.preselectTrack)); // This used to be called during player init, but was causing an error
+
+    var updateDisplayTextHandler = function updateDisplayTextHandler(e) {
+      return _this.updateDisplay(e);
+    };
+
+    var updateDisplayHandler = function updateDisplayHandler(e) {
+      _this.updateDisplayOverlay();
+
+      _this.updateDisplay(e);
+    };
+
+    player.on('loadstart', function (e) {
+      return _this.toggleDisplay(e);
+    });
+    player.on('texttrackchange', updateDisplayTextHandler);
+    player.on('loadedmetadata', function (e) {
+      _this.updateDisplayOverlay();
+
+      _this.preselectTrack(e);
+    }); // This used to be called during player init, but was causing an error
     // if a track should show by default and the display hadn't loaded yet.
     // Should probably be moved to an external track loader when we support
     // tracks that don't need a display.
@@ -10787,6 +10819,35 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
 
       this.updateForTrack(descriptionsTrack);
     }
+  }
+  /**
+   * Updates the displayed TextTrack to be sure it overlays the video when a either
+   * a {@link Player#texttrackchange} or a {@link Player#fullscreenchange} is fired.
+   */
+  ;
+
+  _proto.updateDisplayOverlay = function updateDisplayOverlay() {
+    if (!this.player_.videoHeight()) {
+      return;
+    }
+
+    var playerWidth = this.player_.currentWidth();
+    var playerHeight = this.player_.currentHeight();
+    var playerAspectRatio = playerWidth / playerHeight;
+    var videoAspectRatio = this.player_.videoWidth() / this.player_.videoHeight();
+    var insetInlineMatch = 0;
+    var insetBlockMatch = 0;
+
+    if (Math.abs(playerAspectRatio - videoAspectRatio) > 0.1) {
+      if (playerAspectRatio > videoAspectRatio) {
+        insetInlineMatch = Math.round((playerWidth - playerHeight * videoAspectRatio) / 2);
+      } else {
+        insetBlockMatch = Math.round((playerHeight - playerWidth / videoAspectRatio) / 2);
+      }
+    }
+
+    tryUpdateStyle(this.el_, 'insetInline', getCSSPositionValue(insetInlineMatch));
+    tryUpdateStyle(this.el_, 'insetBlock', getCSSPositionValue(insetBlockMatch));
   }
   /**
    * Style {@Link TextTrack} activeCues according to {@Link TextTrackSettings}.

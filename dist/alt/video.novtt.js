@@ -313,10 +313,6 @@
   var log = createLogger('AMBER');
   var createLogger$1 = log.createLogger;
 
-  function unwrapExports (x) {
-  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-  }
-
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
@@ -337,15 +333,11 @@
         return target;
       };
 
-      module.exports["default"] = module.exports, module.exports.__esModule = true;
       return _extends.apply(this, arguments);
     }
 
     module.exports = _extends;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
-
-  var _extends = unwrapExports(_extends_1);
 
   /**
    * @file obj.js
@@ -451,7 +443,7 @@
     }
 
     if (Object.assign) {
-      return _extends.apply(void 0, [target].concat(sources));
+      return _extends_1.apply(void 0, [target].concat(sources));
     }
 
     sources.forEach(function (source) {
@@ -5033,19 +5025,15 @@
   Component.prototype.supportsRaf_ = typeof window$3.requestAnimationFrame === 'function' && typeof window$3.cancelAnimationFrame === 'function';
   Component.registerComponent('Component', Component);
 
-  var assertThisInitialized = createCommonjsModule(function (module) {
-    function _assertThisInitialized(self) {
-      if (self === void 0) {
-        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-      }
-
-      return self;
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
 
-    module.exports = _assertThisInitialized;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  });
-  var _assertThisInitialized = unwrapExports(assertThisInitialized);
+    return self;
+  }
+
+  var assertThisInitialized = _assertThisInitialized;
 
   var _typeof_1 = createCommonjsModule(function (module) {
     function _typeof(obj) {
@@ -5055,82 +5043,36 @@
         module.exports = _typeof = function _typeof(obj) {
           return typeof obj;
         };
-
-        module.exports["default"] = module.exports, module.exports.__esModule = true;
       } else {
         module.exports = _typeof = function _typeof(obj) {
           return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
-
-        module.exports["default"] = module.exports, module.exports.__esModule = true;
       }
 
       return _typeof(obj);
     }
 
     module.exports = _typeof;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
-
-  unwrapExports(_typeof_1);
-
-  var possibleConstructorReturn = createCommonjsModule(function (module) {
-    var _typeof = _typeof_1["default"];
-
-    function _possibleConstructorReturn(self, call) {
-      if (call && (_typeof(call) === "object" || typeof call === "function")) {
-        return call;
-      }
-
-      return assertThisInitialized(self);
-    }
-
-    module.exports = _possibleConstructorReturn;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  });
-  unwrapExports(possibleConstructorReturn);
 
   var getPrototypeOf = createCommonjsModule(function (module) {
     function _getPrototypeOf(o) {
       module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
         return o.__proto__ || Object.getPrototypeOf(o);
       };
-      module.exports["default"] = module.exports, module.exports.__esModule = true;
       return _getPrototypeOf(o);
     }
 
     module.exports = _getPrototypeOf;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
-  unwrapExports(getPrototypeOf);
 
-  var setPrototypeOf = createCommonjsModule(function (module) {
-    function _setPrototypeOf(o, p) {
-      module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-      };
+  function _inheritsLoose(subClass, superClass) {
+    subClass.prototype = Object.create(superClass.prototype);
+    subClass.prototype.constructor = subClass;
+    subClass.__proto__ = superClass;
+  }
 
-      module.exports["default"] = module.exports, module.exports.__esModule = true;
-      return _setPrototypeOf(o, p);
-    }
-
-    module.exports = _setPrototypeOf;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  });
-  unwrapExports(setPrototypeOf);
-
-  var inheritsLoose = createCommonjsModule(function (module) {
-    function _inheritsLoose(subClass, superClass) {
-      subClass.prototype = Object.create(superClass.prototype);
-      subClass.prototype.constructor = subClass;
-      setPrototypeOf(subClass, superClass);
-    }
-
-    module.exports = _inheritsLoose;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  });
-  var _inheritsLoose = unwrapExports(inheritsLoose);
+  var inheritsLoose = _inheritsLoose;
 
   /**
    * @file browser.js
@@ -6052,7 +5994,7 @@
    */
 
   var ModalDialog = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(ModalDialog, _Component);
+    inheritsLoose(ModalDialog, _Component);
 
     /**
      * Create an instance of this class.
@@ -6572,7 +6514,7 @@
    */
 
   var TrackList = /*#__PURE__*/function (_EventTarget) {
-    _inheritsLoose(TrackList, _EventTarget);
+    inheritsLoose(TrackList, _EventTarget);
 
     /**
      * Create an instance of this class
@@ -6598,7 +6540,7 @@
        * @instance
        */
 
-      Object.defineProperty(_assertThisInitialized(_this), 'length', {
+      Object.defineProperty(assertThisInitialized(_this), 'length', {
         get: function get() {
           return this.tracks_.length;
         }
@@ -6781,7 +6723,7 @@
 
 
   var AudioTrackList = /*#__PURE__*/function (_TrackList) {
-    _inheritsLoose(AudioTrackList, _TrackList);
+    inheritsLoose(AudioTrackList, _TrackList);
 
     /**
      * Create an instance of this class.
@@ -6901,7 +6843,7 @@
 
 
   var VideoTrackList = /*#__PURE__*/function (_TrackList) {
-    _inheritsLoose(VideoTrackList, _TrackList);
+    inheritsLoose(VideoTrackList, _TrackList);
 
     /**
      * Create an instance of this class.
@@ -6932,7 +6874,7 @@
        *         The current index of the selected {@link VideoTrack`}.
        */
 
-      Object.defineProperty(_assertThisInitialized(_this), 'selectedIndex', {
+      Object.defineProperty(assertThisInitialized(_this), 'selectedIndex', {
         get: function get() {
           for (var _i = 0; _i < this.length; _i++) {
             if (this[_i].selected) {
@@ -7012,7 +6954,7 @@
    */
 
   var TextTrackList = /*#__PURE__*/function (_TrackList) {
-    _inheritsLoose(TextTrackList, _TrackList);
+    inheritsLoose(TextTrackList, _TrackList);
 
     function TextTrackList() {
       return _TrackList.apply(this, arguments) || this;
@@ -7389,7 +7331,7 @@
    */
 
   var Track = /*#__PURE__*/function (_EventTarget) {
-    _inheritsLoose(Track, _EventTarget);
+    inheritsLoose(Track, _EventTarget);
 
     /**
      * Create an instance of this class.
@@ -7463,7 +7405,7 @@
        */
 
       var _loop = function _loop(key) {
-        Object.defineProperty(_assertThisInitialized(_this), key, {
+        Object.defineProperty(assertThisInitialized(_this), key, {
           get: function get() {
             return trackProps[key];
           },
@@ -8073,7 +8015,7 @@
 
 
   var TextTrack = /*#__PURE__*/function (_Track) {
-    _inheritsLoose(TextTrack, _Track);
+    inheritsLoose(TextTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8139,7 +8081,7 @@
       var cues = new TextTrackCueList(_this.cues_);
       var activeCues = new TextTrackCueList(_this.activeCues_);
       var changed = false;
-      var timeupdateHandler = bind(_assertThisInitialized(_this), function () {
+      var timeupdateHandler = bind(assertThisInitialized(_this), function () {
         // Accessing this.activeCues for the side-effects of updating itself
         // due to its nature as a getter function. Do not remove or cues will
         // stop updating!
@@ -8158,7 +8100,7 @@
         }, true);
       }
 
-      Object.defineProperties(_assertThisInitialized(_this), {
+      Object.defineProperties(assertThisInitialized(_this), {
         /**
          * @memberof TextTrack
          * @member {boolean} default
@@ -8302,7 +8244,7 @@
         }
 
         if (_this.preload_ || default_ || settings.kind !== 'subtitles' && settings.kind !== 'captions') {
-          loadTrack(_this.src, _assertThisInitialized(_this));
+          loadTrack(_this.src, assertThisInitialized(_this));
         }
       } else {
         _this.loaded_ = true;
@@ -8390,7 +8332,7 @@
    */
 
   var AudioTrack = /*#__PURE__*/function (_Track) {
-    _inheritsLoose(AudioTrack, _Track);
+    inheritsLoose(AudioTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8436,7 +8378,7 @@
        * @fires VideoTrack#selectedchange
        */
 
-      Object.defineProperty(_assertThisInitialized(_this), 'enabled', {
+      Object.defineProperty(assertThisInitialized(_this), 'enabled', {
         get: function get() {
           return enabled;
         },
@@ -8483,7 +8425,7 @@
    */
 
   var VideoTrack = /*#__PURE__*/function (_Track) {
-    _inheritsLoose(VideoTrack, _Track);
+    inheritsLoose(VideoTrack, _Track);
 
     /**
      * Create an instance of this class.
@@ -8528,7 +8470,7 @@
        * @fires VideoTrack#selectedchange
        */
 
-      Object.defineProperty(_assertThisInitialized(_this), 'selected', {
+      Object.defineProperty(assertThisInitialized(_this), 'selected', {
         get: function get() {
           return selected;
         },
@@ -8584,7 +8526,7 @@
    */
 
   var HTMLTrackElement = /*#__PURE__*/function (_EventTarget) {
-    _inheritsLoose(HTMLTrackElement, _EventTarget);
+    inheritsLoose(HTMLTrackElement, _EventTarget);
 
     /**
      * Create an instance of this class.
@@ -8635,7 +8577,7 @@
       _this.srclang = track.language;
       _this.label = track.label;
       _this["default"] = track["default"];
-      Object.defineProperties(_assertThisInitialized(_this), {
+      Object.defineProperties(assertThisInitialized(_this), {
         /**
          * @memberof HTMLTrackElement
          * @member {HTMLTrackElement~ReadyState} readyState
@@ -8672,7 +8614,7 @@
 
         _this.trigger({
           type: 'load',
-          target: _assertThisInitialized(_this)
+          target: assertThisInitialized(_this)
         });
       });
       return _this;
@@ -8732,7 +8674,7 @@
     }
   };
 
-  var ALL = _extends({}, NORMAL, REMOTE);
+  var ALL = _extends_1({}, NORMAL, REMOTE);
 
   REMOTE.names = Object.keys(REMOTE);
   NORMAL.names = Object.keys(NORMAL);
@@ -8809,7 +8751,7 @@
 
 
   var Tech = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(Tech, _Component);
+    inheritsLoose(Tech, _Component);
 
     /**
     * Create an instance of this Tech.
@@ -10693,7 +10635,7 @@
    */
 
   var MediaLoader = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(MediaLoader, _Component);
+    inheritsLoose(MediaLoader, _Component);
 
     /**
      * Create an instance of this class.
@@ -10757,7 +10699,7 @@
    */
 
   var ClickableComponent = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(ClickableComponent, _Component);
+    inheritsLoose(ClickableComponent, _Component);
 
     /**
      * Creates an instance of this class.
@@ -11006,7 +10948,7 @@
    */
 
   var PosterImage = /*#__PURE__*/function (_ClickableComponent) {
-    _inheritsLoose(PosterImage, _ClickableComponent);
+    inheritsLoose(PosterImage, _ClickableComponent);
 
     /**
      * Create an instance of this class.
@@ -11024,7 +10966,7 @@
 
       _this.update();
 
-      player.on('posterchange', bind(_assertThisInitialized(_this), _this.update));
+      player.on('posterchange', bind(assertThisInitialized(_this), _this.update));
       return _this;
     }
     /**
@@ -11201,6 +11143,22 @@
     }
   }
   /**
+   * Converts the CSS top/right/bottom/left property numeric value to string in pixels.
+   *
+   * @param {number} position
+   *        The CSS top/right/bottom/left property value.
+   *
+   * @return {string}
+   *          The CSS property value that was created, like '10px'.
+   *
+   * @private
+   */
+
+
+  function getCSSPositionValue(position) {
+    return position ? position + "px" : '';
+  }
+  /**
    * The component for displaying text track cues.
    *
    * @extends Component
@@ -11208,7 +11166,7 @@
 
 
   var TextTrackDisplay = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(TextTrackDisplay, _Component);
+    inheritsLoose(TextTrackDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -11226,15 +11184,31 @@
       var _this;
 
       _this = _Component.call(this, player, options, ready) || this;
-      var updateDisplayHandler = bind(_assertThisInitialized(_this), _this.updateDisplay);
-      player.on('loadstart', bind(_assertThisInitialized(_this), _this.toggleDisplay));
-      player.on('texttrackchange', updateDisplayHandler);
-      player.on('loadedmetadata', bind(_assertThisInitialized(_this), _this.preselectTrack)); // This used to be called during player init, but was causing an error
+
+      var updateDisplayTextHandler = function updateDisplayTextHandler(e) {
+        return _this.updateDisplay(e);
+      };
+
+      var updateDisplayHandler = function updateDisplayHandler(e) {
+        _this.updateDisplayOverlay();
+
+        _this.updateDisplay(e);
+      };
+
+      player.on('loadstart', function (e) {
+        return _this.toggleDisplay(e);
+      });
+      player.on('texttrackchange', updateDisplayTextHandler);
+      player.on('loadedmetadata', function (e) {
+        _this.updateDisplayOverlay();
+
+        _this.preselectTrack(e);
+      }); // This used to be called during player init, but was causing an error
       // if a track should show by default and the display hadn't loaded yet.
       // Should probably be moved to an external track loader when we support
       // tracks that don't need a display.
 
-      player.ready(bind(_assertThisInitialized(_this), function () {
+      player.ready(bind(assertThisInitialized(_this), function () {
         if (player.tech_ && player.tech_.featuresNativeTextTracks) {
           this.hide();
           return;
@@ -11424,6 +11398,35 @@
       }
     }
     /**
+     * Updates the displayed TextTrack to be sure it overlays the video when a either
+     * a {@link Player#texttrackchange} or a {@link Player#fullscreenchange} is fired.
+     */
+    ;
+
+    _proto.updateDisplayOverlay = function updateDisplayOverlay() {
+      if (!this.player_.videoHeight()) {
+        return;
+      }
+
+      var playerWidth = this.player_.currentWidth();
+      var playerHeight = this.player_.currentHeight();
+      var playerAspectRatio = playerWidth / playerHeight;
+      var videoAspectRatio = this.player_.videoWidth() / this.player_.videoHeight();
+      var insetInlineMatch = 0;
+      var insetBlockMatch = 0;
+
+      if (Math.abs(playerAspectRatio - videoAspectRatio) > 0.1) {
+        if (playerAspectRatio > videoAspectRatio) {
+          insetInlineMatch = Math.round((playerWidth - playerHeight * videoAspectRatio) / 2);
+        } else {
+          insetBlockMatch = Math.round((playerHeight - playerWidth / videoAspectRatio) / 2);
+        }
+      }
+
+      tryUpdateStyle(this.el_, 'insetInline', getCSSPositionValue(insetInlineMatch));
+      tryUpdateStyle(this.el_, 'insetBlock', getCSSPositionValue(insetBlockMatch));
+    }
+    /**
      * Style {@Link TextTrack} activeCues according to {@Link TextTrackSettings}.
      *
      * @param {TextTrack} track
@@ -11557,7 +11560,7 @@
    */
 
   var LoadingSpinner = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(LoadingSpinner, _Component);
+    inheritsLoose(LoadingSpinner, _Component);
 
     function LoadingSpinner() {
       return _Component.apply(this, arguments) || this;
@@ -11600,7 +11603,7 @@
    */
 
   var Button = /*#__PURE__*/function (_ClickableComponent) {
-    _inheritsLoose(Button, _ClickableComponent);
+    inheritsLoose(Button, _ClickableComponent);
 
     function Button() {
       return _ClickableComponent.apply(this, arguments) || this;
@@ -11736,7 +11739,7 @@
    */
 
   var BigPlayButton = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(BigPlayButton, _Button);
+    inheritsLoose(BigPlayButton, _Button);
 
     function BigPlayButton(player, options) {
       var _this;
@@ -11841,7 +11844,7 @@
    */
 
   var CloseButton = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(CloseButton, _Button);
+    inheritsLoose(CloseButton, _Button);
 
     /**
     * Creates an instance of the this class.
@@ -11942,7 +11945,7 @@
    */
 
   var PlayToggle = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(PlayToggle, _Button);
+    inheritsLoose(PlayToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -12192,7 +12195,7 @@
    */
 
   var TimeDisplay = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(TimeDisplay, _Component);
+    inheritsLoose(TimeDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -12338,7 +12341,7 @@
    */
 
   var CurrentTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    _inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
+    inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
 
     function CurrentTimeDisplay() {
       return _TimeDisplay.apply(this, arguments) || this;
@@ -12408,7 +12411,7 @@
    */
 
   var DurationDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    _inheritsLoose(DurationDisplay, _TimeDisplay);
+    inheritsLoose(DurationDisplay, _TimeDisplay);
 
     /**
      * Creates an instance of this class.
@@ -12502,7 +12505,7 @@
    */
 
   var TimeDivider = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(TimeDivider, _Component);
+    inheritsLoose(TimeDivider, _Component);
 
     function TimeDivider() {
       return _Component.apply(this, arguments) || this;
@@ -12540,7 +12543,7 @@
    */
 
   var RemainingTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
-    _inheritsLoose(RemainingTimeDisplay, _TimeDisplay);
+    inheritsLoose(RemainingTimeDisplay, _TimeDisplay);
 
     /**
      * Creates an instance of this class.
@@ -12649,7 +12652,7 @@
    */
 
   var LiveDisplay = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(LiveDisplay, _Component);
+    inheritsLoose(LiveDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -12732,7 +12735,7 @@
    */
 
   var SeekToLive = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(SeekToLive, _Button);
+    inheritsLoose(SeekToLive, _Button);
 
     /**
      * Creates an instance of this class.
@@ -12856,7 +12859,7 @@
    */
 
   var Slider = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(Slider, _Component);
+    inheritsLoose(Slider, _Component);
 
     /**
     * Create an instance of this class
@@ -13230,7 +13233,7 @@
 
 
   var LoadProgressBar = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(LoadProgressBar, _Component);
+    inheritsLoose(LoadProgressBar, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13367,7 +13370,7 @@
    */
 
   var TimeTooltip = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(TimeTooltip, _Component);
+    inheritsLoose(TimeTooltip, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13382,7 +13385,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13525,7 +13528,7 @@
    */
 
   var PlayProgressBar = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(PlayProgressBar, _Component);
+    inheritsLoose(PlayProgressBar, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13540,7 +13543,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13614,7 +13617,7 @@
    */
 
   var MouseTimeDisplay = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(MouseTimeDisplay, _Component);
+    inheritsLoose(MouseTimeDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -13629,7 +13632,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -13695,7 +13698,7 @@
    */
 
   var SeekBar = /*#__PURE__*/function (_Slider) {
-    _inheritsLoose(SeekBar, _Slider);
+    inheritsLoose(SeekBar, _Slider);
 
     /**
      * Creates an instance of this class.
@@ -14155,7 +14158,7 @@
    */
 
   var ProgressControl = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(ProgressControl, _Component);
+    inheritsLoose(ProgressControl, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14170,8 +14173,8 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.handleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
-      _this.throttledHandleMouseSeek = throttle(bind(_assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
+      _this.handleMouseMove = throttle(bind(assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
+      _this.throttledHandleMouseSeek = throttle(bind(assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
 
       _this.enable();
 
@@ -14383,7 +14386,7 @@
    */
 
   var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(PictureInPictureToggle, _Button);
+    inheritsLoose(PictureInPictureToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -14499,7 +14502,7 @@
    */
 
   var FullscreenToggle = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(FullscreenToggle, _Button);
+    inheritsLoose(FullscreenToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -14622,7 +14625,7 @@
    */
 
   var VolumeLevel = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(VolumeLevel, _Component);
+    inheritsLoose(VolumeLevel, _Component);
 
     function VolumeLevel() {
       return _Component.apply(this, arguments) || this;
@@ -14655,7 +14658,7 @@
    */
 
   var VolumeLevelTooltip = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(VolumeLevelTooltip, _Component);
+    inheritsLoose(VolumeLevelTooltip, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14670,7 +14673,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -14800,7 +14803,7 @@
    */
 
   var MouseVolumeLevelDisplay = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(MouseVolumeLevelDisplay, _Component);
+    inheritsLoose(MouseVolumeLevelDisplay, _Component);
 
     /**
      * Creates an instance of this class.
@@ -14815,7 +14818,7 @@
       var _this;
 
       _this = _Component.call(this, player, options) || this;
-      _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+      _this.update = throttle(bind(assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
       return _this;
     }
     /**
@@ -14886,7 +14889,7 @@
    */
 
   var VolumeBar = /*#__PURE__*/function (_Slider) {
-    _inheritsLoose(VolumeBar, _Slider);
+    inheritsLoose(VolumeBar, _Slider);
 
     /**
      * Creates an instance of this class.
@@ -15103,7 +15106,7 @@
    */
 
   var VolumeControl = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(VolumeControl, _Component);
+    inheritsLoose(VolumeControl, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15131,8 +15134,8 @@
 
       _this = _Component.call(this, player, options) || this; // hide this control if volume support is missing
 
-      checkVolumeSupport(_assertThisInitialized(_this), player);
-      _this.throttledHandleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
+      checkVolumeSupport(assertThisInitialized(_this), player);
+      _this.throttledHandleMouseMove = throttle(bind(assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
 
       _this.on('mousedown', _this.handleMouseDown);
 
@@ -15281,7 +15284,7 @@
    */
 
   var MuteToggle = /*#__PURE__*/function (_Button) {
-    _inheritsLoose(MuteToggle, _Button);
+    inheritsLoose(MuteToggle, _Button);
 
     /**
      * Creates an instance of this class.
@@ -15297,7 +15300,7 @@
 
       _this = _Button.call(this, player, options) || this; // hide this control if volume support is missing
 
-      checkMuteSupport(_assertThisInitialized(_this), player);
+      checkMuteSupport(assertThisInitialized(_this), player);
 
       _this.on(player, ['loadstart', 'volumechange'], _this.update);
 
@@ -15435,7 +15438,7 @@
    */
 
   var VolumePanel = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(VolumePanel, _Component);
+    inheritsLoose(VolumePanel, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15651,7 +15654,7 @@
    */
 
   var Menu = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(Menu, _Component);
+    inheritsLoose(Menu, _Component);
 
     /**
      * Create an instance of this class.
@@ -15677,8 +15680,8 @@
       _this.on('keydown', _this.handleKeyDown); // All the menu item instances share the same blur handler provided by the menu container.
 
 
-      _this.boundHandleBlur_ = bind(_assertThisInitialized(_this), _this.handleBlur);
-      _this.boundHandleTapClick_ = bind(_assertThisInitialized(_this), _this.handleTapClick);
+      _this.boundHandleBlur_ = bind(assertThisInitialized(_this), _this.handleBlur);
+      _this.boundHandleTapClick_ = bind(assertThisInitialized(_this), _this.handleTapClick);
       return _this;
     }
     /**
@@ -15942,7 +15945,7 @@
    */
 
   var MenuButton = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(MenuButton, _Component);
+    inheritsLoose(MenuButton, _Component);
 
     /**
      * Creates an instance of this class.
@@ -15990,7 +15993,7 @@
 
         _this.menu.show();
 
-        on(document, 'keyup', bind(_assertThisInitialized(_this), _this.handleMenuKeyUp));
+        on(document, 'keyup', bind(assertThisInitialized(_this), _this.handleMenuKeyUp));
       });
 
       _this.on('mouseleave', _this.handleMouseLeave);
@@ -16379,7 +16382,7 @@
    */
 
   var TrackButton = /*#__PURE__*/function (_MenuButton) {
-    _inheritsLoose(TrackButton, _MenuButton);
+    inheritsLoose(TrackButton, _MenuButton);
 
     /**
      * Creates an instance of this class.
@@ -16401,10 +16404,10 @@
       }
 
       if (!tracks) {
-        return _assertThisInitialized(_this);
+        return assertThisInitialized(_this);
       }
 
-      var updateHandler = bind(_assertThisInitialized(_this), _this.update);
+      var updateHandler = bind(assertThisInitialized(_this), _this.update);
       tracks.addEventListener('removetrack', updateHandler);
       tracks.addEventListener('addtrack', updateHandler);
 
@@ -16443,7 +16446,7 @@
    */
 
   var MenuItem = /*#__PURE__*/function (_ClickableComponent) {
-    _inheritsLoose(MenuItem, _ClickableComponent);
+    inheritsLoose(MenuItem, _ClickableComponent);
 
     /**
      * Creates an instance of the this class.
@@ -16579,7 +16582,7 @@
    */
 
   var TextTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    _inheritsLoose(TextTrackMenuItem, _MenuItem);
+    inheritsLoose(TextTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -16609,7 +16612,7 @@
           args[_key] = arguments[_key];
         }
 
-        _this.handleTracksChange.apply(_assertThisInitialized(_this), args);
+        _this.handleTracksChange.apply(assertThisInitialized(_this), args);
       };
 
       var selectedLanguageChangeHandler = function selectedLanguageChangeHandler() {
@@ -16617,7 +16620,7 @@
           args[_key2] = arguments[_key2];
         }
 
-        _this.handleSelectedLanguageChange.apply(_assertThisInitialized(_this), args);
+        _this.handleSelectedLanguageChange.apply(assertThisInitialized(_this), args);
       };
 
       player.on(['loadstart', 'texttrackchange'], changeHandler);
@@ -16781,7 +16784,7 @@
    */
 
   var OffTextTrackMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    _inheritsLoose(OffTextTrackMenuItem, _TextTrackMenuItem);
+    inheritsLoose(OffTextTrackMenuItem, _TextTrackMenuItem);
 
     /**
      * Creates an instance of this class.
@@ -16884,7 +16887,7 @@
    */
 
   var TextTrackButton = /*#__PURE__*/function (_TrackButton) {
-    _inheritsLoose(TextTrackButton, _TrackButton);
+    inheritsLoose(TextTrackButton, _TrackButton);
 
     /**
      * Creates an instance of this class.
@@ -16979,7 +16982,7 @@
    */
 
   var ChaptersTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    _inheritsLoose(ChaptersTrackMenuItem, _MenuItem);
+    inheritsLoose(ChaptersTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17004,7 +17007,7 @@
       _this = _MenuItem.call(this, player, options) || this;
       _this.track = track;
       _this.cue = cue;
-      track.addEventListener('cuechange', bind(_assertThisInitialized(_this), _this.update));
+      track.addEventListener('cuechange', bind(assertThisInitialized(_this), _this.update));
       return _this;
     }
     /**
@@ -17059,7 +17062,7 @@
    */
 
   var ChaptersButton = /*#__PURE__*/function (_TextTrackButton) {
-    _inheritsLoose(ChaptersButton, _TextTrackButton);
+    inheritsLoose(ChaptersButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17262,7 +17265,7 @@
    */
 
   var DescriptionsButton = /*#__PURE__*/function (_TextTrackButton) {
-    _inheritsLoose(DescriptionsButton, _TextTrackButton);
+    inheritsLoose(DescriptionsButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17281,7 +17284,7 @@
 
       _this = _TextTrackButton.call(this, player, options, ready) || this;
       var tracks = player.textTracks();
-      var changeHandler = bind(_assertThisInitialized(_this), _this.handleTracksChange);
+      var changeHandler = bind(assertThisInitialized(_this), _this.handleTracksChange);
       tracks.addEventListener('change', changeHandler);
 
       _this.on('dispose', function () {
@@ -17366,7 +17369,7 @@
    */
 
   var SubtitlesButton = /*#__PURE__*/function (_TextTrackButton) {
-    _inheritsLoose(SubtitlesButton, _TextTrackButton);
+    inheritsLoose(SubtitlesButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17429,7 +17432,7 @@
    */
 
   var CaptionSettingsMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    _inheritsLoose(CaptionSettingsMenuItem, _TextTrackMenuItem);
+    inheritsLoose(CaptionSettingsMenuItem, _TextTrackMenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17493,7 +17496,7 @@
    */
 
   var CaptionsButton = /*#__PURE__*/function (_TextTrackButton) {
-    _inheritsLoose(CaptionsButton, _TextTrackButton);
+    inheritsLoose(CaptionsButton, _TextTrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17577,7 +17580,7 @@
    */
 
   var SubsCapsMenuItem = /*#__PURE__*/function (_TextTrackMenuItem) {
-    _inheritsLoose(SubsCapsMenuItem, _TextTrackMenuItem);
+    inheritsLoose(SubsCapsMenuItem, _TextTrackMenuItem);
 
     function SubsCapsMenuItem() {
       return _TextTrackMenuItem.apply(this, arguments) || this;
@@ -17613,7 +17616,7 @@
    */
 
   var SubsCapsButton = /*#__PURE__*/function (_TextTrackButton) {
-    _inheritsLoose(SubsCapsButton, _TextTrackButton);
+    inheritsLoose(SubsCapsButton, _TextTrackButton);
 
     function SubsCapsButton(player, options) {
       var _this;
@@ -17703,7 +17706,7 @@
    */
 
   var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
-    _inheritsLoose(AudioTrackMenuItem, _MenuItem);
+    inheritsLoose(AudioTrackMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17732,7 +17735,7 @@
           args[_key] = arguments[_key];
         }
 
-        _this.handleTracksChange.apply(_assertThisInitialized(_this), args);
+        _this.handleTracksChange.apply(assertThisInitialized(_this), args);
       };
 
       tracks.addEventListener('change', changeHandler);
@@ -17810,7 +17813,7 @@
    */
 
   var AudioTrackButton = /*#__PURE__*/function (_TrackButton) {
-    _inheritsLoose(AudioTrackButton, _TrackButton);
+    inheritsLoose(AudioTrackButton, _TrackButton);
 
     /**
      * Creates an instance of this class.
@@ -17900,7 +17903,7 @@
    */
 
   var PlaybackRateMenuItem = /*#__PURE__*/function (_MenuItem) {
-    _inheritsLoose(PlaybackRateMenuItem, _MenuItem);
+    inheritsLoose(PlaybackRateMenuItem, _MenuItem);
 
     /**
      * Creates an instance of this class.
@@ -17983,7 +17986,7 @@
    */
 
   var PlaybackRateMenuButton = /*#__PURE__*/function (_MenuButton) {
-    _inheritsLoose(PlaybackRateMenuButton, _MenuButton);
+    inheritsLoose(PlaybackRateMenuButton, _MenuButton);
 
     /**
      * Creates an instance of this class.
@@ -18187,7 +18190,7 @@
    */
 
   var Spacer = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(Spacer, _Component);
+    inheritsLoose(Spacer, _Component);
 
     function Spacer() {
       return _Component.apply(this, arguments) || this;
@@ -18230,7 +18233,7 @@
    */
 
   var CustomControlSpacer = /*#__PURE__*/function (_Spacer) {
-    _inheritsLoose(CustomControlSpacer, _Spacer);
+    inheritsLoose(CustomControlSpacer, _Spacer);
 
     function CustomControlSpacer() {
       return _Spacer.apply(this, arguments) || this;
@@ -18278,7 +18281,7 @@
    */
 
   var ControlBar = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(ControlBar, _Component);
+    inheritsLoose(ControlBar, _Component);
 
     function ControlBar() {
       return _Component.apply(this, arguments) || this;
@@ -18327,7 +18330,7 @@
    */
 
   var ErrorDisplay = /*#__PURE__*/function (_ModalDialog) {
-    _inheritsLoose(ErrorDisplay, _ModalDialog);
+    inheritsLoose(ErrorDisplay, _ModalDialog);
 
     /**
      * Creates an instance of this class.
@@ -18384,7 +18387,7 @@
    */
 
 
-  ErrorDisplay.prototype.options_ = _extends({}, ModalDialog.prototype.options_, {
+  ErrorDisplay.prototype.options_ = _extends_1({}, ModalDialog.prototype.options_, {
     pauseOnOpen: false,
     fillAlways: true,
     temporary: false,
@@ -18562,7 +18565,7 @@
 
 
   var TextTrackSettings = /*#__PURE__*/function (_ModalDialog) {
-    _inheritsLoose(TextTrackSettings, _ModalDialog);
+    inheritsLoose(TextTrackSettings, _ModalDialog);
 
     /**
      * Creates an instance of this class.
@@ -18578,7 +18581,7 @@
 
       options.temporary = false;
       _this = _ModalDialog.call(this, player, options) || this;
-      _this.updateDisplay = bind(_assertThisInitialized(_this), _this.updateDisplay); // fill the modal and pretend we have opened it
+      _this.updateDisplay = bind(assertThisInitialized(_this), _this.updateDisplay); // fill the modal and pretend we have opened it
 
       _this.fill();
 
@@ -18971,7 +18974,7 @@
    */
 
   var ResizeManager = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(ResizeManager, _Component);
+    inheritsLoose(ResizeManager, _Component);
 
     /**
      * Create the ResizeManager.
@@ -19006,7 +19009,7 @@
       _this.resizeObserver_ = null;
       _this.debouncedHandler_ = debounce(function () {
         _this.resizeHandler();
-      }, 100, false, _assertThisInitialized(_this));
+      }, 100, false, assertThisInitialized(_this));
 
       if (RESIZE_OBSERVER_AVAILABLE) {
         _this.resizeObserver_ = new _this.ResizeObserver(_this.debouncedHandler_);
@@ -19119,7 +19122,7 @@
    */
 
   var LiveTracker = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(LiveTracker, _Component);
+    inheritsLoose(LiveTracker, _Component);
 
     /**
      * Creates an instance of this class.
@@ -19842,7 +19845,7 @@
    */
 
   var Html5 = /*#__PURE__*/function (_Tech) {
-    _inheritsLoose(Html5, _Tech);
+    inheritsLoose(Html5, _Tech);
 
     /**
     * Create an instance of this Tech.
@@ -22092,7 +22095,7 @@
    */
 
   var Player = /*#__PURE__*/function (_Component) {
-    _inheritsLoose(Player, _Component);
+    inheritsLoose(Player, _Component);
 
     /**
      * Create an instance of this class.
@@ -22152,8 +22155,8 @@
 
       _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
 
-      _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_this), _this.documentFullscreenChange_);
-      _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
+      _this.boundDocumentFullscreenChange_ = bind(assertThisInitialized(_this), _this.documentFullscreenChange_);
+      _this.boundFullWindowOnEscKey_ = bind(assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
 
       _this.isFullscreen_ = false; // create logger
 
@@ -22240,7 +22243,7 @@
       _this.scrubbing_ = false;
       _this.el_ = _this.createEl(); // Make this an evented object and use `el_` as its event bus.
 
-      evented(_assertThisInitialized(_this), {
+      evented(assertThisInitialized(_this), {
         eventBusKey: 'el_'
       }); // listen to document and player fullscreenchange handlers so we receive those events
       // before a user can receive them so we can update isFullscreen appropriately.
@@ -22321,7 +22324,7 @@
       } // Make player easily findable by ID
 
 
-      Player.players[_this.id_] = _assertThisInitialized(_this); // Add a major version class to aid css in plugins
+      Player.players[_this.id_] = assertThisInitialized(_this); // Add a major version class to aid css in plugins
 
       var majorVersion = version.split('.')[0];
 
@@ -26945,30 +26948,38 @@
 
   Component.registerComponent('Player', Player);
 
-  var isNativeReflectConstruct = createCommonjsModule(function (module) {
-    function _isNativeReflectConstruct() {
-      if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-      if (Reflect.construct.sham) return false;
-      if (typeof Proxy === "function") return true;
+  var setPrototypeOf = createCommonjsModule(function (module) {
+    function _setPrototypeOf(o, p) {
+      module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
 
-      try {
-        Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-        return true;
-      } catch (e) {
-        return false;
-      }
+      return _setPrototypeOf(o, p);
     }
 
-    module.exports = _isNativeReflectConstruct;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
+    module.exports = _setPrototypeOf;
   });
-  unwrapExports(isNativeReflectConstruct);
+
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var isNativeReflectConstruct = _isNativeReflectConstruct;
 
   var construct = createCommonjsModule(function (module) {
     function _construct(Parent, args, Class) {
       if (isNativeReflectConstruct()) {
         module.exports = _construct = Reflect.construct;
-        module.exports["default"] = module.exports, module.exports.__esModule = true;
       } else {
         module.exports = _construct = function _construct(Parent, args, Class) {
           var a = [null];
@@ -26978,17 +26989,13 @@
           if (Class) setPrototypeOf(instance, Class.prototype);
           return instance;
         };
-
-        module.exports["default"] = module.exports, module.exports.__esModule = true;
       }
 
       return _construct.apply(null, arguments);
     }
 
     module.exports = _construct;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
   });
-  var _construct = unwrapExports(construct);
 
   /**
    * The base plugin name.
@@ -27161,7 +27168,7 @@
         args[_key] = arguments[_key];
       }
 
-      var instance = _construct(PluginSubClass, [this].concat(args)); // The plugin is replaced by a function that returns the current instance.
+      var instance = construct(PluginSubClass, [this].concat(args)); // The plugin is replaced by a function that returns the current instance.
 
 
       this[name] = function () {
@@ -27541,26 +27548,22 @@
    *           plugin class/constructor.
    */
 
-  var inherits = createCommonjsModule(function (module) {
-    function _inherits(subClass, superClass) {
-      if (typeof superClass !== "function" && superClass !== null) {
-        throw new TypeError("Super expression must either be null or a function");
-      }
-
-      subClass.prototype = Object.create(superClass && superClass.prototype, {
-        constructor: {
-          value: subClass,
-          writable: true,
-          configurable: true
-        }
-      });
-      if (superClass) setPrototypeOf(subClass, superClass);
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
     }
 
-    module.exports = _inherits;
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  });
-  var _inherits = unwrapExports(inherits);
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) setPrototypeOf(subClass, superClass);
+  }
+
+  var inherits = _inherits;
 
   /**
    * @file extend.js
@@ -27609,7 +27612,7 @@
       subClass = subClassMethods;
     }
 
-    _inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
+    inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
 
 
     if (superClass) {
@@ -28154,12 +28157,16 @@
 
   var urlToolkit = createCommonjsModule(function (module, exports) {
     // see https://tools.ietf.org/html/rfc1808
+
+    /* jshint ignore:start */
     (function (root) {
-      var URL_REGEX = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/?#]*\/)*[^;?#]*)?(;[^?#]*)?(\?[^#]*)?(#[^]*)?$/;
-      var FIRST_SEGMENT_REGEX = /^([^\/?#]*)([^]*)$/;
+      /* jshint ignore:end */
+      var URL_REGEX = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/;
+      var FIRST_SEGMENT_REGEX = /^([^\/?#]*)(.*)$/;
       var SLASH_DOT_REGEX = /(?:\/|^)\.(?=\/)/g;
-      var SLASH_DOT_DOT_REGEX = /(?:\/|^)\.\.\/(?!\.\.\/)[^\/]*(?=\/)/g;
+      var SLASH_DOT_DOT_REGEX = /(?:\/|^)\.\.\/(?!\.\.\/).*?(?=\/)/g;
       var URLToolkit = {
+        // jshint ignore:line
         // If opts.alwaysNormalize is true then the path will always be normalized even when it starts with / or //
         // E.g
         // With opts.alwaysNormalize = false (default, spec compliant)
@@ -28310,7 +28317,8 @@
           // complete path segment not equal to "..", that
           // "<segment>/.." is removed.
 
-          while (path.length !== (path = path.replace(SLASH_DOT_DOT_REGEX, '')).length) {}
+          while (path.length !== (path = path.replace(SLASH_DOT_DOT_REGEX, '')).length) {} // jshint ignore:line
+
 
           return path.split('').reverse().join('');
         },
@@ -28318,14 +28326,18 @@
           return parts.scheme + parts.netLoc + parts.path + parts.params + parts.query + parts.fragment;
         }
       };
+      /* jshint ignore:start */
+
       module.exports = URLToolkit;
     })();
+    /* jshint ignore:end */
+
   });
 
   /*! @name m3u8-parser @version 4.4.0 @license Apache-2.0 */
 
-  function _extends$1() {
-    _extends$1 = Object.assign || function (target) {
+  function _extends() {
+    _extends = Object.assign || function (target) {
       for (var i = 1; i < arguments.length; i++) {
         var source = arguments[i];
 
@@ -28339,7 +28351,7 @@
       return target;
     };
 
-    return _extends$1.apply(this, arguments);
+    return _extends.apply(this, arguments);
   }
 
   function _inheritsLoose$1(subClass, superClass) {
@@ -29430,7 +29442,7 @@
                   currentUri.attributes = {};
                 }
 
-                _extends$1(currentUri.attributes, entry.attributes);
+                _extends(currentUri.attributes, entry.attributes);
               },
               media: function media() {
                 this.manifest.mediaGroups = this.manifest.mediaGroups || defaultMediaGroups;
@@ -30469,7 +30481,7 @@
    */
 
 
-  function _extends$2(Class, Super) {
+  function _extends$1(Class, Super) {
     var pt = Class.prototype;
 
     if (Object.create) {
@@ -30606,7 +30618,7 @@
     return this[i];
   };
 
-  _extends$2(LiveNodeList, NodeList);
+  _extends$1(LiveNodeList, NodeList);
   /**
    * 
    * Objects implementing the NamedNodeMap interface are used to represent collections of nodes that can be accessed by name. Note that NamedNodeMap does not inherit from NodeList; NamedNodeMaps are not maintained in any particular order. Objects contained in an object implementing NamedNodeMap may also be accessed by an ordinal index, but this is simply to allow convenient enumeration of the contents of a NamedNodeMap, and does not imply that the DOM specifies an order to these Nodes.
@@ -31263,7 +31275,7 @@
     }
   };
 
-  _extends$2(Document, Node);
+  _extends$1(Document, Node);
 
   function Element() {
     this._nsMap = {};
@@ -31357,12 +31369,12 @@
   Document.prototype.getElementsByTagName = Element.prototype.getElementsByTagName;
   Document.prototype.getElementsByTagNameNS = Element.prototype.getElementsByTagNameNS;
 
-  _extends$2(Element, Node);
+  _extends$1(Element, Node);
 
   function Attr() {}
   Attr.prototype.nodeType = ATTRIBUTE_NODE;
 
-  _extends$2(Attr, Node);
+  _extends$1(Attr, Node);
 
   function CharacterData() {}
   CharacterData.prototype = {
@@ -31393,7 +31405,7 @@
     }
   };
 
-  _extends$2(CharacterData, Node);
+  _extends$1(CharacterData, Node);
 
   function Text() {}
   Text.prototype = {
@@ -31415,7 +31427,7 @@
     }
   };
 
-  _extends$2(Text, CharacterData);
+  _extends$1(Text, CharacterData);
 
   function Comment() {}
   Comment.prototype = {
@@ -31423,7 +31435,7 @@
     nodeType: COMMENT_NODE
   };
 
-  _extends$2(Comment, CharacterData);
+  _extends$1(Comment, CharacterData);
 
   function CDATASection() {}
   CDATASection.prototype = {
@@ -31431,39 +31443,39 @@
     nodeType: CDATA_SECTION_NODE
   };
 
-  _extends$2(CDATASection, CharacterData);
+  _extends$1(CDATASection, CharacterData);
 
   function DocumentType() {}
   DocumentType.prototype.nodeType = DOCUMENT_TYPE_NODE;
 
-  _extends$2(DocumentType, Node);
+  _extends$1(DocumentType, Node);
 
   function Notation() {}
   Notation.prototype.nodeType = NOTATION_NODE;
 
-  _extends$2(Notation, Node);
+  _extends$1(Notation, Node);
 
   function Entity() {}
   Entity.prototype.nodeType = ENTITY_NODE;
 
-  _extends$2(Entity, Node);
+  _extends$1(Entity, Node);
 
   function EntityReference() {}
   EntityReference.prototype.nodeType = ENTITY_REFERENCE_NODE;
 
-  _extends$2(EntityReference, Node);
+  _extends$1(EntityReference, Node);
 
   function DocumentFragment() {}
   DocumentFragment.prototype.nodeName = "#document-fragment";
   DocumentFragment.prototype.nodeType = DOCUMENT_FRAGMENT_NODE;
 
-  _extends$2(DocumentFragment, Node);
+  _extends$1(DocumentFragment, Node);
 
   function ProcessingInstruction() {}
 
   ProcessingInstruction.prototype.nodeType = PROCESSING_INSTRUCTION_NODE;
 
-  _extends$2(ProcessingInstruction, Node);
+  _extends$1(ProcessingInstruction, Node);
 
   function XMLSerializer() {}
 
@@ -34024,17 +34036,6 @@
     return parseUTCTimingScheme(stringToMpdXml(manifestString));
   };
 
-  var parseType = function parseType(buffer) {
-    var result = '';
-    result += String.fromCharCode(buffer[0]);
-    result += String.fromCharCode(buffer[1]);
-    result += String.fromCharCode(buffer[2]);
-    result += String.fromCharCode(buffer[3]);
-    return result;
-  };
-
-  var parseType_1 = parseType;
-
   /**
    * mux.js
    *
@@ -34054,9 +34055,39 @@
     toHexString: toHexString
   };
 
-  var toUnsigned$1 = bin.toUnsigned;
+  var inspectMp4,
+      _textifyMp,
+      toUnsigned$1 = bin.toUnsigned,
+      parseMp4Date = function parseMp4Date(seconds) {
+    return new Date(seconds * 1000 - 2082844800000);
+  },
+      parseSampleFlags = function parseSampleFlags(flags) {
+    return {
+      isLeading: (flags[0] & 0x0c) >>> 2,
+      dependsOn: flags[0] & 0x03,
+      isDependedOn: (flags[1] & 0xc0) >>> 6,
+      hasRedundancy: (flags[1] & 0x30) >>> 4,
+      paddingValue: (flags[1] & 0x0e) >>> 1,
+      isNonSyncSample: flags[1] & 0x01,
+      degradationPriority: flags[2] << 8 | flags[3]
+    };
+  },
 
-  var findBox = function findBox(data, path) {
+  /**
+   * Returns the string representation of an ASCII encoded four byte buffer.
+   * @param buffer {Uint8Array} a four-byte buffer to translate
+   * @return {string} the corresponding string
+   */
+  parseType = function parseType(buffer) {
+    var result = '';
+    result += String.fromCharCode(buffer[0]);
+    result += String.fromCharCode(buffer[1]);
+    result += String.fromCharCode(buffer[2]);
+    result += String.fromCharCode(buffer[3]);
+    return result;
+  },
+      // Find the data for a box specified by its path
+  findBox = function findBox(data, path) {
     var results = [],
         i,
         size,
@@ -34071,7 +34102,7 @@
 
     for (i = 0; i < data.byteLength;) {
       size = toUnsigned$1(data[i] << 24 | data[i + 1] << 16 | data[i + 2] << 8 | data[i + 3]);
-      type = parseType_1(data.subarray(i + 4, i + 8));
+      type = parseType(data.subarray(i + 4, i + 8));
       end = size > 1 ? i + size : data.byteLength;
 
       if (type === path[0]) {
@@ -34094,249 +34125,6 @@
 
 
     return results;
-  };
-
-  var findBox_1 = findBox;
-
-  var MAX_UINT32 = Math.pow(2, 32);
-
-  var parseSidx = function parseSidx(data) {
-    var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-        result = {
-      version: data[0],
-      flags: new Uint8Array(data.subarray(1, 4)),
-      references: [],
-      referenceId: view.getUint32(4),
-      timescale: view.getUint32(8)
-    },
-        i = 12;
-
-    if (result.version === 0) {
-      result.earliestPresentationTime = view.getUint32(i);
-      result.firstOffset = view.getUint32(i + 4);
-      i += 8;
-    } else {
-      // read 64 bits
-      result.earliestPresentationTime = view.getUint32(i) * MAX_UINT32 + view.getUint32(i + 4);
-      result.firstOffset = view.getUint32(i + 8) * MAX_UINT32 + view.getUint32(i + 12);
-      i += 16;
-    }
-
-    i += 2; // reserved
-
-    var referenceCount = view.getUint16(i);
-    i += 2; // start of references
-
-    for (; referenceCount > 0; i += 12, referenceCount--) {
-      result.references.push({
-        referenceType: (data[i] & 0x80) >>> 7,
-        referencedSize: view.getUint32(i) & 0x7FFFFFFF,
-        subsegmentDuration: view.getUint32(i + 4),
-        startsWithSap: !!(data[i + 8] & 0x80),
-        sapType: (data[i + 8] & 0x70) >>> 4,
-        sapDeltaTime: view.getUint32(i + 8) & 0x0FFFFFFF
-      });
-    }
-
-    return result;
-  };
-
-  var parseSidx_1 = parseSidx;
-
-  var toUnsigned$2 = bin.toUnsigned;
-
-  var tfdt = function tfdt(data) {
-    var result = {
-      version: data[0],
-      flags: new Uint8Array(data.subarray(1, 4)),
-      baseMediaDecodeTime: toUnsigned$2(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7])
-    };
-
-    if (result.version === 1) {
-      result.baseMediaDecodeTime *= Math.pow(2, 32);
-      result.baseMediaDecodeTime += toUnsigned$2(data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11]);
-    }
-
-    return result;
-  };
-
-  var parseTfdt = tfdt;
-
-  var tfhd = function tfhd(data) {
-    var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-        result = {
-      version: data[0],
-      flags: new Uint8Array(data.subarray(1, 4)),
-      trackId: view.getUint32(4)
-    },
-        baseDataOffsetPresent = result.flags[2] & 0x01,
-        sampleDescriptionIndexPresent = result.flags[2] & 0x02,
-        defaultSampleDurationPresent = result.flags[2] & 0x08,
-        defaultSampleSizePresent = result.flags[2] & 0x10,
-        defaultSampleFlagsPresent = result.flags[2] & 0x20,
-        durationIsEmpty = result.flags[0] & 0x010000,
-        defaultBaseIsMoof = result.flags[0] & 0x020000,
-        i;
-    i = 8;
-
-    if (baseDataOffsetPresent) {
-      i += 4; // truncate top 4 bytes
-      // FIXME: should we read the full 64 bits?
-
-      result.baseDataOffset = view.getUint32(12);
-      i += 4;
-    }
-
-    if (sampleDescriptionIndexPresent) {
-      result.sampleDescriptionIndex = view.getUint32(i);
-      i += 4;
-    }
-
-    if (defaultSampleDurationPresent) {
-      result.defaultSampleDuration = view.getUint32(i);
-      i += 4;
-    }
-
-    if (defaultSampleSizePresent) {
-      result.defaultSampleSize = view.getUint32(i);
-      i += 4;
-    }
-
-    if (defaultSampleFlagsPresent) {
-      result.defaultSampleFlags = view.getUint32(i);
-    }
-
-    if (durationIsEmpty) {
-      result.durationIsEmpty = true;
-    }
-
-    if (!baseDataOffsetPresent && defaultBaseIsMoof) {
-      result.baseDataOffsetIsMoof = true;
-    }
-
-    return result;
-  };
-
-  var parseTfhd = tfhd;
-
-  var parseSampleFlags = function parseSampleFlags(flags) {
-    return {
-      isLeading: (flags[0] & 0x0c) >>> 2,
-      dependsOn: flags[0] & 0x03,
-      isDependedOn: (flags[1] & 0xc0) >>> 6,
-      hasRedundancy: (flags[1] & 0x30) >>> 4,
-      paddingValue: (flags[1] & 0x0e) >>> 1,
-      isNonSyncSample: flags[1] & 0x01,
-      degradationPriority: flags[2] << 8 | flags[3]
-    };
-  };
-
-  var parseSampleFlags_1 = parseSampleFlags;
-
-  var trun = function trun(data) {
-    var result = {
-      version: data[0],
-      flags: new Uint8Array(data.subarray(1, 4)),
-      samples: []
-    },
-        view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-        // Flag interpretation
-    dataOffsetPresent = result.flags[2] & 0x01,
-        // compare with 2nd byte of 0x1
-    firstSampleFlagsPresent = result.flags[2] & 0x04,
-        // compare with 2nd byte of 0x4
-    sampleDurationPresent = result.flags[1] & 0x01,
-        // compare with 2nd byte of 0x100
-    sampleSizePresent = result.flags[1] & 0x02,
-        // compare with 2nd byte of 0x200
-    sampleFlagsPresent = result.flags[1] & 0x04,
-        // compare with 2nd byte of 0x400
-    sampleCompositionTimeOffsetPresent = result.flags[1] & 0x08,
-        // compare with 2nd byte of 0x800
-    sampleCount = view.getUint32(4),
-        offset = 8,
-        sample;
-
-    if (dataOffsetPresent) {
-      // 32 bit signed integer
-      result.dataOffset = view.getInt32(offset);
-      offset += 4;
-    } // Overrides the flags for the first sample only. The order of
-    // optional values will be: duration, size, compositionTimeOffset
-
-
-    if (firstSampleFlagsPresent && sampleCount) {
-      sample = {
-        flags: parseSampleFlags_1(data.subarray(offset, offset + 4))
-      };
-      offset += 4;
-
-      if (sampleDurationPresent) {
-        sample.duration = view.getUint32(offset);
-        offset += 4;
-      }
-
-      if (sampleSizePresent) {
-        sample.size = view.getUint32(offset);
-        offset += 4;
-      }
-
-      if (sampleCompositionTimeOffsetPresent) {
-        if (result.version === 1) {
-          sample.compositionTimeOffset = view.getInt32(offset);
-        } else {
-          sample.compositionTimeOffset = view.getUint32(offset);
-        }
-
-        offset += 4;
-      }
-
-      result.samples.push(sample);
-      sampleCount--;
-    }
-
-    while (sampleCount--) {
-      sample = {};
-
-      if (sampleDurationPresent) {
-        sample.duration = view.getUint32(offset);
-        offset += 4;
-      }
-
-      if (sampleSizePresent) {
-        sample.size = view.getUint32(offset);
-        offset += 4;
-      }
-
-      if (sampleFlagsPresent) {
-        sample.flags = parseSampleFlags_1(data.subarray(offset, offset + 4));
-        offset += 4;
-      }
-
-      if (sampleCompositionTimeOffsetPresent) {
-        if (result.version === 1) {
-          sample.compositionTimeOffset = view.getInt32(offset);
-        } else {
-          sample.compositionTimeOffset = view.getUint32(offset);
-        }
-
-        offset += 4;
-      }
-
-      result.samples.push(sample);
-    }
-
-    return result;
-  };
-
-  var parseTrun = trun;
-
-  var MAX_UINT32$1 = Math.pow(2, 32);
-
-  var inspectMp4,
-      _textifyMp,
-      parseMp4Date = function parseMp4Date(seconds) {
-    return new Date(seconds * 1000 - 2082844800000);
   },
       nalParse = function nalParse(avcStream) {
     var avcView = new DataView(avcStream.buffer, avcStream.byteOffset, avcStream.byteLength),
@@ -34451,41 +34239,6 @@
         avgBitrate: view.getUint32(8)
       };
     },
-    edts: function edts(data) {
-      return {
-        boxes: inspectMp4(data)
-      };
-    },
-    elst: function elst(data) {
-      var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-          result = {
-        version: view.getUint8(0),
-        flags: new Uint8Array(data.subarray(1, 4)),
-        edits: []
-      },
-          entryCount = view.getUint32(4),
-          i;
-
-      for (i = 8; entryCount; entryCount--) {
-        if (result.version === 0) {
-          result.edits.push({
-            segmentDuration: view.getUint32(i),
-            mediaTime: view.getInt32(i + 4),
-            mediaRate: view.getUint16(i + 8) + view.getUint16(i + 10) / (256 * 256)
-          });
-          i += 12;
-        } else {
-          result.edits.push({
-            segmentDuration: view.getUint32(i) * MAX_UINT32$1 + view.getUint32(i + 4),
-            mediaTime: view.getUint32(i + 8) * MAX_UINT32$1 + view.getUint32(i + 12),
-            mediaRate: view.getUint16(i + 16) + view.getUint16(i + 18) / (256 * 256)
-          });
-          i += 20;
-        }
-      }
-
-      return result;
-    },
     esds: function esds(data) {
       return {
         version: data[0],
@@ -34511,14 +34264,14 @@
     ftyp: function ftyp(data) {
       var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
           result = {
-        majorBrand: parseType_1(data.subarray(0, 4)),
+        majorBrand: parseType(data.subarray(0, 4)),
         minorVersion: view.getUint32(4),
         compatibleBrands: []
       },
           i = 8;
 
       while (i < data.byteLength) {
-        result.compatibleBrands.push(parseType_1(data.subarray(i, i + 4)));
+        result.compatibleBrands.push(parseType(data.subarray(i, i + 4)));
         i += 4;
       }
 
@@ -34541,7 +34294,7 @@
           result = {
         version: view.getUint8(0),
         flags: new Uint8Array(data.subarray(1, 4)),
-        handlerType: parseType_1(data.subarray(8, 12)),
+        handlerType: parseType(data.subarray(8, 12)),
         name: ''
       },
           i = 8; // parse out the name field
@@ -34732,7 +34485,33 @@
 
       return result;
     },
-    sidx: parseSidx_1,
+    sidx: function sidx(data) {
+      var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
+          result = {
+        version: data[0],
+        flags: new Uint8Array(data.subarray(1, 4)),
+        references: [],
+        referenceId: view.getUint32(4),
+        timescale: view.getUint32(8),
+        earliestPresentationTime: view.getUint32(12),
+        firstOffset: view.getUint32(16)
+      },
+          referenceCount = view.getUint16(22),
+          i;
+
+      for (i = 24; referenceCount; i += 12, referenceCount--) {
+        result.references.push({
+          referenceType: (data[i] & 0x80) >>> 7,
+          referencedSize: view.getUint32(i) & 0x7FFFFFFF,
+          subsegmentDuration: view.getUint32(i + 4),
+          startsWithSap: !!(data[i + 8] & 0x80),
+          sapType: (data[i + 8] & 0x70) >>> 4,
+          sapDeltaTime: view.getUint32(i + 8) & 0x0FFFFFFF
+        });
+      }
+
+      return result;
+    },
     smhd: function smhd(data) {
       return {
         version: data[0],
@@ -34744,41 +34523,6 @@
       return {
         boxes: inspectMp4(data)
       };
-    },
-    ctts: function ctts(data) {
-      var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-          result = {
-        version: view.getUint8(0),
-        flags: new Uint8Array(data.subarray(1, 4)),
-        compositionOffsets: []
-      },
-          entryCount = view.getUint32(4),
-          i;
-
-      for (i = 8; entryCount; i += 8, entryCount--) {
-        result.compositionOffsets.push({
-          sampleCount: view.getUint32(i),
-          sampleOffset: view[result.version === 0 ? 'getUint32' : 'getInt32'](i + 4)
-        });
-      }
-
-      return result;
-    },
-    stss: function stss(data) {
-      var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-          result = {
-        version: view.getUint8(0),
-        flags: new Uint8Array(data.subarray(1, 4)),
-        syncSamples: []
-      },
-          entryCount = view.getUint32(4),
-          i;
-
-      for (i = 8; entryCount; i += 4, entryCount--) {
-        result.syncSamples.push(view.getUint32(i));
-      }
-
-      return result;
     },
     stco: function stco(data) {
       var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
@@ -34861,8 +34605,74 @@
     styp: function styp(data) {
       return parse$1.ftyp(data);
     },
-    tfdt: parseTfdt,
-    tfhd: parseTfhd,
+    tfdt: function tfdt(data) {
+      var result = {
+        version: data[0],
+        flags: new Uint8Array(data.subarray(1, 4)),
+        baseMediaDecodeTime: toUnsigned$1(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7])
+      };
+
+      if (result.version === 1) {
+        result.baseMediaDecodeTime *= Math.pow(2, 32);
+        result.baseMediaDecodeTime += toUnsigned$1(data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11]);
+      }
+
+      return result;
+    },
+    tfhd: function tfhd(data) {
+      var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
+          result = {
+        version: data[0],
+        flags: new Uint8Array(data.subarray(1, 4)),
+        trackId: view.getUint32(4)
+      },
+          baseDataOffsetPresent = result.flags[2] & 0x01,
+          sampleDescriptionIndexPresent = result.flags[2] & 0x02,
+          defaultSampleDurationPresent = result.flags[2] & 0x08,
+          defaultSampleSizePresent = result.flags[2] & 0x10,
+          defaultSampleFlagsPresent = result.flags[2] & 0x20,
+          durationIsEmpty = result.flags[0] & 0x010000,
+          defaultBaseIsMoof = result.flags[0] & 0x020000,
+          i;
+      i = 8;
+
+      if (baseDataOffsetPresent) {
+        i += 4; // truncate top 4 bytes
+        // FIXME: should we read the full 64 bits?
+
+        result.baseDataOffset = view.getUint32(12);
+        i += 4;
+      }
+
+      if (sampleDescriptionIndexPresent) {
+        result.sampleDescriptionIndex = view.getUint32(i);
+        i += 4;
+      }
+
+      if (defaultSampleDurationPresent) {
+        result.defaultSampleDuration = view.getUint32(i);
+        i += 4;
+      }
+
+      if (defaultSampleSizePresent) {
+        result.defaultSampleSize = view.getUint32(i);
+        i += 4;
+      }
+
+      if (defaultSampleFlagsPresent) {
+        result.defaultSampleFlags = view.getUint32(i);
+      }
+
+      if (durationIsEmpty) {
+        result.durationIsEmpty = true;
+      }
+
+      if (!baseDataOffsetPresent && defaultBaseIsMoof) {
+        result.baseDataOffsetIsMoof = true;
+      }
+
+      return result;
+    },
     tkhd: function tkhd(data) {
       var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
           i = 4,
@@ -34938,7 +34748,93 @@
         sampleDegradationPriority: view.getUint16(22)
       };
     },
-    trun: parseTrun,
+    trun: function trun(data) {
+      var result = {
+        version: data[0],
+        flags: new Uint8Array(data.subarray(1, 4)),
+        samples: []
+      },
+          view = new DataView(data.buffer, data.byteOffset, data.byteLength),
+          // Flag interpretation
+      dataOffsetPresent = result.flags[2] & 0x01,
+          // compare with 2nd byte of 0x1
+      firstSampleFlagsPresent = result.flags[2] & 0x04,
+          // compare with 2nd byte of 0x4
+      sampleDurationPresent = result.flags[1] & 0x01,
+          // compare with 2nd byte of 0x100
+      sampleSizePresent = result.flags[1] & 0x02,
+          // compare with 2nd byte of 0x200
+      sampleFlagsPresent = result.flags[1] & 0x04,
+          // compare with 2nd byte of 0x400
+      sampleCompositionTimeOffsetPresent = result.flags[1] & 0x08,
+          // compare with 2nd byte of 0x800
+      sampleCount = view.getUint32(4),
+          offset = 8,
+          sample;
+
+      if (dataOffsetPresent) {
+        // 32 bit signed integer
+        result.dataOffset = view.getInt32(offset);
+        offset += 4;
+      } // Overrides the flags for the first sample only. The order of
+      // optional values will be: duration, size, compositionTimeOffset
+
+
+      if (firstSampleFlagsPresent && sampleCount) {
+        sample = {
+          flags: parseSampleFlags(data.subarray(offset, offset + 4))
+        };
+        offset += 4;
+
+        if (sampleDurationPresent) {
+          sample.duration = view.getUint32(offset);
+          offset += 4;
+        }
+
+        if (sampleSizePresent) {
+          sample.size = view.getUint32(offset);
+          offset += 4;
+        }
+
+        if (sampleCompositionTimeOffsetPresent) {
+          // Note: this should be a signed int if version is 1
+          sample.compositionTimeOffset = view.getUint32(offset);
+          offset += 4;
+        }
+
+        result.samples.push(sample);
+        sampleCount--;
+      }
+
+      while (sampleCount--) {
+        sample = {};
+
+        if (sampleDurationPresent) {
+          sample.duration = view.getUint32(offset);
+          offset += 4;
+        }
+
+        if (sampleSizePresent) {
+          sample.size = view.getUint32(offset);
+          offset += 4;
+        }
+
+        if (sampleFlagsPresent) {
+          sample.flags = parseSampleFlags(data.subarray(offset, offset + 4));
+          offset += 4;
+        }
+
+        if (sampleCompositionTimeOffsetPresent) {
+          // Note: this should be a signed int if version is 1
+          sample.compositionTimeOffset = view.getUint32(offset);
+          offset += 4;
+        }
+
+        result.samples.push(sample);
+      }
+
+      return result;
+    },
     'url ': function url(data) {
       return {
         version: data[0],
@@ -34984,7 +34880,7 @@
     while (i < data.byteLength) {
       // parse box data
       size = view.getUint32(i);
-      type = parseType_1(data.subarray(i + 4, i + 8));
+      type = parseType(data.subarray(i + 4, i + 8));
       end = size > 1 ? i + size : data.byteLength; // parse type-specific data
 
       box = (parse$1[type] || function (data) {
@@ -35062,8 +34958,8 @@
   var mp4Inspector = {
     inspect: inspectMp4,
     textify: _textifyMp,
-    parseType: parseType_1,
-    findBox: findBox_1,
+    parseType: parseType,
+    findBox: findBox,
     parseTraf: parse$1.traf,
     parseTfdt: parse$1.tfdt,
     parseHdlr: parse$1.hdlr,
@@ -35072,9 +34968,9 @@
     parseSidx: parse$1.sidx
   };
 
-  var toUnsigned$3 = bin.toUnsigned;
+  var toUnsigned$2 = bin.toUnsigned;
   var toHexString$1 = bin.toHexString;
-  var timescale, startTime, compositionStartTime, getVideoTrackIds, getTracks, getTimescaleFromMediaHeader;
+  var timescale, startTime, compositionStartTime, getVideoTrackIds, getTracks;
   /**
    * Parses an MP4 initialization segment and extracts the timescale
    * values for any declared tracks. Timescale values indicate the
@@ -35096,11 +34992,11 @@
 
   timescale = function timescale(init) {
     var result = {},
-        traks = findBox_1(init, ['moov', 'trak']); // mdhd timescale
+        traks = mp4Inspector.findBox(init, ['moov', 'trak']); // mdhd timescale
 
     return traks.reduce(function (result, trak) {
       var tkhd, version, index, id, mdhd;
-      tkhd = findBox_1(trak, ['tkhd'])[0];
+      tkhd = mp4Inspector.findBox(trak, ['tkhd'])[0];
 
       if (!tkhd) {
         return null;
@@ -35108,8 +35004,8 @@
 
       version = tkhd[0];
       index = version === 0 ? 12 : 20;
-      id = toUnsigned$3(tkhd[index] << 24 | tkhd[index + 1] << 16 | tkhd[index + 2] << 8 | tkhd[index + 3]);
-      mdhd = findBox_1(trak, ['mdia', 'mdhd'])[0];
+      id = toUnsigned$2(tkhd[index] << 24 | tkhd[index + 1] << 16 | tkhd[index + 2] << 8 | tkhd[index + 3]);
+      mdhd = mp4Inspector.findBox(trak, ['mdia', 'mdhd'])[0];
 
       if (!mdhd) {
         return null;
@@ -35117,7 +35013,7 @@
 
       version = mdhd[0];
       index = version === 0 ? 12 : 20;
-      result[id] = toUnsigned$3(mdhd[index] << 24 | mdhd[index + 1] << 16 | mdhd[index + 2] << 8 | mdhd[index + 3]);
+      result[id] = toUnsigned$2(mdhd[index] << 24 | mdhd[index + 1] << 16 | mdhd[index + 2] << 8 | mdhd[index + 3]);
       return result;
     }, result);
   };
@@ -35142,29 +35038,29 @@
   startTime = function startTime(timescale, fragment) {
     var trafs, baseTimes, result; // we need info from two childrend of each track fragment box
 
-    trafs = findBox_1(fragment, ['moof', 'traf']); // determine the start times for each track
+    trafs = mp4Inspector.findBox(fragment, ['moof', 'traf']); // determine the start times for each track
 
     baseTimes = [].concat.apply([], trafs.map(function (traf) {
-      return findBox_1(traf, ['tfhd']).map(function (tfhd) {
+      return mp4Inspector.findBox(traf, ['tfhd']).map(function (tfhd) {
         var id, scale, baseTime; // get the track id from the tfhd
 
-        id = toUnsigned$3(tfhd[4] << 24 | tfhd[5] << 16 | tfhd[6] << 8 | tfhd[7]); // assume a 90kHz clock if no timescale was specified
+        id = toUnsigned$2(tfhd[4] << 24 | tfhd[5] << 16 | tfhd[6] << 8 | tfhd[7]); // assume a 90kHz clock if no timescale was specified
 
         scale = timescale[id] || 90e3; // get the base media decode time from the tfdt
 
-        baseTime = findBox_1(traf, ['tfdt']).map(function (tfdt) {
+        baseTime = mp4Inspector.findBox(traf, ['tfdt']).map(function (tfdt) {
           var version, result;
           version = tfdt[0];
-          result = toUnsigned$3(tfdt[4] << 24 | tfdt[5] << 16 | tfdt[6] << 8 | tfdt[7]);
+          result = toUnsigned$2(tfdt[4] << 24 | tfdt[5] << 16 | tfdt[6] << 8 | tfdt[7]);
 
           if (version === 1) {
             result *= Math.pow(2, 32);
-            result += toUnsigned$3(tfdt[8] << 24 | tfdt[9] << 16 | tfdt[10] << 8 | tfdt[11]);
+            result += toUnsigned$2(tfdt[8] << 24 | tfdt[9] << 16 | tfdt[10] << 8 | tfdt[11]);
           }
 
           return result;
         })[0];
-        baseTime = typeof baseTime === 'number' && !isNaN(baseTime) ? baseTime : Infinity; // convert base time to seconds
+        baseTime = baseTime || Infinity; // convert base time to seconds
 
         return baseTime / scale;
       });
@@ -35195,7 +35091,7 @@
 
 
   compositionStartTime = function compositionStartTime(timescales, fragment) {
-    var trafBoxes = findBox_1(fragment, ['moof', 'traf']);
+    var trafBoxes = mp4Inspector.findBox(fragment, ['moof', 'traf']);
     var baseMediaDecodeTime = 0;
     var compositionTimeOffset = 0;
     var trackId;
@@ -35204,25 +35100,15 @@
       // The spec states that track run samples contained within a `traf` box are contiguous, but
       // it does not explicitly state whether the `traf` boxes themselves are contiguous.
       // We will assume that they are, so we only need the first to calculate start time.
-      var tfhd = findBox_1(trafBoxes[0], ['tfhd'])[0];
-      var trun = findBox_1(trafBoxes[0], ['trun'])[0];
-      var tfdt = findBox_1(trafBoxes[0], ['tfdt'])[0];
+      var parsedTraf = mp4Inspector.parseTraf(trafBoxes[0]);
 
-      if (tfhd) {
-        var parsedTfhd = parseTfhd(tfhd);
-        trackId = parsedTfhd.trackId;
-      }
-
-      if (tfdt) {
-        var parsedTfdt = parseTfdt(tfdt);
-        baseMediaDecodeTime = parsedTfdt.baseMediaDecodeTime;
-      }
-
-      if (trun) {
-        var parsedTrun = parseTrun(trun);
-
-        if (parsedTrun.samples && parsedTrun.samples.length) {
-          compositionTimeOffset = parsedTrun.samples[0].compositionTimeOffset || 0;
+      for (var i = 0; i < parsedTraf.boxes.length; i++) {
+        if (parsedTraf.boxes[i].type === 'tfhd') {
+          trackId = parsedTraf.boxes[i].trackId;
+        } else if (parsedTraf.boxes[i].type === 'tfdt') {
+          baseMediaDecodeTime = parsedTraf.boxes[i].baseMediaDecodeTime;
+        } else if (parsedTraf.boxes[i].type === 'trun' && parsedTraf.boxes[i].samples.length) {
+          compositionTimeOffset = parsedTraf.boxes[i].samples[0].compositionTimeOffset || 0;
         }
       }
     } // Get timescale for this specific track. Assume a 90kHz clock if no timescale was
@@ -35247,13 +35133,13 @@
 
 
   getVideoTrackIds = function getVideoTrackIds(init) {
-    var traks = findBox_1(init, ['moov', 'trak']);
+    var traks = mp4Inspector.findBox(init, ['moov', 'trak']);
     var videoTrackIds = [];
     traks.forEach(function (trak) {
-      var hdlrs = findBox_1(trak, ['mdia', 'hdlr']);
-      var tkhds = findBox_1(trak, ['tkhd']);
+      var hdlrs = mp4Inspector.findBox(trak, ['mdia', 'hdlr']);
+      var tkhds = mp4Inspector.findBox(trak, ['tkhd']);
       hdlrs.forEach(function (hdlr, index) {
-        var handlerType = parseType_1(hdlr.subarray(8, 12));
+        var handlerType = mp4Inspector.parseType(hdlr.subarray(8, 12));
         var tkhd = tkhds[index];
         var view;
         var version;
@@ -35269,13 +35155,6 @@
     });
     return videoTrackIds;
   };
-
-  getTimescaleFromMediaHeader = function getTimescaleFromMediaHeader(mdhd) {
-    // mdhd is a FullBox, meaning it will have its own version as the first byte
-    var version = mdhd[0];
-    var index = version === 0 ? 12 : 20;
-    return toUnsigned$3(mdhd[index] << 24 | mdhd[index + 1] << 16 | mdhd[index + 2] << 8 | mdhd[index + 3]);
-  };
   /**
    * Get all the video, audio, and hint tracks from a non fragmented
    * mp4 segment
@@ -35283,23 +35162,23 @@
 
 
   getTracks = function getTracks(init) {
-    var traks = findBox_1(init, ['moov', 'trak']);
+    var traks = mp4Inspector.findBox(init, ['moov', 'trak']);
     var tracks = [];
     traks.forEach(function (trak) {
       var track = {};
-      var tkhd = findBox_1(trak, ['tkhd'])[0];
-      var view, tkhdVersion; // id
+      var tkhd = mp4Inspector.findBox(trak, ['tkhd'])[0];
+      var view, version; // id
 
       if (tkhd) {
         view = new DataView(tkhd.buffer, tkhd.byteOffset, tkhd.byteLength);
-        tkhdVersion = view.getUint8(0);
-        track.id = tkhdVersion === 0 ? view.getUint32(12) : view.getUint32(20);
+        version = view.getUint8(0);
+        track.id = version === 0 ? view.getUint32(12) : view.getUint32(20);
       }
 
-      var hdlr = findBox_1(trak, ['mdia', 'hdlr'])[0]; // type
+      var hdlr = mp4Inspector.findBox(trak, ['mdia', 'hdlr'])[0]; // type
 
       if (hdlr) {
-        var type = parseType_1(hdlr.subarray(8, 12));
+        var type = mp4Inspector.parseType(hdlr.subarray(8, 12));
 
         if (type === 'vide') {
           track.type = 'video';
@@ -35311,13 +35190,13 @@
       } // codec
 
 
-      var stsd = findBox_1(trak, ['mdia', 'minf', 'stbl', 'stsd'])[0];
+      var stsd = mp4Inspector.findBox(trak, ['mdia', 'minf', 'stbl', 'stsd'])[0];
 
       if (stsd) {
         var sampleDescriptions = stsd.subarray(8); // gives the codec type string
 
-        track.codec = parseType_1(sampleDescriptions.subarray(4, 8));
-        var codecBox = findBox_1(sampleDescriptions, [track.codec])[0];
+        track.codec = mp4Inspector.parseType(sampleDescriptions.subarray(4, 8));
+        var codecBox = mp4Inspector.findBox(sampleDescriptions, [track.codec])[0];
         var codecConfig, codecConfigType;
 
         if (codecBox) {
@@ -35326,7 +35205,7 @@
             // we don't need anything but the "config" parameter of the
             // avc1 codecBox
             codecConfig = codecBox.subarray(78);
-            codecConfigType = parseType_1(codecConfig.subarray(4, 8));
+            codecConfigType = mp4Inspector.parseType(codecConfig.subarray(4, 8));
 
             if (codecConfigType === 'avcC' && codecConfig.length > 11) {
               track.codec += '.'; // left padded with zeroes for single digit hex
@@ -35345,7 +35224,7 @@
           } else if (/^mp4[a,v]$/i.test(track.codec)) {
             // we do not need anything but the streamDescriptor of the mp4a codecBox
             codecConfig = codecBox.subarray(28);
-            codecConfigType = parseType_1(codecConfig.subarray(4, 8));
+            codecConfigType = mp4Inspector.parseType(codecConfig.subarray(4, 8));
 
             if (codecConfigType === 'esds' && codecConfig.length > 20 && codecConfig[19] !== 0) {
               track.codec += '.' + toHexString$1(codecConfig[19]); // this value is only a single digit
@@ -35356,17 +35235,15 @@
               // and are using the default
               track.codec = 'mp4a.40.2';
             }
-          } else {
-            // flac, opus, etc
-            track.codec = track.codec.toLowerCase();
           }
         }
       }
 
-      var mdhd = findBox_1(trak, ['mdia', 'mdhd'])[0];
+      var mdhd = mp4Inspector.findBox(trak, ['mdia', 'mdhd'])[0];
 
-      if (mdhd) {
-        track.timescale = getTimescaleFromMediaHeader(mdhd);
+      if (mdhd && tkhd) {
+        var index = version === 0 ? 12 : 20;
+        track.timescale = toUnsigned$2(mdhd[index] << 24 | mdhd[index + 1] << 16 | mdhd[index + 2] << 8 | mdhd[index + 3]);
       }
 
       tracks.push(track);
@@ -35376,14 +35253,13 @@
 
   var probe = {
     // export mp4 inspector's findBox and parseType for backwards compatibility
-    findBox: findBox_1,
-    parseType: parseType_1,
+    findBox: mp4Inspector.findBox,
+    parseType: mp4Inspector.parseType,
     timescale: timescale,
     startTime: startTime,
     compositionStartTime: compositionStartTime,
     videoTrackIds: getVideoTrackIds,
-    tracks: getTracks,
-    getTimescaleFromMediaHeader: getTimescaleFromMediaHeader
+    tracks: getTracks
   };
 
   /**
@@ -35445,12 +35321,12 @@
       // there can only ever be one caption message in a frame's sei
 
       if (!result.payload && payloadType === USER_DATA_REGISTERED_ITU_T_T35) {
-        var userIdentifier = String.fromCharCode(bytes[i + 3], bytes[i + 4], bytes[i + 5], bytes[i + 6]);
+        result.payloadType = payloadType;
+        result.payloadSize = payloadSize;
+        result.payload = bytes.subarray(i, i + payloadSize);
+        var userIdentifier = String.fromCharCode(result.payload[3], result.payload[4], result.payload[5], result.payload[6]);
 
         if (userIdentifier === 'GA94') {
-          result.payloadType = payloadType;
-          result.payloadSize = payloadSize;
-          result.payload = bytes.subarray(i, i + payloadSize);
           break;
         } else {
           result.payload = void 0;
@@ -35732,22 +35608,14 @@
   // -----------------
 
 
-  var CaptionStream = function CaptionStream(options) {
-    options = options || {};
-    CaptionStream.prototype.init.call(this); // parse708captions flag, default to true
-
-    this.parse708captions_ = typeof options.parse708captions === 'boolean' ? options.parse708captions : true;
+  var CaptionStream = function CaptionStream() {
+    CaptionStream.prototype.init.call(this);
     this.captionPackets_ = [];
     this.ccStreams_ = [new Cea608Stream(0, 0), // eslint-disable-line no-use-before-define
     new Cea608Stream(0, 1), // eslint-disable-line no-use-before-define
     new Cea608Stream(1, 0), // eslint-disable-line no-use-before-define
     new Cea608Stream(1, 1) // eslint-disable-line no-use-before-define
     ];
-
-    if (this.parse708captions_) {
-      this.cc708Stream_ = new Cea708Stream(); // eslint-disable-line no-use-before-define
-    }
-
     this.reset(); // forward data and done events from CCs to this CaptionStream
 
     this.ccStreams_.forEach(function (cc) {
@@ -35755,12 +35623,6 @@
       cc.on('partialdone', this.trigger.bind(this, 'partialdone'));
       cc.on('done', this.trigger.bind(this, 'done'));
     }, this);
-
-    if (this.parse708captions_) {
-      this.cc708Stream_.on('data', this.trigger.bind(this, 'data'));
-      this.cc708Stream_.on('partialdone', this.trigger.bind(this, 'partialdone'));
-      this.cc708Stream_.on('done', this.trigger.bind(this, 'done'));
-    }
   };
 
   CaptionStream.prototype = new stream();
@@ -35773,12 +35635,7 @@
     } // parse the sei
 
 
-    sei = captionPacketParser.parseSei(event.escapedRBSP); // no payload data, skip
-
-    if (!sei.payload) {
-      return;
-    } // ignore everything but user_data_registered_itu_t_t35
-
+    sei = captionPacketParser.parseSei(event.escapedRBSP); // ignore everything but user_data_registered_itu_t_t35
 
     if (sei.payloadType !== captionPacketParser.USER_DATA_REGISTERED_ITU_T_T35) {
       return;
@@ -35856,10 +35713,9 @@
       if (packet.type < 2) {
         // Dispatch packet to the right Cea608Stream
         this.dispatchCea608Packet(packet);
-      } else {
-        // Dispatch packet to the Cea708Stream
-        this.dispatchCea708Packet(packet);
-      }
+      } // this is where an 'else' would go for a dispatching packets
+      // to a theoretical Cea708Stream that handles SERVICEn data
+
     }, this);
     this.captionPackets_.length = 0;
     this.flushCCStreams(flushType);
@@ -35926,855 +35782,10 @@
 
   CaptionStream.prototype.setsTextOrXDSActive = function (packet) {
     return (packet.ccData & 0x7100) === 0x0100 || (packet.ccData & 0x78fe) === 0x102a || (packet.ccData & 0x78fe) === 0x182a;
-  };
-
-  CaptionStream.prototype.dispatchCea708Packet = function (packet) {
-    if (this.parse708captions_) {
-      this.cc708Stream_.push(packet);
-    }
   }; // ----------------------
   // Session to Application
   // ----------------------
-  // This hash maps special and extended character codes to their
-  // proper Unicode equivalent. The first one-byte key is just a
-  // non-standard character code. The two-byte keys that follow are
-  // the extended CEA708 character codes, along with the preceding
-  // 0x10 extended character byte to distinguish these codes from
-  // non-extended character codes. Every CEA708 character code that
-  // is not in this object maps directly to a standard unicode
-  // character code.
-  // The transparent space and non-breaking transparent space are
-  // technically not fully supported since there is no code to
-  // make them transparent, so they have normal non-transparent
-  // stand-ins.
-  // The special closed caption (CC) character isn't a standard
-  // unicode character, so a fairly similar unicode character was
-  // chosen in it's place.
-
-
-  var CHARACTER_TRANSLATION_708 = {
-    0x7f: 0x266a,
-    // ♪
-    0x1020: 0x20,
-    // Transparent Space
-    0x1021: 0xa0,
-    // Nob-breaking Transparent Space
-    0x1025: 0x2026,
-    // …
-    0x102a: 0x0160,
-    // Š
-    0x102c: 0x0152,
-    // Œ
-    0x1030: 0x2588,
-    // █
-    0x1031: 0x2018,
-    // ‘
-    0x1032: 0x2019,
-    // ’
-    0x1033: 0x201c,
-    // “
-    0x1034: 0x201d,
-    // ”
-    0x1035: 0x2022,
-    // •
-    0x1039: 0x2122,
-    // ™
-    0x103a: 0x0161,
-    // š
-    0x103c: 0x0153,
-    // œ
-    0x103d: 0x2120,
-    // ℠
-    0x103f: 0x0178,
-    // Ÿ
-    0x1076: 0x215b,
-    // ⅛
-    0x1077: 0x215c,
-    // ⅜
-    0x1078: 0x215d,
-    // ⅝
-    0x1079: 0x215e,
-    // ⅞
-    0x107a: 0x23d0,
-    // ⏐
-    0x107b: 0x23a4,
-    // ⎤
-    0x107c: 0x23a3,
-    // ⎣
-    0x107d: 0x23af,
-    // ⎯
-    0x107e: 0x23a6,
-    // ⎦
-    0x107f: 0x23a1,
-    // ⎡
-    0x10a0: 0x3138 // ㄸ (CC char)
-
-  };
-
-  var get708CharFromCode = function get708CharFromCode(code) {
-    var newCode = CHARACTER_TRANSLATION_708[code] || code;
-
-    if (code & 0x1000 && code === newCode) {
-      // Invalid extended code
-      return '';
-    }
-
-    return String.fromCharCode(newCode);
-  };
-
-  var within708TextBlock = function within708TextBlock(b) {
-    return 0x20 <= b && b <= 0x7f || 0xa0 <= b && b <= 0xff;
-  };
-
-  var Cea708Window = function Cea708Window(windowNum) {
-    this.windowNum = windowNum;
-    this.reset();
-  };
-
-  Cea708Window.prototype.reset = function () {
-    this.clearText();
-    this.pendingNewLine = false;
-    this.winAttr = {};
-    this.penAttr = {};
-    this.penLoc = {};
-    this.penColor = {}; // These default values are arbitrary,
-    // defineWindow will usually override them
-
-    this.visible = 0;
-    this.rowLock = 0;
-    this.columnLock = 0;
-    this.priority = 0;
-    this.relativePositioning = 0;
-    this.anchorVertical = 0;
-    this.anchorHorizontal = 0;
-    this.anchorPoint = 0;
-    this.rowCount = 1;
-    this.virtualRowCount = this.rowCount + 1;
-    this.columnCount = 41;
-    this.windowStyle = 0;
-    this.penStyle = 0;
-  };
-
-  Cea708Window.prototype.getText = function () {
-    return this.rows.join('\n');
-  };
-
-  Cea708Window.prototype.clearText = function () {
-    this.rows = [''];
-    this.rowIdx = 0;
-  };
-
-  Cea708Window.prototype.newLine = function (pts) {
-    if (this.rows.length >= this.virtualRowCount && typeof this.beforeRowOverflow === 'function') {
-      this.beforeRowOverflow(pts);
-    }
-
-    if (this.rows.length > 0) {
-      this.rows.push('');
-      this.rowIdx++;
-    } // Show all virtual rows since there's no visible scrolling
-
-
-    while (this.rows.length > this.virtualRowCount) {
-      this.rows.shift();
-      this.rowIdx--;
-    }
-  };
-
-  Cea708Window.prototype.isEmpty = function () {
-    if (this.rows.length === 0) {
-      return true;
-    } else if (this.rows.length === 1) {
-      return this.rows[0] === '';
-    }
-
-    return false;
-  };
-
-  Cea708Window.prototype.addText = function (text) {
-    this.rows[this.rowIdx] += text;
-  };
-
-  Cea708Window.prototype.backspace = function () {
-    if (!this.isEmpty()) {
-      var row = this.rows[this.rowIdx];
-      this.rows[this.rowIdx] = row.substr(0, row.length - 1);
-    }
-  };
-
-  var Cea708Service = function Cea708Service(serviceNum) {
-    this.serviceNum = serviceNum;
-    this.text = '';
-    this.currentWindow = new Cea708Window(-1);
-    this.windows = [];
-  };
-  /**
-   * Initialize service windows
-   * Must be run before service use
-   *
-   * @param  {Integer}  pts               PTS value
-   * @param  {Function} beforeRowOverflow Function to execute before row overflow of a window
-   */
-
-
-  Cea708Service.prototype.init = function (pts, beforeRowOverflow) {
-    this.startPts = pts;
-
-    for (var win = 0; win < 8; win++) {
-      this.windows[win] = new Cea708Window(win);
-
-      if (typeof beforeRowOverflow === 'function') {
-        this.windows[win].beforeRowOverflow = beforeRowOverflow;
-      }
-    }
-  };
-  /**
-   * Set current window of service to be affected by commands
-   *
-   * @param  {Integer} windowNum Window number
-   */
-
-
-  Cea708Service.prototype.setCurrentWindow = function (windowNum) {
-    this.currentWindow = this.windows[windowNum];
-  };
-
-  var Cea708Stream = function Cea708Stream() {
-    Cea708Stream.prototype.init.call(this);
-    var self = this;
-    this.current708Packet = null;
-    this.services = {};
-
-    this.push = function (packet) {
-      if (packet.type === 3) {
-        // 708 packet start
-        self.new708Packet();
-        self.add708Bytes(packet);
-      } else {
-        if (self.current708Packet === null) {
-          // This should only happen at the start of a file if there's no packet start.
-          self.new708Packet();
-        }
-
-        self.add708Bytes(packet);
-      }
-    };
-  };
-
-  Cea708Stream.prototype = new stream();
-  /**
-   * Push current 708 packet, create new 708 packet.
-   */
-
-  Cea708Stream.prototype.new708Packet = function () {
-    if (this.current708Packet !== null) {
-      this.push708Packet();
-    }
-
-    this.current708Packet = {
-      data: [],
-      ptsVals: []
-    };
-  };
-  /**
-   * Add pts and both bytes from packet into current 708 packet.
-   */
-
-
-  Cea708Stream.prototype.add708Bytes = function (packet) {
-    var data = packet.ccData;
-    var byte0 = data >>> 8;
-    var byte1 = data & 0xff; // I would just keep a list of packets instead of bytes, but it isn't clear in the spec
-    // that service blocks will always line up with byte pairs.
-
-    this.current708Packet.ptsVals.push(packet.pts);
-    this.current708Packet.data.push(byte0);
-    this.current708Packet.data.push(byte1);
-  };
-  /**
-   * Parse completed 708 packet into service blocks and push each service block.
-   */
-
-
-  Cea708Stream.prototype.push708Packet = function () {
-    var packet708 = this.current708Packet;
-    var packetData = packet708.data;
-    var serviceNum = null;
-    var blockSize = null;
-    var i = 0;
-    var b = packetData[i++];
-    packet708.seq = b >> 6;
-    packet708.sizeCode = b & 0x3f; // 0b00111111;
-
-    for (; i < packetData.length; i++) {
-      b = packetData[i++];
-      serviceNum = b >> 5;
-      blockSize = b & 0x1f; // 0b00011111
-
-      if (serviceNum === 7 && blockSize > 0) {
-        // Extended service num
-        b = packetData[i++];
-        serviceNum = b;
-      }
-
-      this.pushServiceBlock(serviceNum, i, blockSize);
-
-      if (blockSize > 0) {
-        i += blockSize - 1;
-      }
-    }
-  };
-  /**
-   * Parse service block, execute commands, read text.
-   *
-   * Note: While many of these commands serve important purposes,
-   * many others just parse out the parameters or attributes, but
-   * nothing is done with them because this is not a full and complete
-   * implementation of the entire 708 spec.
-   *
-   * @param  {Integer} serviceNum Service number
-   * @param  {Integer} start      Start index of the 708 packet data
-   * @param  {Integer} size       Block size
-   */
-
-
-  Cea708Stream.prototype.pushServiceBlock = function (serviceNum, start, size) {
-    var b;
-    var i = start;
-    var packetData = this.current708Packet.data;
-    var service = this.services[serviceNum];
-
-    if (!service) {
-      service = this.initService(serviceNum, i);
-    }
-
-    for (; i < start + size && i < packetData.length; i++) {
-      b = packetData[i];
-
-      if (within708TextBlock(b)) {
-        i = this.handleText(i, service);
-      } else if (b === 0x10) {
-        i = this.extendedCommands(i, service);
-      } else if (0x80 <= b && b <= 0x87) {
-        i = this.setCurrentWindow(i, service);
-      } else if (0x98 <= b && b <= 0x9f) {
-        i = this.defineWindow(i, service);
-      } else if (b === 0x88) {
-        i = this.clearWindows(i, service);
-      } else if (b === 0x8c) {
-        i = this.deleteWindows(i, service);
-      } else if (b === 0x89) {
-        i = this.displayWindows(i, service);
-      } else if (b === 0x8a) {
-        i = this.hideWindows(i, service);
-      } else if (b === 0x8b) {
-        i = this.toggleWindows(i, service);
-      } else if (b === 0x97) {
-        i = this.setWindowAttributes(i, service);
-      } else if (b === 0x90) {
-        i = this.setPenAttributes(i, service);
-      } else if (b === 0x91) {
-        i = this.setPenColor(i, service);
-      } else if (b === 0x92) {
-        i = this.setPenLocation(i, service);
-      } else if (b === 0x8f) {
-        service = this.reset(i, service);
-      } else if (b === 0x08) {
-        // BS: Backspace
-        service.currentWindow.backspace();
-      } else if (b === 0x0c) {
-        // FF: Form feed
-        service.currentWindow.clearText();
-      } else if (b === 0x0d) {
-        // CR: Carriage return
-        service.currentWindow.pendingNewLine = true;
-      } else if (b === 0x0e) {
-        // HCR: Horizontal carriage return
-        service.currentWindow.clearText();
-      } else if (b === 0x8d) {
-        // DLY: Delay, nothing to do
-        i++;
-      }
-    }
-  };
-  /**
-   * Execute an extended command
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.extendedCommands = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-
-    if (within708TextBlock(b)) {
-      i = this.handleText(i, service, true);
-    }
-
-    return i;
-  };
-  /**
-   * Get PTS value of a given byte index
-   *
-   * @param  {Integer} byteIndex  Index of the byte
-   * @return {Integer}            PTS
-   */
-
-
-  Cea708Stream.prototype.getPts = function (byteIndex) {
-    // There's 1 pts value per 2 bytes
-    return this.current708Packet.ptsVals[Math.floor(byteIndex / 2)];
-  };
-  /**
-   * Initializes a service
-   *
-   * @param  {Integer} serviceNum Service number
-   * @return {Service}            Initialized service object
-   */
-
-
-  Cea708Stream.prototype.initService = function (serviceNum, i) {
-    var self = this;
-    this.services[serviceNum] = new Cea708Service(serviceNum);
-    this.services[serviceNum].init(this.getPts(i), function (pts) {
-      self.flushDisplayed(pts, self.services[serviceNum]);
-    });
-    return this.services[serviceNum];
-  };
-  /**
-   * Execute text writing to current window
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.handleText = function (i, service, isExtended) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var extended = isExtended ? 0x1000 : 0x0000;
-
-    var _char = get708CharFromCode(extended | b);
-
-    var win = service.currentWindow;
-
-    if (win.pendingNewLine && !win.isEmpty()) {
-      win.newLine(this.getPts(i));
-    }
-
-    win.pendingNewLine = false;
-    win.addText(_char);
-    return i;
-  };
-  /**
-   * Parse and execute the CW# command.
-   *
-   * Set the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.setCurrentWindow = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var windowNum = b & 0x07;
-    service.setCurrentWindow(windowNum);
-    return i;
-  };
-  /**
-   * Parse and execute the DF# command.
-   *
-   * Define a window and set it as the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.defineWindow = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var windowNum = b & 0x07;
-    service.setCurrentWindow(windowNum);
-    var win = service.currentWindow;
-    b = packetData[++i];
-    win.visible = (b & 0x20) >> 5; // v
-
-    win.rowLock = (b & 0x10) >> 4; // rl
-
-    win.columnLock = (b & 0x08) >> 3; // cl
-
-    win.priority = b & 0x07; // p
-
-    b = packetData[++i];
-    win.relativePositioning = (b & 0x80) >> 7; // rp
-
-    win.anchorVertical = b & 0x7f; // av
-
-    b = packetData[++i];
-    win.anchorHorizontal = b; // ah
-
-    b = packetData[++i];
-    win.anchorPoint = (b & 0xf0) >> 4; // ap
-
-    win.rowCount = b & 0x0f; // rc
-
-    b = packetData[++i];
-    win.columnCount = b & 0x3f; // cc
-
-    b = packetData[++i];
-    win.windowStyle = (b & 0x38) >> 3; // ws
-
-    win.penStyle = b & 0x07; // ps
-    // The spec says there are (rowCount+1) "virtual rows"
-
-    win.virtualRowCount = win.rowCount + 1;
-    return i;
-  };
-  /**
-   * Parse and execute the SWA command.
-   *
-   * Set attributes of the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.setWindowAttributes = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var winAttr = service.currentWindow.winAttr;
-    b = packetData[++i];
-    winAttr.fillOpacity = (b & 0xc0) >> 6; // fo
-
-    winAttr.fillRed = (b & 0x30) >> 4; // fr
-
-    winAttr.fillGreen = (b & 0x0c) >> 2; // fg
-
-    winAttr.fillBlue = b & 0x03; // fb
-
-    b = packetData[++i];
-    winAttr.borderType = (b & 0xc0) >> 6; // bt
-
-    winAttr.borderRed = (b & 0x30) >> 4; // br
-
-    winAttr.borderGreen = (b & 0x0c) >> 2; // bg
-
-    winAttr.borderBlue = b & 0x03; // bb
-
-    b = packetData[++i];
-    winAttr.borderType += (b & 0x80) >> 5; // bt
-
-    winAttr.wordWrap = (b & 0x40) >> 6; // ww
-
-    winAttr.printDirection = (b & 0x30) >> 4; // pd
-
-    winAttr.scrollDirection = (b & 0x0c) >> 2; // sd
-
-    winAttr.justify = b & 0x03; // j
-
-    b = packetData[++i];
-    winAttr.effectSpeed = (b & 0xf0) >> 4; // es
-
-    winAttr.effectDirection = (b & 0x0c) >> 2; // ed
-
-    winAttr.displayEffect = b & 0x03; // de
-
-    return i;
-  };
-  /**
-   * Gather text from all displayed windows and push a caption to output.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   */
-
-
-  Cea708Stream.prototype.flushDisplayed = function (pts, service) {
-    var displayedText = []; // TODO: Positioning not supported, displaying multiple windows will not necessarily
-    // display text in the correct order, but sample files so far have not shown any issue.
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (service.windows[winId].visible && !service.windows[winId].isEmpty()) {
-        displayedText.push(service.windows[winId].getText());
-      }
-    }
-
-    service.endPts = pts;
-    service.text = displayedText.join('\n\n');
-    this.pushCaption(service);
-    service.startPts = pts;
-  };
-  /**
-   * Push a caption to output if the caption contains text.
-   *
-   * @param  {Service} service  The service object to be affected
-   */
-
-
-  Cea708Stream.prototype.pushCaption = function (service) {
-    if (service.text !== '') {
-      this.trigger('data', {
-        startPts: service.startPts,
-        endPts: service.endPts,
-        text: service.text,
-        stream: 'cc708_' + service.serviceNum
-      });
-      service.text = '';
-      service.startPts = service.endPts;
-    }
-  };
-  /**
-   * Parse and execute the DSW command.
-   *
-   * Set visible property of windows based on the parsed bitmask.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.displayWindows = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (b & 0x01 << winId) {
-        service.windows[winId].visible = 1;
-      }
-    }
-
-    return i;
-  };
-  /**
-   * Parse and execute the HDW command.
-   *
-   * Set visible property of windows based on the parsed bitmask.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.hideWindows = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (b & 0x01 << winId) {
-        service.windows[winId].visible = 0;
-      }
-    }
-
-    return i;
-  };
-  /**
-   * Parse and execute the TGW command.
-   *
-   * Set visible property of windows based on the parsed bitmask.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.toggleWindows = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (b & 0x01 << winId) {
-        service.windows[winId].visible ^= 1;
-      }
-    }
-
-    return i;
-  };
-  /**
-   * Parse and execute the CLW command.
-   *
-   * Clear text of windows based on the parsed bitmask.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.clearWindows = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (b & 0x01 << winId) {
-        service.windows[winId].clearText();
-      }
-    }
-
-    return i;
-  };
-  /**
-   * Parse and execute the DLW command.
-   *
-   * Re-initialize windows based on the parsed bitmask.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.deleteWindows = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[++i];
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-
-    for (var winId = 0; winId < 8; winId++) {
-      if (b & 0x01 << winId) {
-        service.windows[winId].reset();
-      }
-    }
-
-    return i;
-  };
-  /**
-   * Parse and execute the SPA command.
-   *
-   * Set pen attributes of the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.setPenAttributes = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var penAttr = service.currentWindow.penAttr;
-    b = packetData[++i];
-    penAttr.textTag = (b & 0xf0) >> 4; // tt
-
-    penAttr.offset = (b & 0x0c) >> 2; // o
-
-    penAttr.penSize = b & 0x03; // s
-
-    b = packetData[++i];
-    penAttr.italics = (b & 0x80) >> 7; // i
-
-    penAttr.underline = (b & 0x40) >> 6; // u
-
-    penAttr.edgeType = (b & 0x38) >> 3; // et
-
-    penAttr.fontStyle = b & 0x07; // fs
-
-    return i;
-  };
-  /**
-   * Parse and execute the SPC command.
-   *
-   * Set pen color of the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.setPenColor = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var penColor = service.currentWindow.penColor;
-    b = packetData[++i];
-    penColor.fgOpacity = (b & 0xc0) >> 6; // fo
-
-    penColor.fgRed = (b & 0x30) >> 4; // fr
-
-    penColor.fgGreen = (b & 0x0c) >> 2; // fg
-
-    penColor.fgBlue = b & 0x03; // fb
-
-    b = packetData[++i];
-    penColor.bgOpacity = (b & 0xc0) >> 6; // bo
-
-    penColor.bgRed = (b & 0x30) >> 4; // br
-
-    penColor.bgGreen = (b & 0x0c) >> 2; // bg
-
-    penColor.bgBlue = b & 0x03; // bb
-
-    b = packetData[++i];
-    penColor.edgeRed = (b & 0x30) >> 4; // er
-
-    penColor.edgeGreen = (b & 0x0c) >> 2; // eg
-
-    penColor.edgeBlue = b & 0x03; // eb
-
-    return i;
-  };
-  /**
-   * Parse and execute the SPL command.
-   *
-   * Set pen location of the current window.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Integer}          New index after parsing
-   */
-
-
-  Cea708Stream.prototype.setPenLocation = function (i, service) {
-    var packetData = this.current708Packet.data;
-    var b = packetData[i];
-    var penLoc = service.currentWindow.penLoc; // Positioning isn't really supported at the moment, so this essentially just inserts a linebreak
-
-    service.currentWindow.pendingNewLine = true;
-    b = packetData[++i];
-    penLoc.row = b & 0x0f; // r
-
-    b = packetData[++i];
-    penLoc.column = b & 0x3f; // c
-
-    return i;
-  };
-  /**
-   * Execute the RST command.
-   *
-   * Reset service to a clean slate. Re-initialize.
-   *
-   * @param  {Integer} i        Current index in the 708 packet
-   * @param  {Service} service  The service object to be affected
-   * @return {Service}          Re-initialized service
-   */
-
-
-  Cea708Stream.prototype.reset = function (i, service) {
-    var pts = this.getPts(i);
-    this.flushDisplayed(pts, service);
-    return this.initService(service.serviceNum, i);
-  }; // This hash maps non-ASCII, special, and extended character codes to their
+  // This hash maps non-ASCII, special, and extended character codes to their
   // proper Unicode equivalent. The first keys that are only a single byte
   // are the non-standard ASCII characters, which simply map the CEA608 byte
   // to the standard ASCII/Unicode. The two-byte keys that follow are the CEA608
@@ -37191,20 +36202,18 @@
 
   Cea608Stream.prototype.flushDisplayed = function (pts) {
     var content = this.displayed_ // remove spaces from the start and end of the string
-    .map(function (row, index) {
+    .map(function (row) {
       try {
         return row.trim();
       } catch (e) {
         // Ordinarily, this shouldn't happen. However, caption
         // parsing errors should not throw exceptions and
         // break playback.
-        this.trigger('log', {
-          level: 'warn',
-          message: 'Skipping a malformed 608 caption at index ' + index + '.'
-        });
+        // eslint-disable-next-line no-console
+        console.error('Skipping malformed caption.');
         return '';
       }
-    }, this) // combine all text rows to display in one cue
+    }) // combine all text rows to display in one cue
     .join('\n') // and remove blank rows from the start and end, but not the middle
     .replace(/^\n+|\n+$/g, '');
 
@@ -37394,8 +36403,8 @@
    */
 
 
-  Cea608Stream.prototype.isNormalChar = function (_char2) {
-    return _char2 >= 0x20 && _char2 <= 0x7f;
+  Cea608Stream.prototype.isNormalChar = function (_char) {
+    return _char >= 0x20 && _char <= 0x7f;
   };
   /**
    * Configures roll-up
@@ -37499,8 +36508,7 @@
 
   var captionStream = {
     CaptionStream: CaptionStream,
-    Cea608Stream: Cea608Stream,
-    Cea708Stream: Cea708Stream
+    Cea608Stream: Cea608Stream
   };
 
   var discardEmulationPreventionBytes$1 = captionPacketParser.discardEmulationPreventionBytes;
@@ -37549,10 +36557,7 @@
 
   var findSeiNals = function findSeiNals(avcStream, samples, trackId) {
     var avcView = new DataView(avcStream.buffer, avcStream.byteOffset, avcStream.byteLength),
-        result = {
-      logs: [],
-      seiNals: []
-    },
+        result = [],
         seiNal,
         i,
         length,
@@ -37588,14 +36593,12 @@
             seiNal.pts = lastMatchedSample.pts;
             seiNal.dts = lastMatchedSample.dts;
           } else {
-            result.logs.push({
-              level: 'warn',
-              message: 'We\'ve encountered a nal unit without data at ' + i + ' for trackId ' + trackId + '. See mux.js#223.'
-            });
+            // eslint-disable-next-line no-console
+            console.log("We've encountered a nal unit without data. See mux.js#233.");
             break;
           }
 
-          result.seiNals.push(seiNal);
+          result.push(seiNal);
           break;
       }
     }
@@ -37627,7 +36630,7 @@
       // Note: We currently do not parse the sample table as well
       // as the trun. It's possible some sources will require this.
       // moov > trak > mdia > minf > stbl
-      var trackRun = parseTrun(trun);
+      var trackRun = mp4Inspector.parseTrun(trun);
       var samples = trackRun.samples;
       samples.forEach(function (sample) {
         if (sample.duration === undefined) {
@@ -37664,9 +36667,9 @@
 
   var parseCaptionNals = function parseCaptionNals(segment, videoTrackId) {
     // To get the samples
-    var trafs = findBox_1(segment, ['moof', 'traf']); // To get SEI NAL units
+    var trafs = probe.findBox(segment, ['moof', 'traf']); // To get SEI NAL units
 
-    var mdats = findBox_1(segment, ['mdat']);
+    var mdats = probe.findBox(segment, ['mdat']);
     var captionNals = {};
     var mdatTrafPairs = []; // Pair up each traf with a mdat as moofs and mdats are in pairs
 
@@ -37680,30 +36683,26 @@
     mdatTrafPairs.forEach(function (pair) {
       var mdat = pair.mdat;
       var traf = pair.traf;
-      var tfhd = findBox_1(traf, ['tfhd']); // Exactly 1 tfhd per traf
+      var tfhd = probe.findBox(traf, ['tfhd']); // Exactly 1 tfhd per traf
 
-      var headerInfo = parseTfhd(tfhd[0]);
+      var headerInfo = mp4Inspector.parseTfhd(tfhd[0]);
       var trackId = headerInfo.trackId;
-      var tfdt = findBox_1(traf, ['tfdt']); // Either 0 or 1 tfdt per traf
+      var tfdt = probe.findBox(traf, ['tfdt']); // Either 0 or 1 tfdt per traf
 
-      var baseMediaDecodeTime = tfdt.length > 0 ? parseTfdt(tfdt[0]).baseMediaDecodeTime : 0;
-      var truns = findBox_1(traf, ['trun']);
+      var baseMediaDecodeTime = tfdt.length > 0 ? mp4Inspector.parseTfdt(tfdt[0]).baseMediaDecodeTime : 0;
+      var truns = probe.findBox(traf, ['trun']);
       var samples;
-      var result; // Only parse video data for the chosen video track
+      var seiNals; // Only parse video data for the chosen video track
 
       if (videoTrackId === trackId && truns.length > 0) {
         samples = parseSamples(truns, baseMediaDecodeTime, headerInfo);
-        result = findSeiNals(mdat, samples, trackId);
+        seiNals = findSeiNals(mdat, samples, trackId);
 
         if (!captionNals[trackId]) {
-          captionNals[trackId] = {
-            seiNals: [],
-            logs: []
-          };
+          captionNals[trackId] = [];
         }
 
-        captionNals[trackId].seiNals = captionNals[trackId].seiNals.concat(result.seiNals);
-        captionNals[trackId].logs = captionNals[trackId].logs.concat(result.logs);
+        captionNals[trackId] = captionNals[trackId].concat(seiNals);
       }
     });
     return captionNals;
@@ -37727,17 +36726,15 @@
 
 
   var parseEmbeddedCaptions = function parseEmbeddedCaptions(segment, trackId, timescale) {
-    var captionNals; // the ISO-BMFF spec says that trackId can't be zero, but there's some broken content out there
+    var seiNals; // the ISO-BMFF spec says that trackId can't be zero, but there's some broken content out there
 
     if (trackId === null) {
       return null;
     }
 
-    captionNals = parseCaptionNals(segment, trackId);
-    var trackNals = captionNals[trackId] || {};
+    seiNals = parseCaptionNals(segment, trackId);
     return {
-      seiNals: trackNals.seiNals,
-      logs: trackNals.logs,
+      seiNals: seiNals[trackId],
       timescale: timescale
     };
   };
@@ -37784,9 +36781,6 @@
         event.endTime = event.endPts / timescale;
         parsedCaptions.captions.push(event);
         parsedCaptions.captionStreams[event.stream] = true;
-      });
-      captionStream.on('log', function (log) {
-        parsedCaptions.logs.push(log);
       });
     };
     /**
@@ -37842,19 +36836,7 @@
 
       parsedData = parseEmbeddedCaptions(segment, trackId, timescale);
 
-      if (parsedData && parsedData.logs) {
-        parsedCaptions.logs = parsedCaptions.logs.concat(parsedData.logs);
-      }
-
       if (parsedData === null || !parsedData.seiNals) {
-        if (parsedCaptions.logs.length) {
-          return {
-            logs: parsedCaptions.logs,
-            captions: [],
-            captionStreams: []
-          };
-        }
-
         return null;
       }
 
@@ -37905,7 +36887,6 @@
     this.clearParsedCaptions = function () {
       parsedCaptions.captions = [];
       parsedCaptions.captionStreams = {};
-      parsedCaptions.logs = [];
     };
     /**
       * Resets underlying CaptionStream
@@ -37945,8 +36926,7 @@
         parsedCaptions = {
           captions: [],
           // CC1, CC2, CC3, CC4
-          captionStreams: {},
-          logs: []
+          captionStreams: {}
         };
       } else {
         this.clearParsedCaptions();
@@ -38351,35 +37331,12 @@
 
   var ADTS_SAMPLING_FREQUENCIES = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
 
-  var parseId3TagSize = function parseId3TagSize(header, byteIndex) {
-    var returnSize = header[byteIndex + 6] << 21 | header[byteIndex + 7] << 14 | header[byteIndex + 8] << 7 | header[byteIndex + 9],
-        flags = header[byteIndex + 5],
-        footerPresent = (flags & 16) >> 4; // if we get a negative returnSize clamp it to 0
-
-    returnSize = returnSize >= 0 ? returnSize : 0;
-
-    if (footerPresent) {
-      return returnSize + 20;
-    }
-
-    return returnSize + 10;
-  };
-
-  var getId3Offset = function getId3Offset(data, offset) {
-    if (data.length - offset < 10 || data[offset] !== 'I'.charCodeAt(0) || data[offset + 1] !== 'D'.charCodeAt(0) || data[offset + 2] !== '3'.charCodeAt(0)) {
-      return offset;
-    }
-
-    offset += parseId3TagSize(data, offset);
-    return getId3Offset(data, offset);
-  }; // TODO: use vhs-utils
-
-
   var isLikelyAacData = function isLikelyAacData(data) {
-    var offset = getId3Offset(data, 0);
-    return data.length >= offset + 2 && (data[offset] & 0xFF) === 0xFF && (data[offset + 1] & 0xF0) === 0xF0 && // verify that the 2 layer bits are 0, aka this
-    // is not mp3 data but aac data.
-    (data[offset + 1] & 0x16) === 0x10;
+    if (data[0] === 'I'.charCodeAt(0) && data[1] === 'D'.charCodeAt(0) && data[2] === '3'.charCodeAt(0)) {
+      return true;
+    }
+
+    return false;
   };
 
   var parseSyncSafeInteger = function parseSyncSafeInteger(data) {
@@ -38403,6 +37360,18 @@
 
   var parseIso88591 = function parseIso88591(bytes, start, end) {
     return unescape(percentEncode(bytes, start, end)); // jshint ignore:line
+  };
+
+  var parseId3TagSize = function parseId3TagSize(header, byteIndex) {
+    var returnSize = header[byteIndex + 6] << 21 | header[byteIndex + 7] << 14 | header[byteIndex + 8] << 7 | header[byteIndex + 9],
+        flags = header[byteIndex + 5],
+        footerPresent = (flags & 16) >> 4;
+
+    if (footerPresent) {
+      return returnSize + 20;
+    }
+
+    return returnSize + 10;
   };
 
   var parseAdtsSize = function parseAdtsSize(header, byteIndex) {
@@ -38588,16 +37557,23 @@
 
         switch (type) {
           case 'pat':
-            pmt.pid = probe$2.ts.parsePat(packet);
+            if (!pmt.pid) {
+              pmt.pid = probe$2.ts.parsePat(packet);
+            }
+
             break;
 
           case 'pmt':
-            var table = probe$2.ts.parsePmt(packet);
-            pmt.table = pmt.table || {};
-            Object.keys(table).forEach(function (key) {
-              pmt.table[key] = table[key];
-            });
+            if (!pmt.table) {
+              pmt.table = probe$2.ts.parsePmt(packet);
+            }
+
             break;
+        } // Found the pat and pmt, we can stop walking the segment
+
+
+        if (pmt.pid && pmt.table) {
+          return;
         }
 
         startIndex += MP2T_PACKET_LENGTH;
@@ -38872,7 +37848,7 @@
     if (segmentInfo.audio && segmentInfo.audio.length) {
       var audioBaseTimestamp = baseTimestamp;
 
-      if (typeof audioBaseTimestamp === 'undefined' || isNaN(audioBaseTimestamp)) {
+      if (typeof audioBaseTimestamp === 'undefined') {
         audioBaseTimestamp = segmentInfo.audio[0].dts;
       }
 
@@ -38888,7 +37864,7 @@
     if (segmentInfo.video && segmentInfo.video.length) {
       var videoBaseTimestamp = baseTimestamp;
 
-      if (typeof videoBaseTimestamp === 'undefined' || isNaN(videoBaseTimestamp)) {
+      if (typeof videoBaseTimestamp === 'undefined') {
         videoBaseTimestamp = segmentInfo.video[0].dts;
       }
 
@@ -38906,7 +37882,7 @@
         frame.pts = handleRollover$1(frame.pts, videoBaseTimestamp); // time in seconds
 
         frame.dtsTime = frame.dts / ONE_SECOND_IN_TS$1;
-        frame.ptsTime = frame.pts / ONE_SECOND_IN_TS$1;
+        frame.ptsTime = frame.dts / ONE_SECOND_IN_TS$1;
       }
     }
   };
@@ -39083,10 +38059,15 @@
     parseAudioPes_: parseAudioPes_
   };
 
-  /*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
+  /*
+   * pkcs7.pad
+   * https://github.com/brightcove/pkcs7
+   *
+   * Copyright (c) 2014 Brightcove
+   * Licensed under the apache2 license.
+   */
   /**
    * Returns the subarray of a Uint8Array without PKCS#7 padding.
-   *
    * @param padded {Uint8Array} unencrypted bytes that have been padded
    * @return {Uint8Array} the unpadded bytes
    * @see http://tools.ietf.org/html/rfc5652
@@ -39136,7 +38117,7 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   };
 
-  var possibleConstructorReturn$1 = function possibleConstructorReturn(self, call) {
+  var possibleConstructorReturn = function possibleConstructorReturn(self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
@@ -39505,7 +38486,7 @@
     function AsyncStream() {
       classCallCheck(this, AsyncStream);
 
-      var _this = possibleConstructorReturn$1(this, _Stream.call(this, Stream$2));
+      var _this = possibleConstructorReturn(this, _Stream.call(this, Stream$2));
 
       _this.jobs = [];
       _this.delay = 1;
@@ -39802,7 +38783,7 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   };
 
-  var possibleConstructorReturn$2 = function possibleConstructorReturn(self, call) {
+  var possibleConstructorReturn$1 = function possibleConstructorReturn(self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
@@ -40053,7 +39034,7 @@
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       classCallCheck$1(this, PlaylistLoader);
 
-      var _this = possibleConstructorReturn$2(this, (PlaylistLoader.__proto__ || Object.getPrototypeOf(PlaylistLoader)).call(this));
+      var _this = possibleConstructorReturn$1(this, (PlaylistLoader.__proto__ || Object.getPrototypeOf(PlaylistLoader)).call(this));
 
       var _options$withCredenti = options.withCredentials,
           withCredentials = _options$withCredenti === undefined ? false : _options$withCredenti,
@@ -48430,7 +47411,7 @@
     function VirtualSourceBuffer(mediaSource, codecs) {
       classCallCheck$1(this, VirtualSourceBuffer);
 
-      var _this = possibleConstructorReturn$2(this, (VirtualSourceBuffer.__proto__ || Object.getPrototypeOf(VirtualSourceBuffer)).call(this, videojs$1.EventTarget));
+      var _this = possibleConstructorReturn$1(this, (VirtualSourceBuffer.__proto__ || Object.getPrototypeOf(VirtualSourceBuffer)).call(this, videojs$1.EventTarget));
 
       _this.timestampOffset_ = 0;
       _this.pendingBuffers_ = [];
@@ -49009,7 +47990,7 @@
     function HtmlMediaSource() {
       classCallCheck$1(this, HtmlMediaSource);
 
-      var _this = possibleConstructorReturn$2(this, (HtmlMediaSource.__proto__ || Object.getPrototypeOf(HtmlMediaSource)).call(this));
+      var _this = possibleConstructorReturn$1(this, (HtmlMediaSource.__proto__ || Object.getPrototypeOf(HtmlMediaSource)).call(this));
 
       var property = void 0;
       _this.nativeMediaSource_ = new window$3.MediaSource(); // delegate to the native MediaSource's methods by default
@@ -49610,7 +48591,7 @@
       var masterPlaylistLoader = arguments[3];
       classCallCheck$1(this, DashPlaylistLoader);
 
-      var _this = possibleConstructorReturn$2(this, (DashPlaylistLoader.__proto__ || Object.getPrototypeOf(DashPlaylistLoader)).call(this));
+      var _this = possibleConstructorReturn$1(this, (DashPlaylistLoader.__proto__ || Object.getPrototypeOf(DashPlaylistLoader)).call(this));
 
       var _options$withCredenti = options.withCredentials,
           withCredentials = _options$withCredenti === undefined ? false : _options$withCredenti,
@@ -49643,7 +48624,7 @@
         // once multi-period is refactored
 
         _this.sidxMapping_ = {};
-        return possibleConstructorReturn$2(_this);
+        return possibleConstructorReturn$1(_this);
       }
 
       _this.setupChildLoader(masterPlaylistLoader, srcUrlOrPlaylist);
@@ -51484,7 +50465,7 @@
     function SegmentLoader(settings) {
       classCallCheck$1(this, SegmentLoader); // check pre-conditions
 
-      var _this = possibleConstructorReturn$2(this, (SegmentLoader.__proto__ || Object.getPrototypeOf(SegmentLoader)).call(this));
+      var _this = possibleConstructorReturn$1(this, (SegmentLoader.__proto__ || Object.getPrototypeOf(SegmentLoader)).call(this));
 
       if (!settings) {
         throw new TypeError('Initialization settings are required');
@@ -52895,7 +51876,7 @@
       classCallCheck$1(this, VTTSegmentLoader); // SegmentLoader requires a MediaSource be specified or it will throw an error;
       // however, VTTSegmentLoader has no need of a media source, so delete the reference
 
-      var _this = possibleConstructorReturn$2(this, (VTTSegmentLoader.__proto__ || Object.getPrototypeOf(VTTSegmentLoader)).call(this, settings, options));
+      var _this = possibleConstructorReturn$1(this, (VTTSegmentLoader.__proto__ || Object.getPrototypeOf(VTTSegmentLoader)).call(this, settings, options));
 
       _this.mediaSource_ = null;
       _this.subtitlesTrack_ = null;
@@ -53531,7 +52512,7 @@
       classCallCheck$1(this, SyncController); // Segment Loader state variables...
       // ...for synching across variants
 
-      var _this = possibleConstructorReturn$2(this, (SyncController.__proto__ || Object.getPrototypeOf(SyncController)).call(this));
+      var _this = possibleConstructorReturn$1(this, (SyncController.__proto__ || Object.getPrototypeOf(SyncController)).call(this));
 
       _this.inspectCache_ = undefined; // ...for synching across variants
 
@@ -55431,7 +54412,7 @@
     function MasterPlaylistController(options) {
       classCallCheck$1(this, MasterPlaylistController);
 
-      var _this = possibleConstructorReturn$2(this, (MasterPlaylistController.__proto__ || Object.getPrototypeOf(MasterPlaylistController)).call(this));
+      var _this = possibleConstructorReturn$1(this, (MasterPlaylistController.__proto__ || Object.getPrototypeOf(MasterPlaylistController)).call(this));
 
       var url = options.url,
           handleManifestRedirects = options.handleManifestRedirects,
@@ -57616,7 +56597,7 @@
       classCallCheck$1(this, HlsHandler); // tech.player() is deprecated but setup a reference to HLS for
       // backwards-compatibility
 
-      var _this = possibleConstructorReturn$2(this, (HlsHandler.__proto__ || Object.getPrototypeOf(HlsHandler)).call(this, tech, options.hls));
+      var _this = possibleConstructorReturn$1(this, (HlsHandler.__proto__ || Object.getPrototypeOf(HlsHandler)).call(this, tech, options.hls));
 
       if (tech.options_ && tech.options_.playerId) {
         var _player = videojs$1(tech.options_.playerId);
