@@ -48,7 +48,7 @@ class AudioTrackMenuItem extends MenuItem {
   createEl(type, props, attrs) {
     let innerHTML = `<span class="vjs-menu-item-text">${this.localize(this.options_.label)}`;
 
-    if (this.options_.track.kind === 'main-desc') {
+    if (['main-desc', 'description'].indexOf(this.options_.track.kind) >= 0) {
       innerHTML += `
         <span aria-hidden="true" class="vjs-icon-placeholder"></span>
         <span class="vjs-control-text"> ${this.localize('Descriptions')}</span>
