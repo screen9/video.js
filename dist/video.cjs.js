@@ -17183,7 +17183,7 @@ var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
   _proto.createEl = function createEl(type, props, attrs) {
     var innerHTML = "<span class=\"vjs-menu-item-text\">" + this.localize(this.options_.label);
 
-    if (this.options_.track.kind === 'main-desc') {
+    if (['main-desc', 'description'].indexOf(this.options_.track.kind) >= 0) {
       innerHTML += "\n        <span aria-hidden=\"true\" class=\"vjs-icon-placeholder\"></span>\n        <span class=\"vjs-control-text\"> " + this.localize('Descriptions') + "</span>\n      ";
     }
 
