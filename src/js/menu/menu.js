@@ -156,18 +156,21 @@ class Menu extends Component {
    * @listens blur
    */
   handleBlur(event) {
-    const relatedTarget = event.relatedTarget || document.activeElement;
-
     // Close menu popup when a user clicks outside the menu
-    if (!this.children().some((element) => {
-      return element.el() === relatedTarget;
-    })) {
-      const btn = this.menuButton_;
+    const relatedTarget = event.relatedTarget || document.activeElement;
+    // fix for windows narrator
 
-      if (btn && btn.buttonPressed_ && relatedTarget !== btn.el().firstChild) {
-        btn.unpressButton();
+    this.setTimeout(() => {
+      if (!this.children().some((element) => {
+        return element.el() === relatedTarget;
+      })) {
+        const btn = this.menuButton_;
+
+        if (btn && btn.buttonPressed_ && relatedTarget !== btn.el().firstChild) {
+          btn.unpressButton();
+        }
       }
-    }
+    }, 1);
   }
 
   /**
@@ -214,13 +217,13 @@ class Menu extends Component {
   handleKeyDown(event) {
 
     // Left and Down Arrows
-    if (keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
+    if ((keycode.isEventKey(event, 'Tab') && !event.shiftKey && !this.isStepOutside(1)) || keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
       event.preventDefault();
       event.stopPropagation();
       this.stepForward();
 
     // Up and Right Arrows
-    } else if (keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
+    } else if ((keycode.isEventKey(event, 'Tab') && event.shiftKey && !this.isStepOutside(-1)) || keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
       event.preventDefault();
       event.stopPropagation();
       this.stepBack();
@@ -228,27 +231,29 @@ class Menu extends Component {
   }
 
   /**
+   * Checks if the next menu step jumps outside the menu.
+   *
+   * @param {number} step
+   *        step value.
+   */
+  isStepOutside(step) {
+    const stepChild = this.getStepChild(step);
+
+    return stepChild < 0 || stepChild >= this.getSlicedChildren().length;
+  }
+
+  /**
    * Move to next (lower) menu item for keyboard users.
    */
   stepForward() {
-    let stepChild = 0;
-
-    if (this.focusedChild_ !== undefined) {
-      stepChild = this.focusedChild_ + 1;
-    }
-    this.focus(stepChild);
+    this.focus(this.getStepChild(1));
   }
 
   /**
    * Move to previous (higher) menu item for keyboard users.
    */
   stepBack() {
-    let stepChild = 0;
-
-    if (this.focusedChild_ !== undefined) {
-      stepChild = this.focusedChild_ - 1;
-    }
-    this.focus(stepChild);
+    this.focus(this.getStepChild(-1));
   }
 
   /**
@@ -258,13 +263,7 @@ class Menu extends Component {
    *        Index of child item set focus on.
    */
   focus(item = 0) {
-    const children = this.children().slice();
-    const haveTitle = children.length && children[0].className &&
-      (/vjs-menu-title/).test(children[0].className);
-
-    if (haveTitle) {
-      children.shift();
-    }
+    const children = this.getSlicedChildren();
 
     if (children.length > 0) {
       if (item < 0) {
@@ -277,6 +276,30 @@ class Menu extends Component {
 
       children[item].el_.focus();
     }
+  }
+
+  /**
+   * Returns slicked menu children.
+   */
+  getSlicedChildren() {
+    const children = this.children().slice();
+    const haveTitle = children.length && children[0].className &&
+      (/vjs-menu-title/).test(children[0].className);
+
+    if (haveTitle) {
+      children.shift();
+    }
+    return children;
+  }
+
+  /**
+   * Returns index of child item set focus on.
+   *
+   * @param {number} step
+   *        step value.
+   */
+  getStepChild(step) {
+    return this.focusedChild_ !== undefined ? this.focusedChild_ + step : 0;
   }
 }
 
