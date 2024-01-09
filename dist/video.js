@@ -17659,17 +17659,22 @@
     ;
 
     _proto.handleBlur = function handleBlur(event) {
-      var relatedTarget = event.relatedTarget || document.activeElement; // Close menu popup when a user clicks outside the menu
+      var _this2 = this;
 
-      if (!this.children().some(function (element) {
-        return element.el() === relatedTarget;
-      })) {
-        var btn = this.menuButton_;
+      // Close menu popup when a user clicks outside the menu
+      var relatedTarget = event.relatedTarget || document.activeElement; // fix for windows narrator
 
-        if (btn && btn.buttonPressed_ && relatedTarget !== btn.el().firstChild) {
-          btn.unpressButton();
+      this.setTimeout(function () {
+        if (!_this2.children().some(function (element) {
+          return element.el() === relatedTarget;
+        })) {
+          var btn = _this2.menuButton_;
+
+          if (btn && btn.buttonPressed_ && relatedTarget !== btn.el().firstChild) {
+            btn.unpressButton();
+          }
         }
-      }
+      }, 1);
     }
     /**
      * Called when a `MenuItem` gets clicked or tapped.
@@ -17718,15 +17723,27 @@
 
     _proto.handleKeyDown = function handleKeyDown(event) {
       // Left and Down Arrows
-      if (keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
+      if (keycode.isEventKey(event, 'Tab') && !event.shiftKey && !this.isStepOutside(1) || keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
         event.preventDefault();
         event.stopPropagation();
         this.stepForward(); // Up and Right Arrows
-      } else if (keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
+      } else if (keycode.isEventKey(event, 'Tab') && event.shiftKey && !this.isStepOutside(-1) || keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
         event.preventDefault();
         event.stopPropagation();
         this.stepBack();
       }
+    }
+    /**
+     * Checks if the next menu step jumps outside the menu.
+     *
+     * @param {number} step
+     *        step value.
+     */
+    ;
+
+    _proto.isStepOutside = function isStepOutside(step) {
+      var stepChild = this.getStepChild(step);
+      return stepChild < 0 || stepChild >= this.getSlicedChildren().length;
     }
     /**
      * Move to next (lower) menu item for keyboard users.
@@ -17734,13 +17751,7 @@
     ;
 
     _proto.stepForward = function stepForward() {
-      var stepChild = 0;
-
-      if (this.focusedChild_ !== undefined) {
-        stepChild = this.focusedChild_ + 1;
-      }
-
-      this.focus(stepChild);
+      this.focus(this.getStepChild(1));
     }
     /**
      * Move to previous (higher) menu item for keyboard users.
@@ -17748,13 +17759,7 @@
     ;
 
     _proto.stepBack = function stepBack() {
-      var stepChild = 0;
-
-      if (this.focusedChild_ !== undefined) {
-        stepChild = this.focusedChild_ - 1;
-      }
-
-      this.focus(stepChild);
+      this.focus(this.getStepChild(-1));
     }
     /**
      * Set focus on a {@link MenuItem} in the `Menu`.
@@ -17769,12 +17774,7 @@
         item = 0;
       }
 
-      var children = this.children().slice();
-      var haveTitle = children.length && children[0].className && /vjs-menu-title/.test(children[0].className);
-
-      if (haveTitle) {
-        children.shift();
-      }
+      var children = this.getSlicedChildren();
 
       if (children.length > 0) {
         if (item < 0) {
@@ -17786,6 +17786,32 @@
         this.focusedChild_ = item;
         children[item].el_.focus();
       }
+    }
+    /**
+     * Returns slicked menu children.
+     */
+    ;
+
+    _proto.getSlicedChildren = function getSlicedChildren() {
+      var children = this.children().slice();
+      var haveTitle = children.length && children[0].className && /vjs-menu-title/.test(children[0].className);
+
+      if (haveTitle) {
+        children.shift();
+      }
+
+      return children;
+    }
+    /**
+     * Returns index of child item set focus on.
+     *
+     * @param {number} step
+     *        step value.
+     */
+    ;
+
+    _proto.getStepChild = function getStepChild(step) {
+      return this.focusedChild_ !== undefined ? this.focusedChild_ + step : 0;
     };
 
     return Menu;
