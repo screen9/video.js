@@ -105,6 +105,20 @@ QUnit.test('dispose should not throw if playerEl is missing', function(assert) {
   assert.notOk(error, 'Function did not throw an error on dispose');
 });
 
+QUnit.test('dispose should replace playerEl with restoreEl', function(assert) {
+  const videoTag = TestHelpers.makeTag();
+  const fixture = document.getElementById('qunit-fixture');
+  const replacement = document.createElement('div');
+
+  fixture.appendChild(videoTag);
+
+  const player = new Player(videoTag, {restoreEl: replacement});
+
+  player.dispose();
+
+  assert.ok(replacement.parentNode, fixture, 'Replacement node present after dispose');
+});
+
 // technically, all uses of videojs.options should be replaced with
 // Player.prototype.options_ in this file and a equivalent test using
 // videojs.options should be made in video.test.js. Keeping this here
@@ -322,6 +336,27 @@ QUnit.test('should get current sources from src set', function(assert) {
   player.dispose();
 });
 
+QUnit.test('should remove autoplay attribute when normalizeAutoplay: true', function(assert) {
+  const fixture = document.getElementById('qunit-fixture');
+
+  let html = '<video id="example_1" class="video-js" autoplay preload="none">';
+
+  html += '<source src="http://google.com" type="video/mp4">';
+  html += '<source src="http://google.com" type="video/webm">';
+  html += '<track kind="captions" attrtest>';
+  html += '</video>';
+
+  fixture.innerHTML += html;
+
+  const tag = document.getElementById('example_1');
+  const player = TestHelpers.makePlayer({normalizeAutoplay: true}, tag);
+
+  player.loadTech_('Html5');
+
+  assert.equal(player.autoplay(), true, 'autoplay option is set to true');
+  assert.equal(tag.getAttribute('autoplay'), null, 'autoplay attribute removed');
+});
+
 QUnit.test('should asynchronously fire error events during source selection', function(assert) {
   assert.expect(2);
 
@@ -347,6 +382,176 @@ QUnit.test('should asynchronously fire error events during source selection', fu
 
   player.dispose();
   log.error.restore();
+});
+
+QUnit.test('should retry setting source if error occurs and retryOnError: true', function(assert) {
+  const player = TestHelpers.makePlayer({
+    techOrder: ['html5'],
+    retryOnError: true,
+    sources: [
+      { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' }
+    ]
+  });
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+    'first source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+    'second source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' },
+    'last source set'
+  );
+
+  // No more sources to try so the previous source should remain
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' },
+    'last source remains'
+  );
+
+  assert.deepEqual(
+    player.currentSources(),
+    [
+      { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' }
+    ],
+    'currentSources() correctly returns the full source list'
+  );
+
+  player.dispose();
+});
+
+QUnit.test('should not retry setting source if retryOnError: true and error occurs during playback', function(assert) {
+  const player = TestHelpers.makePlayer({
+    techOrder: ['html5'],
+    retryOnError: true,
+    sources: [
+      { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' }
+    ]
+  });
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+    'first source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+    'second source set'
+  );
+
+  // Playback starts then error occurs
+  player.trigger('playing');
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+    'second source remains'
+  );
+
+  assert.deepEqual(
+    player.currentSources(),
+    [
+      { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' }
+    ],
+    'currentSources() correctly returns the full source list'
+  );
+
+  player.dispose();
+});
+
+QUnit.test('aborts and resets retryOnError behavior if new src() call made during a retry', function(assert) {
+  const player = TestHelpers.makePlayer({
+    techOrder: ['html5'],
+    retryOnError: true,
+    sources: [
+      { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/oceans3.mp4', type: 'video/mp4' }
+    ]
+  });
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' },
+    'first source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/oceans2.mp4', type: 'video/mp4' },
+    'second source set'
+  );
+
+  // Setting a new source list should reset retry behavior and enable it for the new sources
+  player.src([
+    { src: 'http://vjs.zencdn.net/v/newSource.mp4', type: 'video/mp4' },
+    { src: 'http://vjs.zencdn.net/v/newSource2.mp4', type: 'video/mp4' },
+    { src: 'http://vjs.zencdn.net/v/newSource3.mp4', type: 'video/mp4' }
+  ]);
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/newSource.mp4', type: 'video/mp4' },
+    'first new source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/newSource2.mp4', type: 'video/mp4' },
+    'second new source set'
+  );
+
+  player.trigger('error');
+
+  assert.deepEqual(
+    player.currentSource(),
+    { src: 'http://vjs.zencdn.net/v/newSource3.mp4', type: 'video/mp4' },
+    'third new source set'
+  );
+
+  assert.deepEqual(
+    player.currentSources(),
+    [
+      { src: 'http://vjs.zencdn.net/v/newSource.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/newSource2.mp4', type: 'video/mp4' },
+      { src: 'http://vjs.zencdn.net/v/newSource3.mp4', type: 'video/mp4' }
+    ],
+    'currentSources() correctly returns the full new source list'
+  );
+
+  player.dispose();
 });
 
 QUnit.test('should suppress source error messages', function(assert) {
@@ -476,6 +681,45 @@ QUnit.test('should default to 16:9 when fluid', function(assert) {
 
   // account for some rounding of 0.5625 up to 0.563
   assert.ok(((ratio >= 0.562) && (ratio <= 0.563)), 'fluid player without dimensions defaults to 16:9');
+
+  player.dispose();
+});
+
+QUnit.test('should resize fluid player on resize', function(assert) {
+  const player = TestHelpers.makePlayer({fluid: true});
+  let ratio = player.currentHeight() / player.currentWidth();
+
+  // account for some rounding of 0.5625 up to 0.563
+  assert.ok(((ratio >= 0.562) && (ratio <= 0.563)), 'fluid player without dimensions defaults to 16:9');
+
+  player.tech_.videoWidth = () => 100;
+  player.tech_.videoHeight = () => 50;
+
+  player.trigger('resize');
+
+  this.clock.tick(1);
+
+  ratio = player.currentHeight() / player.currentWidth();
+
+  assert.ok(ratio === 0.5, 'player aspect ratio changed on resize event');
+
+  player.dispose();
+});
+
+QUnit.test('should resize fluid player on resize if fluid enabled post initialisation', function(assert) {
+  const player = TestHelpers.makePlayer({fluid: false});
+
+  player.tech_.videoWidth = () => 100;
+  player.tech_.videoHeight = () => 30;
+
+  player.fluid(true);
+  player.trigger('resize');
+
+  this.clock.tick(1);
+
+  const ratio = player.currentHeight() / player.currentWidth();
+
+  assert.ok(ratio === 0.3, 'player aspect ratio changed on resize event');
 
   player.dispose();
 });
@@ -951,6 +1195,105 @@ QUnit.test('player should handle different error types', function(assert) {
   player.dispose();
 });
 
+QUnit.test('beforeerror hook allows us to modify errors', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  const beforeerrorHook = function(p, err) {
+    assert.equal(player, p, 'the players match');
+    assert.equal(err.code, 4, 'we got code 4 in beforeerror hook');
+    return { code: 1 };
+  };
+  const errorHook = function(p, err) {
+    assert.equal(player, p, 'the players match');
+    assert.equal(err.code, 1, 'we got code 1 in error hook');
+  };
+
+  videojs.hook('beforeerror', beforeerrorHook);
+  videojs.hook('error', errorHook);
+
+  player.error({code: 4});
+
+  player.dispose();
+  videojs.removeHook('beforeerror', beforeerrorHook);
+  videojs.removeHook('error', errorHook);
+});
+
+QUnit.test('beforeerror hook logs a warning if the incorrect type is returned', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  const stub = sinon.stub(player.log, 'error');
+  let errorReturnValue;
+
+  const beforeerrorHook = function(p, err) {
+    return errorReturnValue;
+  };
+
+  videojs.hook('beforeerror', beforeerrorHook);
+
+  stub.reset();
+  errorReturnValue = {code: 4};
+  player.error({code: 4});
+  assert.ok(stub.notCalled, '{code: 4} is supported');
+
+  stub.reset();
+  errorReturnValue = 1;
+  player.error({code: 4});
+  assert.ok(stub.notCalled, 'number is supported');
+
+  stub.reset();
+  errorReturnValue = null;
+  player.error({code: 4});
+  assert.ok(stub.notCalled, 'null is supported');
+
+  stub.reset();
+  errorReturnValue = 'hello';
+  player.error({code: 4});
+  assert.ok(stub.notCalled, 'string is supported');
+
+  stub.reset();
+  errorReturnValue = new Error('hello');
+  player.error({code: 4});
+  assert.ok(stub.notCalled, 'Error object is supported');
+
+  stub.reset();
+  errorReturnValue = [1, 2, 3];
+  player.error({code: 4});
+  assert.ok(stub.called, 'array is not supported');
+
+  stub.reset();
+  errorReturnValue = undefined;
+  player.error({code: 4});
+  assert.ok(stub.called, 'undefined is not supported');
+
+  stub.reset();
+  errorReturnValue = true;
+  player.error({code: 4});
+  assert.ok(stub.called, 'booleans are not supported');
+
+  videojs.removeHook('beforeerror', beforeerrorHook);
+  player.dispose();
+});
+
+QUnit.test('player should trigger error related hooks', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  const beforeerrorHook = function(p, err) {
+    assert.equal(player, p, 'the players match');
+    assert.equal(err.code, 4, 'we got code 4 in beforeerror hook');
+    return err;
+  };
+  const errorHook = function(p, err) {
+    assert.equal(player, p, 'the players match');
+    assert.equal(err.code, 4, 'we got code 4 in error hook');
+  };
+
+  videojs.hook('beforeerror', beforeerrorHook);
+  videojs.hook('error', errorHook);
+
+  player.error({code: 4});
+
+  player.dispose();
+  videojs.removeHook('beforeerror', beforeerrorHook);
+  videojs.removeHook('error', errorHook);
+});
+
 QUnit.test('Data attributes on the video element should persist in the new wrapper element', function(assert) {
   const dataId = 123;
 
@@ -1241,6 +1584,82 @@ QUnit.test('should add an audio player region if an audio el is used', function(
   player.dispose();
 });
 
+QUnit.test('default audioPosterMode value at player creation', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  assert.ok(player.audioPosterMode() === false, 'audioPosterMode is false by default');
+
+  const player2 = TestHelpers.makePlayer({
+    audioPosterMode: true
+  });
+  const done = assert.async();
+
+  player2.trigger('ready');
+  player2.one('audiopostermodechange', () => {
+    assert.ok(player2.audioPosterMode(), 'audioPosterMode can be set to true when the player is created');
+    done();
+  });
+});
+
+QUnit.test('get and set audioPosterMode value', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  return player.audioPosterMode(true)
+    .then(() => {
+      assert.ok(player.audioPosterMode(), 'audioPosterMode is set to true');
+    });
+});
+
+QUnit.test('vjs-audio-poster-mode class and video element visibility when audioPosterMode is true', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+
+  assert.ok(player.el().className.indexOf('vjs-audio-poster-mode') === -1, 'vjs-audio-poster-mode class is not present initially');
+  assert.ok(player.tech_.el().className.indexOf('vjs-hidden') === -1, 'video element is visible');
+
+  return player.audioPosterMode(true)
+    .then(() => {
+      assert.ok(player.el().className.indexOf('vjs-audio-poster-mode') !== -1, 'vjs-audio-poster-mode class is present');
+      assert.ok(player.tech_.el().className.indexOf('vjs-hidden') !== -1, 'video element is hidden');
+    });
+});
+
+QUnit.test('setting audioPosterMode() should trigger audiopostermodechange event', function(assert) {
+  const player = TestHelpers.makePlayer({
+    audioPosterMode: true
+  });
+  const done = assert.async();
+
+  player.trigger('ready');
+  player.one('audiopostermodechange', () => {
+    assert.ok(true, 'audiopostermodechange event was triggered');
+    assert.ok(player.audioPosterMode(), 'audioPosterMode is set to true');
+    done();
+  });
+});
+
+QUnit.test('audioPosterMode is synchronous and returns undefined when promises are unsupported', function(assert) {
+  const originalPromise = window.Promise;
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  window.Promise = undefined;
+
+  const returnValTrue = player.audioPosterMode(true);
+
+  assert.equal(returnValTrue, undefined, 'return value is undefined');
+  assert.ok(player.audioPosterMode(), 'state synchronously set to true');
+
+  const returnValFalse = player.audioPosterMode(false);
+
+  assert.equal(returnValFalse, undefined, 'return value is undefined');
+  assert.notOk(player.audioPosterMode(), 'state synchronously set to false');
+
+  window.Promise = originalPromise;
+});
+
 QUnit.test('should setScrubbing when seeking or not seeking', function(assert) {
   const player = TestHelpers.makePlayer();
   let isScrubbing;
@@ -1383,6 +1802,50 @@ QUnit.test('sets lang attribute on player el', function(assert) {
   } else {
     fixture.removeAttribute('lang');
   }
+});
+
+QUnit.test('language changed should trigger languagechange event', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  assert.expect(1);
+
+  player.on('languagechange', function() {
+    assert.ok(true, 'languagechange event triggered');
+  });
+  player.language('es-MX');
+  player.dispose();
+});
+
+QUnit.test('language changed should not trigger languagechange event if language is the same', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  assert.expect(1);
+  let triggered = false;
+
+  player.language('es-MX');
+  player.on('languagechange', function() {
+    triggered = true;
+  });
+  player.language('es-MX');
+
+  assert.equal(triggered, false, 'languagechange event was not triggered');
+  player.dispose();
+});
+
+QUnit.test('change language multiple times should trigger languagechange event', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  assert.expect(3);
+
+  player.on('languagechange', function() {
+    assert.ok(true, 'languagechange event triggered');
+  });
+  player.language('es-MX');
+  player.language('en-EU');
+  // set same language should not trigger the event so we expect 3 asserts not 4.
+  player.language('en-EU');
+  player.language('es-ES');
+  player.dispose();
 });
 
 QUnit.test('should return correct values for canPlayType', function(assert) {
@@ -1556,6 +2019,7 @@ QUnit.test('player#reset clears the player cache', function(assert) {
   player.src(sources);
   player.duration(10);
   player.playbackRate(0.5);
+  player.playbackRates([1, 2, 3]);
   player.volume(0.2);
 
   assert.strictEqual(player.currentSrc(), sources[0].src, 'currentSrc is correct');
@@ -1563,6 +2027,7 @@ QUnit.test('player#reset clears the player cache', function(assert) {
   assert.deepEqual(player.currentSources(), sources, 'currentSources is correct');
   assert.strictEqual(player.duration(), 10, 'duration is correct');
   assert.strictEqual(player.playbackRate(), 0.5, 'playbackRate is correct');
+  assert.deepEqual(player.playbackRates(), [1, 2, 3], 'playbackRates is correct');
   assert.strictEqual(player.volume(), 0.2, 'volume is correct');
   assert.strictEqual(player.lastVolume_(), 0.2, 'lastVolume_ is correct');
 
@@ -1579,6 +2044,7 @@ QUnit.test('player#reset clears the player cache', function(assert) {
   assert.strictEqual(player.getCache().currentTime, 0, 'currentTime is correct');
   assert.ok(isNaN(player.duration()), 'duration is correct');
   assert.strictEqual(player.playbackRate(), 1, 'playbackRate is correct');
+  assert.deepEqual(player.playbackRates(), [], 'playbackRates is correct');
   assert.strictEqual(player.volume(), 1, 'volume is correct');
   assert.strictEqual(player.lastVolume_(), 1, 'lastVolume_ is correct');
 });
@@ -1612,6 +2078,24 @@ QUnit.test('player#reset removes remote text tracks', function(assert) {
   assert.strictEqual(player.remoteTextTracks().length, 0, 'there are zero RTTs');
   assert.strictEqual(log.warn.callCount, 1, 'one warning about for manualCleanup');
   log.warn.restore();
+});
+
+QUnit.test('player#reset progress bar', function(assert) {
+
+  let error;
+
+  const player = TestHelpers.makePlayer();
+
+  player.removeChild('controlBar');
+  player.controlBar = null;
+
+  try {
+    player.resetProgressBar_();
+  } catch (e) {
+    error = e;
+  }
+
+  assert.notOk(error, 'Function did not throw an error on resetProgressBar');
 });
 
 QUnit.test('Remove waiting class after tech waiting when timeupdate shows a time change', function(assert) {
@@ -1723,6 +2207,7 @@ QUnit.test('Make sure that player\'s style el respects VIDEOJS_NO_DYNAMIC_STYLE 
 
 QUnit.test('When VIDEOJS_NO_DYNAMIC_STYLE is set, apply sizing directly to the tech el', function(assert) {
   // clear the HEAD before running this test
+  const originalVjsNoDynamicStyling = window.VIDEOJS_NO_DYNAMIC_STYLE;
   const styles = document.querySelectorAll('style');
   let i = styles.length;
 
@@ -1752,6 +2237,7 @@ QUnit.test('When VIDEOJS_NO_DYNAMIC_STYLE is set, apply sizing directly to the t
   assert.equal(player.tech_.el().width, 600, 'the width is equal to 600');
   assert.equal(player.tech_.el().height, 300, 'the height is equal 300');
   player.dispose();
+  window.VIDEOJS_NO_DYNAMIC_STYLE = originalVjsNoDynamicStyling;
 });
 
 QUnit.test('should allow to register custom player when any player has not been created', function(assert) {
@@ -2346,3 +2832,353 @@ QUnit[testOrSkip]('Should only allow requestPictureInPicture if the tech support
   player.requestPictureInPicture();
   assert.equal(count, 1, 'requestPictureInPicture not passed through when tech does not support');
 });
+
+QUnit.test('playbackRates should trigger a playbackrateschange event', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  const rates = [];
+  let rateschangeCount = 0;
+
+  player.on('playbackrateschange', function() {
+    rates.push(player.playbackRates());
+    rateschangeCount++;
+  });
+
+  player.playbackRates([1, 2, 3]);
+  player.playbackRates([]);
+  player.playbackRates([1, 4]);
+
+  assert.equal(rateschangeCount, 3, 'we got 3 playbackrateschange events');
+  assert.deepEqual(rates[0], [1, 2, 3], 'first rates is 1,2,3');
+  assert.deepEqual(rates[1], [], 'second rates is empty');
+  assert.deepEqual(rates[2], [1, 4], 'third rates is 1,4');
+
+  player.dispose();
+});
+
+QUnit.test('playbackRates only accepts arrays of numbers', function(assert) {
+  const player = TestHelpers.makePlayer();
+  let rateschangeCount = 0;
+
+  player.on('playbackrateschange', function() {
+    rateschangeCount++;
+  });
+
+  player.playbackRates([1, 2, 3]);
+  assert.equal(rateschangeCount, 1, 'we got a playbackrateschange event');
+
+  player.playbackRates('hello');
+  assert.equal(rateschangeCount, 1, 'we did not get a playbackrateschange event');
+
+  player.playbackRates([1, 4]);
+  assert.equal(rateschangeCount, 2, 'we got a playbackrateschange event');
+
+  player.playbackRates(5);
+  assert.equal(rateschangeCount, 2, 'we did not get a playbackrateschange event');
+
+  player.playbackRates(['hello', '2', 'why?']);
+  assert.equal(rateschangeCount, 2, 'we did not get a playbackrateschange event');
+
+  player.dispose();
+});
+
+QUnit.test('audioOnlyMode can be set by option', function(assert) {
+  assert.expect(3);
+
+  const done = assert.async();
+  const player = TestHelpers.makePlayer({audioOnlyMode: true});
+
+  player.trigger('ready');
+  player.one('audioonlymodechange', () => {
+    assert.equal(player.audioOnlyMode(), true, 'asynchronously set via option');
+    assert.equal(player.hasClass('vjs-audio-only-mode'), true, 'class added asynchronously');
+    done();
+  });
+  assert.equal(player.hasClass('vjs-audio-only-mode'), false, 'initially does not have class');
+});
+
+QUnit.test('audioOnlyMode(true) returns Promise when promises are supported', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  const returnValTrue = player.audioOnlyMode(true);
+
+  if (window.Promise) {
+    assert.ok(returnValTrue instanceof window.Promise, 'audioOnlyMode(true) returns Promise when supported');
+  }
+});
+
+QUnit.test('audioOnlyMode(false) returns Promise when promises are supported', function(assert) {
+  const done = assert.async();
+  const player = TestHelpers.makePlayer({audioOnlyMode: true});
+
+  player.trigger('ready');
+  player.one('audioonlymodechange', () => {
+    const returnValFalse = player.audioOnlyMode(false);
+
+    if (window.Promise) {
+      assert.ok(returnValFalse instanceof window.Promise, 'audioOnlyMode(false) returns Promise when supported');
+      done();
+    }
+  });
+});
+
+QUnit.test('audioOnlyMode() getter returns Boolean', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  assert.ok(typeof player.audioOnlyMode() === 'boolean', 'getter correctly returns boolean');
+});
+
+QUnit.test('audioOnlyMode(true/false) is synchronous and returns undefined when promises are unsupported', function(assert) {
+  const originalPromise = window.Promise;
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  window.Promise = undefined;
+
+  const returnValTrue = player.audioOnlyMode(true);
+
+  assert.equal(returnValTrue, undefined, 'return value is undefined');
+  assert.ok(player.audioOnlyMode(), 'state synchronously set to true');
+
+  const returnValFalse = player.audioOnlyMode(false);
+
+  assert.equal(returnValFalse, undefined, 'return value is undefined');
+  assert.notOk(player.audioOnlyMode(), 'state synchronously set to false');
+
+  window.Promise = originalPromise;
+});
+
+QUnit.test('audioOnlyMode() gets the correct audioOnlyMode state', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  assert.equal(player.audioOnlyMode(), false, 'defaults to false');
+
+  return player.audioOnlyMode(true)
+    .then(() => assert.equal(player.audioOnlyMode(), true, 'returns updated state after enabled'))
+    .then(() => player.audioOnlyMode(false))
+    .then(() => assert.equal(player.audioOnlyMode(), false, 'returns updated state after disabled'))
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('audioOnlyMode(true/false) adds or removes vjs-audio-only-mode class to player', function(assert) {
+  const player = TestHelpers.makePlayer({});
+
+  player.trigger('ready');
+  assert.equal(player.hasClass('vjs-audio-only-mode'), false, 'class not initially present');
+
+  return player.audioOnlyMode(true)
+    .then(() => assert.equal(player.hasClass('vjs-audio-only-mode'), true, 'class was added'))
+    .then(() => player.audioOnlyMode(false))
+    .then(() => assert.equal(player.hasClass('vjs-audio-only-mode'), false, 'class was removed'))
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('setting audioOnlyMode() triggers audioonlymodechange event', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  let audioOnlyModeState = false;
+  let audioOnlyModeChangeEvents = 0;
+
+  player.trigger('ready');
+  player.on('audioonlymodechange', () => {
+    audioOnlyModeChangeEvents++;
+    audioOnlyModeState = player.audioOnlyMode();
+  });
+
+  return player.audioOnlyMode(true)
+    .then(() => {
+      assert.equal(audioOnlyModeState, true, 'state is correct');
+      assert.equal(audioOnlyModeChangeEvents, 1, 'event fired once');
+    })
+    .then(() => player.audioOnlyMode(false))
+    .then(() => {
+      assert.equal(audioOnlyModeState, false, 'state is correct');
+      assert.equal(audioOnlyModeChangeEvents, 2, 'event fired again');
+    })
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('audioOnlyMode(true/false) changes player height', function(assert) {
+  const player = TestHelpers.makePlayer({controls: true, height: 600});
+
+  player.trigger('ready');
+  player.hasStarted(true);
+
+  const controlBarHeight = player.getChild('ControlBar').currentHeight();
+  const playerHeight = player.currentHeight();
+
+  assert.notEqual(playerHeight, controlBarHeight, 'heights are not the same');
+  assert.equal(player.currentHeight(), playerHeight, 'player initial height is correct');
+
+  return player.audioOnlyMode(true)
+    .then(() => assert.equal(player.currentHeight(), controlBarHeight, 'player height set to height of control bar in audioOnlyMode'))
+    .then(() => player.audioOnlyMode(false))
+    .then(() => assert.equal(player.currentHeight(), playerHeight, 'player reset to original height when disabling audioOnlyMode'))
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('audioOnlyMode(true/false) hides/shows player components except control bar', function(assert) {
+  const player = TestHelpers.makePlayer({controls: true});
+
+  player.trigger('ready');
+  player.hasStarted(true);
+
+  assert.equal(TestHelpers.getComputedStyle(player.getChild('TextTrackDisplay').el_, 'display'), 'block', 'TextTrackDisplay is initially visible');
+  assert.equal(TestHelpers.getComputedStyle(player.tech(true).el_, 'display'), 'block', 'Tech is initially visible');
+  assert.equal(TestHelpers.getComputedStyle(player.getChild('ControlBar').el_, 'display'), 'flex', 'ControlBar is initially visible');
+
+  return player.audioOnlyMode(true)
+    .then(() => {
+      assert.equal(TestHelpers.getComputedStyle(player.getChild('TextTrackDisplay').el_, 'display'), 'none', 'TextTrackDisplay is hidden');
+      assert.equal(TestHelpers.getComputedStyle(player.tech(true).el_, 'display'), 'none', 'Tech is hidden');
+      assert.equal(TestHelpers.getComputedStyle(player.getChild('ControlBar').el_, 'display'), 'flex', 'ControlBar is still visible');
+
+      // Sanity check that all non-ControlBar player children are hidden
+      player.children().forEach(child => {
+        const el = child.el_;
+
+        if (el) {
+          if (child.name_ !== 'ControlBar') {
+            assert.equal(TestHelpers.getComputedStyle(child.el_, 'display') === 'none', true, 'non-controlBar component is hidden');
+          }
+        }
+      });
+    })
+    .then(() => player.audioOnlyMode(false))
+    .then(() => {
+      assert.equal(TestHelpers.getComputedStyle(player.getChild('TextTrackDisplay').el_, 'display'), 'block', 'TextTrackDisplay is visible again');
+      assert.equal(TestHelpers.getComputedStyle(player.tech(true).el_, 'display'), 'block', 'Tech is visible again');
+      assert.equal(TestHelpers.getComputedStyle(player.getChild('ControlBar').el_, 'display'), 'flex', 'ControlBar is still visible');
+    })
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('audioOnlyMode(true/false) hides/shows video-specific control bar components', function(assert) {
+  const tracks = ['captions', 'subtitles', 'descriptions', 'chapters'].map(kind => {
+    return {
+      kind,
+      label: 'English'
+    };
+  });
+  const player = TestHelpers.makePlayer({controls: true, tracks, playbackRates: [1, 2]});
+
+  this.clock.tick(1000);
+
+  const controlBar = player.getChild('ControlBar');
+  const childrenShownInAudioOnlyMode = [
+    'PlayToggle',
+    'VolumePanel',
+    'ProgressControl',
+    'PlaybackRateMenuButton',
+    'ChaptersButton',
+    'RemainingTimeDisplay'
+  ];
+  const childrenHiddenInAudioOnlyMode = [
+    'CaptionsButton',
+    'DescriptionsButton',
+    'FullscreenToggle',
+    'PictureInPictureToggle',
+    'SubsCapsButton'
+  ];
+
+  const allChildren = childrenShownInAudioOnlyMode.concat(childrenHiddenInAudioOnlyMode);
+
+  const chapters = player.textTracks()[3];
+
+  chapters.addCue({
+    startTime: 0,
+    endTime: 2,
+    text: 'Chapter 1'
+  });
+  chapters.addCue({
+    startTime: 2,
+    endTime: 4,
+    text: 'Chapter 2'
+  });
+
+  // ChaptersButton only shows once cues added and update() called
+  controlBar.getChild('ChaptersButton').update();
+
+  player.trigger('ready');
+  player.hasStarted(true);
+
+  // Show all control bar children
+  allChildren.forEach(child => {
+    const el = controlBar.getChild(child) && controlBar.getChild(child).el_;
+
+    if (el) {
+      // Sanity check that component is showing
+      assert.notEqual(TestHelpers.getComputedStyle(el, 'display'), 'none', `${child} is initially visible`);
+    }
+  });
+
+  return player.audioOnlyMode(true)
+    .then(() => {
+      childrenHiddenInAudioOnlyMode.forEach(child => {
+        const el = controlBar.getChild(child) && controlBar.getChild(child).el_;
+
+        if (el) {
+          assert.equal(TestHelpers.getComputedStyle(el, 'display'), 'none', `${child} is hidden`);
+        }
+      });
+
+      childrenShownInAudioOnlyMode.forEach(child => {
+        const el = controlBar.getChild(child) && controlBar.getChild(child).el_;
+
+        if (el) {
+          assert.notEqual(TestHelpers.getComputedStyle(el, 'display'), 'none', `${child} is still shown`);
+        }
+      });
+    })
+    .then(() => player.audioOnlyMode(false))
+    .then(() => {
+      // Check that all are showing again
+      allChildren.concat(childrenHiddenInAudioOnlyMode).forEach(child => {
+        const el = controlBar.getChild(child) && controlBar.getChild(child).el_;
+
+        if (el) {
+          assert.notEqual(TestHelpers.getComputedStyle(el, 'display'), 'none', `${child} is shown`);
+        }
+      });
+    })
+    .catch(() => assert.ok(false, 'test error'));
+});
+
+QUnit.test('setting both audioOnlyMode and audioPosterMode options to true will only turn audioOnlyMode', function(assert) {
+  const player = TestHelpers.makePlayer({audioOnlyMode: true, audioPosterMode: true});
+  const done = assert.async();
+
+  player.trigger('ready');
+
+  player.one('audioonlymodechange', () => {
+    assert.ok(player.audioOnlyMode(), 'audioOnlyMode is true');
+    assert.notOk(player.audioPosterMode(), 'audioPosterMode is false');
+    done();
+  });
+});
+
+QUnit.test('turning on audioOnlyMode when audioPosterMode is already on will turn off audioPosterMode', function(assert) {
+  const player = TestHelpers.makePlayer({audioPosterMode: true});
+
+  player.trigger('ready');
+  assert.ok(player.audioPosterMode(), 'audioPosterMode is true');
+  return player.audioOnlyMode(true)
+    .then(() => {
+      assert.notOk(player.audioPosterMode(), 'audioPosterMode is false');
+      assert.ok(player.audioOnlyMode(), 'audioOnlyMode is true');
+    });
+});
+
+QUnit.test('turning on audioPosterMode when audioOnlyMode is already on will turn off audioOnlyMode', function(assert) {
+  const player = TestHelpers.makePlayer({audioOnlyMode: true});
+
+  player.trigger('ready');
+  assert.ok(player.audioOnlyMode(), 'audioOnlyMode is true');
+  return player.audioPosterMode(true)
+    .then(() => {
+      assert.ok(player.audioPosterMode(), 'audioPosterMode is true');
+      assert.notOk(player.audioOnlyMode(), 'audioOnlyMode is false');
+    });
+});
+

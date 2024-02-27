@@ -3,6 +3,7 @@
  */
 import Component from '../component';
 import * as Dom from '../utils/dom.js';
+import document from 'global/document';
 
 // TODO - Future make it click to snap to live
 
@@ -26,7 +27,7 @@ class LiveDisplay extends Component {
     super(player, options);
 
     this.updateShowing();
-    this.on(this.player(), 'durationchange', this.updateShowing);
+    this.on(this.player(), 'durationchange', (e) => this.updateShowing(e));
   }
 
   /**
@@ -41,11 +42,16 @@ class LiveDisplay extends Component {
     });
 
     this.contentEl_ = Dom.createEl('div', {
-      className: 'vjs-live-display',
-      innerHTML: `<span class="vjs-control-text">${this.localize('Stream Type')}\u00a0</span>${this.localize('LIVE')}`
+      className: 'vjs-live-display'
     }, {
       'aria-live': 'off'
     });
+
+    this.contentEl_.appendChild(Dom.createEl('span', {
+      className: 'vjs-control-text',
+      textContent: `${this.localize('Stream Type')}\u00a0`
+    }));
+    this.contentEl_.appendChild(document.createTextNode(this.localize('LIVE')));
 
     el.appendChild(this.contentEl_);
     return el;

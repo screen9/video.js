@@ -1032,3 +1032,32 @@ QUnit.test('supports getting available media playback quality metrics', function
   window.performance = origPerformance;
   window.Date = origDate;
 });
+
+QUnit.test('featuresVideoFrameCallback is false for audio elements', function(assert) {
+  const el = document.createElement('audio');
+  const audioTech = new Html5({
+    el,
+    source: [{src: 'https://example.org/stream.m3u8'}]
+  });
+
+  assert.strictEqual(audioTech.featuresVideoFrameCallback, false, 'Html5 with audio element should not support rvf');
+
+  audioTech.dispose();
+});
+
+QUnit.test('featuresVideoFrameCallback is false for Safari DRM', function(assert) {
+  // Looking for `super.requestVideoFrameCallback()` being called
+  const spy = sinon.spy(Object.getPrototypeOf(Object.getPrototypeOf(tech)), 'requestVideoFrameCallback');
+
+  tech.featuresVideoFrameCallback = true;
+
+  try {
+    tech.el_.webkitKeys = {};
+    tech.requestVideoFrameCallback(function() {});
+
+    assert.ok(spy.calledOnce, false, 'rvf fallback used');
+  } catch (e) {
+    // video.webkitKeys isn't writable on Safari, so relying on the mocked property on other browsers
+    assert.ok(true, 'skipped because webkitKeys not writable');
+  }
+});

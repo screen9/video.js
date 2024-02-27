@@ -104,7 +104,7 @@ export function fixEvent(event) {
   // But native events return true for stopPropagation, but don't have
   // other expected methods like isPropagationStopped. Seems to be a problem
   // with the Javascript Ninja code. So we're just overriding all events now.
-  if (!event || !event.isPropagationStopped) {
+  if (!event || !event.isPropagationStopped || !event.isImmediatePropagationStopped) {
     const old = event || window.event;
 
     event = {};
@@ -117,8 +117,10 @@ export function fixEvent(event) {
       // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
       // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
       // and webkitMovementX/Y
+      // Lighthouse complains if Event.path is copied
       if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' &&
-          key !== 'webkitMovementX' && key !== 'webkitMovementY') {
+          key !== 'webkitMovementX' && key !== 'webkitMovementY' &&
+          key !== 'path') {
         // Chrome 32+ warns if you try to copy deprecated returnValue, but
         // we still want to if preventDefault isn't supported (IE8).
         if (!(key === 'returnValue' && old.preventDefault)) {

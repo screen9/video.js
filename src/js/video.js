@@ -4,6 +4,13 @@
  */
 import {version} from '../../package.json';
 import window from 'global/window';
+import {
+  hooks_,
+  hooks,
+  hook,
+  hookOnce,
+  removeHook
+} from './utils/hooks';
 import * as setup from './setup';
 import * as stylesheet from './utils/stylesheet.js';
 import Component from './component';
@@ -155,7 +162,13 @@ function videojs(id, options, ready) {
 
   options = options || {};
 
-  videojs.hooks('beforesetup').forEach((hookFunction) => {
+  // Store a copy of the el before modification, if it is to be restored in destroy()
+  // If div ingest, store the parent div
+  if (options.restoreEl === true) {
+    options.restoreEl = (el.parentNode && el.parentNode.hasAttribute('data-vjs-player') ? el.parentNode : el).cloneNode(true);
+  }
+
+  hooks('beforesetup').forEach((hookFunction) => {
     const opts = hookFunction(el, mergeOptions(options));
 
     if (!isObject(opts) || Array.isArray(opts)) {
@@ -172,96 +185,16 @@ function videojs(id, options, ready) {
 
   player = new PlayerComponent(el, options, ready);
 
-  videojs.hooks('setup').forEach((hookFunction) => hookFunction(player));
+  hooks('setup').forEach((hookFunction) => hookFunction(player));
 
   return player;
 }
 
-/**
- * An Object that contains lifecycle hooks as keys which point to an array
- * of functions that are run when a lifecycle is triggered
- *
- * @private
- */
-videojs.hooks_ = {};
-
-/**
- * Get a list of hooks for a specific lifecycle
- *
- * @param  {string} type
- *         the lifecyle to get hooks from
- *
- * @param  {Function|Function[]} [fn]
- *         Optionally add a hook (or hooks) to the lifecycle that your are getting.
- *
- * @return {Array}
- *         an array of hooks, or an empty array if there are none.
- */
-videojs.hooks = function(type, fn) {
-  videojs.hooks_[type] = videojs.hooks_[type] || [];
-  if (fn) {
-    videojs.hooks_[type] = videojs.hooks_[type].concat(fn);
-  }
-  return videojs.hooks_[type];
-};
-
-/**
- * Add a function hook to a specific videojs lifecycle.
- *
- * @param {string} type
- *        the lifecycle to hook the function to.
- *
- * @param {Function|Function[]}
- *        The function or array of functions to attach.
- */
-videojs.hook = function(type, fn) {
-  videojs.hooks(type, fn);
-};
-
-/**
- * Add a function hook that will only run once to a specific videojs lifecycle.
- *
- * @param {string} type
- *        the lifecycle to hook the function to.
- *
- * @param {Function|Function[]}
- *        The function or array of functions to attach.
- */
-videojs.hookOnce = function(type, fn) {
-  videojs.hooks(type, [].concat(fn).map(original => {
-    const wrapper = (...args) => {
-      videojs.removeHook(type, wrapper);
-      return original(...args);
-    };
-
-    return wrapper;
-  }));
-};
-
-/**
- * Remove a hook from a specific videojs lifecycle.
- *
- * @param  {string} type
- *         the lifecycle that the function hooked to
- *
- * @param  {Function} fn
- *         The hooked function to remove
- *
- * @return {boolean}
- *         The function that was removed or undef
- */
-videojs.removeHook = function(type, fn) {
-  const index = videojs.hooks(type).indexOf(fn);
-
-  if (index <= -1) {
-    return false;
-  }
-
-  videojs.hooks_[type] = videojs.hooks_[type].slice();
-  videojs.hooks_[type].splice(index, 1);
-
-  return true;
-};
+videojs.hooks_ = hooks_;
+videojs.hooks = hooks;
+videojs.hook = hook;
+videojs.hookOnce = hookOnce;
+videojs.removeHook = removeHook;
 
 // Add default styles
 if (window.VIDEOJS_NO_DYNAMIC_STYLE !== true && Dom.isReal()) {
@@ -280,7 +213,7 @@ if (window.VIDEOJS_NO_DYNAMIC_STYLE !== true && Dom.isReal()) {
         height: 150px;
       }
 
-      .vjs-fluid {
+      .vjs-fluid:not(.vjs-audio-only-mode) {
         padding-top: 56.25%
       }
     `);
@@ -568,6 +501,10 @@ videojs.dom = Dom;
 videojs.url = Url;
 
 videojs.defineLazyProperty = defineLazyProperty;
+
+// Adding less ambiguous text for fullscreen button.
+// In a major update this could become the default text and key.
+videojs.addLanguage('en', {'Non-Fullscreen': 'Exit Fullscreen'});
 
 export default videojs;
 

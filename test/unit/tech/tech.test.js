@@ -13,6 +13,7 @@ import VideoTrackList from '../../../src/js/tracks/video-track-list';
 import TextTrackList from '../../../src/js/tracks/text-track-list';
 import sinon from 'sinon';
 import log from '../../../src/js/utils/log.js';
+import TestHelpers from '../test-helpers.js';
 
 function stubbedSourceHandler(handler) {
   return {
@@ -141,8 +142,9 @@ QUnit.test('dispose() should stop time tracking', function(assert) {
 QUnit.test('dispose() should clear all tracks that are passed when its created', function(assert) {
   const audioTracks = new AudioTrackList([new AudioTrack(), new AudioTrack()]);
   const videoTracks = new VideoTrackList([new VideoTrack(), new VideoTrack()]);
-  const textTracks = new TextTrackList([new TextTrack({tech: {}}),
-    new TextTrack({tech: {}})]);
+  const pretech = new Tech();
+  const textTracks = new TextTrackList([new TextTrack({tech: pretech}),
+    new TextTrack({tech: pretech})]);
 
   assert.equal(audioTracks.length, 2, 'should have two audio tracks at the start');
   assert.equal(videoTracks.length, 2, 'should have two video tracks at the start');
@@ -166,6 +168,7 @@ QUnit.test('dispose() should clear all tracks that are passed when its created',
     'should hold text tracks that we passed'
   );
 
+  pretech.dispose();
   tech.dispose();
 
   assert.equal(audioTracks.length, 0, 'should have zero audio tracks after dispose');
@@ -663,7 +666,7 @@ QUnit.test('delegates only deferred deferrables to the source handler', function
 QUnit.test('Tech.isTech returns correct answers for techs and components', function(assert) {
   const isTech = Tech.isTech;
   const tech = new Html5({}, {});
-  const button = new Button({}, {});
+  const button = new Button(TestHelpers.makePlayer(), {});
 
   assert.ok(isTech(Tech), 'Tech is a Tech');
   assert.ok(isTech(Html5), 'Html5 is a Tech');
@@ -765,5 +768,23 @@ QUnit.test('returns an empty object for getVideoPlaybackQuality', function(asser
   const tech = new Tech();
 
   assert.deepEqual(tech.getVideoPlaybackQuality(), {}, 'returns an empty object');
+  tech.dispose();
+});
+
+QUnit.test('requestVideoFrameCallback waits if tech not ready', function(assert) {
+  const tech = new Tech();
+  const cbSpy = sinon.spy();
+
+  tech.paused = sinon.spy();
+  tech.isReady_ = false;
+
+  tech.requestVideoFrameCallback(cbSpy);
+
+  assert.notOk(tech.paused.called, 'paused not called on tech that is not ready');
+
+  tech.trigger('playing');
+
+  assert.ok(cbSpy.called, 'callback was called on tech playing');
+
   tech.dispose();
 });

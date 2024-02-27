@@ -1,21 +1,28 @@
 const generate = require('videojs-generate-karma-config');
+const CI_TEST_TYPE = process.env.CI_TEST_TYPE || '';
 
 module.exports = function(config) {
-  // const coverageFlag = process.env.npm_config_coverage;
-  // process.env.TRAVIS || coverageFlag || false;
-  const reportCoverage = false;
-
   // see https://github.com/videojs/videojs-generate-karma-config
   // for options
   const options = {
-    travisLaunchers(defaults) {
-      delete defaults.travisFirefox;
-      return defaults;
+    browsers(aboutToRun) {
+      // never run on Chromium
+      return aboutToRun.filter(function(launcherName) {
+        return !(/^(Chromium)/).test(launcherName);
+      });
     },
     serverBrowsers(defaults) {
       return [];
     },
-    coverage: reportCoverage
+    browserstackLaunchers(defaults) {
+      // do not use browserstack for coverage testing
+      if (CI_TEST_TYPE === 'coverage') {
+        return {};
+      }
+
+      return defaults;
+    },
+    coverage: CI_TEST_TYPE === 'coverage' ? true : false
   };
 
   config = generate(config, options);
@@ -32,7 +39,9 @@ module.exports = function(config) {
   config.files = [
     'node_modules/es5-shim/es5-shim.js',
     'node_modules/es6-shim/es6-shim.js',
-    'node_modules/sinon/pkg/sinon.js',
+    // make sinon be available via karma's server but don't include it directly
+    { pattern: 'node_modules/sinon/pkg/sinon.js', included: false, served: true },
+    'test/sinon.js',
     'dist/video-js.css',
     'test/dist/bundle.js',
     'test/dist/browserify.js',
@@ -43,7 +52,9 @@ module.exports = function(config) {
 
   // pin Browserstack Firefox version to 64
   /* eslint-disable camelcase */
-  config.customLaunchers.bsFirefox.browser_version = '64.0';
+  if (config.customLaunchers && config.customLaunchers.bsFirefox) {
+    config.customLaunchers.bsFirefox.browser_version = '64.0';
+  }
   /* eslint-enable camelcase */
 
   // uncomment the section below to re-enable all browserstack video recording
@@ -57,7 +68,7 @@ module.exports = function(config) {
   */
 
   /* eslint-disable no-console */
-  console.log(JSON.stringify(config, null, 2));
+  // console.log(JSON.stringify(config, null, 2));
   /* eslint-enable no-console */
 
 };

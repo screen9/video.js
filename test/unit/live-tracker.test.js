@@ -90,6 +90,28 @@ QUnit.module('LiveTracker', () => {
     assert.equal(liveEdgeChange, 3, 'liveedgechange fired again');
   });
 
+  QUnit.test('with canplay', function(assert) {
+    let duration = Infinity;
+
+    this.player.seekable = () => createTimeRanges(0, 30);
+    this.player.duration = () => duration;
+
+    assert.notOk(this.liveTracker.isTracking(), 'not started');
+
+    this.player.trigger('canplay');
+    assert.ok(this.liveTracker.isTracking(), 'started');
+
+    // end the video by triggering a duration change so we toggle off the liveui
+    duration = 5;
+    this.player.trigger('durationchange');
+    assert.notOk(this.liveTracker.isTracking(), 'not started');
+
+    // pretend we loaded a new source and we got a canplay
+    duration = Infinity;
+    this.player.trigger('canplay');
+    assert.ok(this.liveTracker.isTracking(), 'started');
+  });
+
   QUnit.module('tracking', {
     beforeEach() {
       this.clock = sinon.useFakeTimers();
@@ -148,7 +170,7 @@ QUnit.module('LiveTracker', () => {
     assert.ok(this.liveTracker.behindLiveEdge(), 'behindLiveEdge live edge');
   });
 
-  QUnit.test('is behindLiveEdge when seeking backwards', function(assert) {
+  QUnit.test('is behindLiveEdge when seeking behind liveTolerance with API', function(assert) {
     this.liveTracker.options_.liveTolerance = 6;
     this.player.seekable = () => createTimeRanges(0, 20);
     this.player.trigger('timeupdate');
@@ -157,6 +179,23 @@ QUnit.module('LiveTracker', () => {
 
     assert.ok(this.liveTracker.atLiveEdge(), 'at live edge');
 
+    this.player.currentTime = () => 14;
+    this.player.trigger('seeked');
+
+    assert.equal(this.liveEdgeChanges, 1, 'should have one live edge change');
+    assert.ok(this.liveTracker.behindLiveEdge(), 'behindLiveEdge live edge');
+  });
+
+  QUnit.test('is behindLiveEdge when seeking >2s behind with ui', function(assert) {
+    this.liveTracker.options_.liveTolerance = 6;
+    this.player.seekable = () => createTimeRanges(0, 20);
+    this.player.trigger('timeupdate');
+    this.player.currentTime = () => 20;
+    this.clock.tick(1000);
+
+    assert.ok(this.liveTracker.atLiveEdge(), 'at live edge');
+
+    this.liveTracker.nextSeekedFromUser();
     this.player.currentTime = () => 17;
     this.player.trigger('seeked');
 
@@ -290,7 +329,7 @@ QUnit.module('LiveTracker', () => {
   QUnit.test('single seekable with Infinity, helpers should be correct', function(assert) {
     // single with Infinity
     this.player.seekable = () => createTimeRanges(0, Infinity);
-    assert.strictEqual(this.liveTracker.liveWindow(), Infinity, 'liveWindow is Infinity');
+    assert.strictEqual(this.liveTracker.liveWindow(), 0, 'liveWindow is Infinity');
     assert.strictEqual(this.liveTracker.seekableStart(), 0, 'seekableStart is 0s');
     assert.strictEqual(this.liveTracker.seekableEnd(), Infinity, 'seekableEnd is Infinity');
   });
@@ -298,7 +337,7 @@ QUnit.module('LiveTracker', () => {
   QUnit.test('multiple seekables with Infinity, helpers should be correct', function(assert) {
     // multiple with Infinity
     this.player.seekable = () => createTimeRanges([[0, Infinity], [1, Infinity]]);
-    assert.strictEqual(this.liveTracker.liveWindow(), Infinity, 'liveWindow is Infinity');
+    assert.strictEqual(this.liveTracker.liveWindow(), 0, 'liveWindow is Infinity');
     assert.strictEqual(this.liveTracker.seekableStart(), 0, 'seekableStart is 0s');
     assert.strictEqual(this.liveTracker.seekableEnd(), Infinity, 'seekableEnd is Infinity');
   });
@@ -307,7 +346,7 @@ QUnit.module('LiveTracker', () => {
     // defaults
     this.player.seekable = () => createTimeRanges();
 
-    assert.strictEqual(this.liveTracker.liveWindow(), Infinity, 'liveWindow is Infinity');
+    assert.strictEqual(this.liveTracker.liveWindow(), 0, 'liveWindow is Infinity');
     assert.strictEqual(this.liveTracker.seekableStart(), 0, 'seekableStart is 0s');
     assert.strictEqual(this.liveTracker.seekableEnd(), Infinity, 'seekableEnd is Infinity');
   });

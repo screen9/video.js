@@ -6,8 +6,11 @@
 <link rel="stylesheet" type="text/css" href="../css/guides.css">
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,600,600italic' rel='stylesheet' type='text/css'><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/solarized_light.min.css" />
 <script type="text/javascript" src="//use.edgefonts.net/source-code-pro.js"></script>
+<link rel="canonical" href="https://docs.videojs.com/tutorial-text-tracks.html">
 </head>
 <body>
+<p class="legacydocsnote">This documentation is for an outdated version of Video.js. See <a href="https://docs.videojs.com/tutorial-text-tracks.html">documentation for the current release</a>.
+
 <div id="sidenav" class="sidenav"></div>
 <div id="main" class="main">
 <h1 id="text-tracks">Text Tracks</h1>
@@ -27,9 +30,9 @@
 <pre><code class="lang-html">&lt;video id=&quot;example_video_1&quot; class=&quot;video-js&quot;
   controls preload=&quot;auto&quot; width=&quot;640&quot; height=&quot;264&quot;
   data-setup=&#39;{&quot;example_option&quot;:true}&#39;&gt;
- &lt;source src=&quot;http://vjs.zencdn.net/v/oceans.mp4&quot; type=&quot;video/mp4&quot; /&gt;
- &lt;source src=&quot;http://vjs.zencdn.net/v/oceans.webm&quot; type=&quot;video/webm&quot; /&gt;
- &lt;source src=&quot;http://vjs.zencdn.net/v/oceans.ogv&quot; type=&quot;video/ogg&quot; /&gt;
+ &lt;source src=&quot;https://vjs.zencdn.net/v/oceans.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+ &lt;source src=&quot;https://vjs.zencdn.net/v/oceans.webm&quot; type=&quot;video/webm&quot; /&gt;
+ &lt;source src=&quot;https://vjs.zencdn.net/v/oceans.ogv&quot; type=&quot;video/ogg&quot; /&gt;
 
  &lt;track kind=&quot;captions&quot; src=&quot;http://example.com/path/to/captions.vtt&quot; srclang=&quot;en&quot; label=&quot;English&quot; default&gt;
 
@@ -42,7 +45,7 @@ but the text track served from another, you&#39;ll need to <a href="http://enabl
 In addition to enabling CORS on the server serving the text tracks, you will need to add the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes"><code>crossorigin</code> attribute</a> to the video element itself. This attribute has two values <code>anonymous</code> and <code>use-credentials</code>. Most users will want to use <code>anonymous</code> with cross-origin tracks.
 It can be added to the video element like so:</p>
 <pre><code class="lang-html">&lt;video class=&quot;video-js&quot; crossorigin=&quot;anonymous&quot;&gt;
-  &lt;source src=&quot;http://vjs.zencdn.net/v/oceans.mp4&quot; type=&quot;video/mp4&quot;&gt;
+  &lt;source src=&quot;https://vjs.zencdn.net/v/oceans.mp4&quot; type=&quot;video/mp4&quot;&gt;
   &lt;track src=&quot;http://example.com/oceans.vtt&quot; kind=&quot;captions&quot; srclang=&quot;en&quot; label=&quot;English&quot;&gt;
 &lt;/video&gt;
 </code></pre>

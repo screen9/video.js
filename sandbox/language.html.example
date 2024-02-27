@@ -9,11 +9,6 @@
   <link href="../dist/video-js.css" rel="stylesheet" type="text/css">
   <script src="../dist/video.js"></script>
 
-  <!-- Set the location of the flash SWF -->
-  <script>
-    videojs.options.flash.swf = '../node_modules/videojs-flash/node_modules/videojs-swf/dist/video-js.swf';
-  </script>
-
   <!-- Add support for Spanish 'es' -->
   <script>
     videojs.addLanguage('es', {
@@ -49,9 +44,9 @@
 <body>
   <video id="vid1" class="video-js" controls preload="auto" width="640" height="264" data-setup=''>
     <!--
-    <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4'>
-    <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm'>
-    <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg'>
+    <source src="https://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4'>
+    <source src="https://video-js.zencoder.com/oceans-clip.webm" type='video/webm'>
+    <source src="https://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg'>
     -->
   </video>
 

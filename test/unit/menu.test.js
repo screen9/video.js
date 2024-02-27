@@ -43,6 +43,24 @@ QUnit.test('should place title list item into ul', function(assert) {
   player.dispose();
 });
 
+QUnit.test('should not include menu title in hide threshold', function(assert) {
+  const player = TestHelpers.makePlayer();
+
+  const menuButton = new MenuButton(player, {
+    title: 'testTitle'
+  });
+
+  assert.strictEqual(menuButton.hideThreshold_, 0, 'title should not increment hideThreshold_');
+
+  menuButton.createItems = () => [new MenuItem(player, { label: 'menu-item1' })];
+  menuButton.update();
+
+  assert.strictEqual(menuButton.hasClass('vjs-hidden'), false, 'menu button with single (non-title) item is not hidden');
+
+  menuButton.dispose();
+  player.dispose();
+});
+
 QUnit.test('clicking should display the menu', function(assert) {
   assert.expect(6);
 
@@ -119,6 +137,23 @@ QUnit.test('should keep all the added menu items', function(assert) {
   player.dispose();
 
   MenuButton.prototype.createItems = oldCreateItems;
+});
+
+QUnit.test('should add or remove role menu for accessibility purpose', function(assert) {
+  const player = TestHelpers.makePlayer();
+  const menuButton = new MenuButton(player);
+
+  menuButton.createItems = () => [];
+  menuButton.update();
+  assert.equal(menuButton.menu.contentEl_.hasAttribute('role'), false, 'the menu does not have a role attribute when it contains no menu items');
+
+  menuButton.createItems = () => [new MenuItem(player, { label: 'menu-item' })];
+  menuButton.update();
+  assert.equal(menuButton.menu.contentEl_.hasAttribute('role'), true, 'the menu has a role attribute when it contains menu items');
+  assert.strictEqual(menuButton.menu.contentEl_.getAttribute('role'), 'menu', 'the menu role is `menu`');
+
+  menuButton.dispose();
+  player.dispose();
 });
 
 QUnit.test('should remove old event listeners when the menu item adds to the new menu', function(assert) {

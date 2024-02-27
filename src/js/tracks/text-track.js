@@ -183,7 +183,19 @@ class TextTrack extends Track {
     const cues = new TextTrackCueList(this.cues_);
     const activeCues = new TextTrackCueList(this.activeCues_);
     let changed = false;
-    const timeupdateHandler = Fn.bind(this, function() {
+
+    this.timeupdateHandler = Fn.bind(this, function(event = {}) {
+      if (this.tech_.isDisposed()) {
+        return;
+      }
+
+      if (!this.tech_.isReady_) {
+        if (event.type !== 'timeupdate') {
+          this.rvf_ = this.tech_.requestVideoFrameCallback(this.timeupdateHandler);
+        }
+
+        return;
+      }
 
       // Accessing this.activeCues for the side-effects of updating itself
       // due to its nature as a getter function. Do not remove or cues will
@@ -194,12 +206,20 @@ class TextTrack extends Track {
         this.trigger('cuechange');
         changed = false;
       }
+
+      if (event.type !== 'timeupdate') {
+        this.rvf_ = this.tech_.requestVideoFrameCallback(this.timeupdateHandler);
+      }
+
     });
 
+    const disposeHandler = () => {
+      this.stopTracking();
+    };
+
+    this.tech_.one('dispose', disposeHandler);
     if (mode !== 'disabled') {
-      this.tech_.ready(() => {
-        this.tech_.on('timeupdate', timeupdateHandler);
-      }, true);
+      this.startTracking();
     }
 
     Object.defineProperties(this, {
@@ -236,17 +256,19 @@ class TextTrack extends Track {
           if (!TextTrackMode[newMode]) {
             return;
           }
+          if (mode === newMode) {
+            return;
+          }
+
           mode = newMode;
           if (!this.preload_ && mode !== 'disabled' && this.cues.length === 0) {
             // On-demand load.
             loadTrack(this.src, this);
           }
+          this.stopTracking();
+
           if (mode !== 'disabled') {
-            this.tech_.ready(() => {
-              this.tech_.on('timeupdate', timeupdateHandler);
-            }, true);
-          } else {
-            this.tech_.off('timeupdate', timeupdateHandler);
+            this.startTracking();
           }
           /**
            * An event that fires when mode changes on this track. This allows
@@ -341,12 +363,27 @@ class TextTrack extends Track {
         // Act like we're loaded for other purposes.
         this.loaded_ = true;
       }
-      if (this.preload_ || default_ || (settings.kind !== 'subtitles' && settings.kind !== 'captions')) {
+      if (this.preload_ || (settings.kind !== 'subtitles' && settings.kind !== 'captions')) {
         loadTrack(this.src, this);
       }
     } else {
       this.loaded_ = true;
     }
+  }
+
+  startTracking() {
+    // More precise cues based on requestVideoFrameCallback with a requestAnimationFram fallback
+    this.rvf_ = this.tech_.requestVideoFrameCallback(this.timeupdateHandler);
+    // Also listen to timeupdate in case rVFC/rAF stops (window in background, audio in video el)
+    this.tech_.on('timeupdate', this.timeupdateHandler);
+  }
+
+  stopTracking() {
+    if (this.rvf_) {
+      this.tech_.cancelVideoFrameCallback(this.rvf_);
+      this.rvf_ = undefined;
+    }
+    this.tech_.off('timeupdate', this.timeupdateHandler);
   }
 
   /**

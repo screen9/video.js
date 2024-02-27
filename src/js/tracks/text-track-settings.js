@@ -6,7 +6,6 @@ import Component from '../component';
 import document from 'global/document';
 import ModalDialog from '../modal-dialog';
 import {createEl} from '../utils/dom';
-import * as Fn from '../utils/fn';
 import * as Obj from '../utils/obj';
 import log from '../utils/log';
 import keycode from 'keycode';
@@ -256,7 +255,7 @@ class TextTrackSettings extends ModalDialog {
     options.temporary = false;
 
     super(player, options);
-    this.updateDisplay = Fn.bind(this, this.updateDisplay);
+    this.updateDisplay = this.updateDisplay.bind(this);
 
     // fill the modal and pretend we have opened it
     this.fill();

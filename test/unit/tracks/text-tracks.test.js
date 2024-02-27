@@ -58,22 +58,18 @@ QUnit.test('Player track methods call the tech', function(assert) {
 
 QUnit.test('TextTrackDisplay initializes tracks on player ready', function(assert) {
   let calls = 0;
-  const ttd = new TextTrackDisplay({
-    on() {},
-    addTextTracks() {
-      calls--;
-    },
-    getChild() {
-      calls--;
-    },
-    ready() {
-      calls++;
-    }
-  }, {});
+  const player = TestHelpers.makePlayer();
+
+  player.addTextTrack = () => calls--;
+  player.getChild = () => calls--;
+  player.ready = () => calls++;
+
+  const ttd = new TextTrackDisplay(player, {});
 
   assert.equal(calls, 1, 'only a player.ready call was made');
 
   ttd.dispose();
+  player.dispose();
 });
 
 QUnit.test('listen to remove and add track events in native text tracks', function(assert) {
@@ -327,6 +323,51 @@ QUnit.test('should check for text track changes when emulating text tracks', fun
   tech.dispose();
 });
 
+QUnit.test('no lang attribute on cue elements if one is provided', function(assert) {
+  const player = TestHelpers.makePlayer();
+  const tt = new TextTrack({
+    tech: player.tech_,
+    mode: 'showing'
+  });
+
+  tt.addCue({
+    id: '1',
+    startTime: 2,
+    endTime: 5
+  });
+  player.tech_.textTracks().addTrack(tt);
+
+  player.currentTime(2);
+  player.tech_.trigger('playing');
+
+  assert.notOk(tt.activeCues[0].displayState.hasAttribute('lang'), 'no lang attribute should be set');
+
+  player.dispose();
+});
+
+QUnit.test('set lang attribute on cue elements if one is provided', function(assert) {
+  const player = TestHelpers.makePlayer();
+  const tt = new TextTrack({
+    srclang: 'en',
+    tech: player.tech_,
+    mode: 'showing'
+  });
+
+  tt.addCue({
+    id: '1',
+    startTime: 2,
+    endTime: 5
+  });
+  player.tech_.textTracks().addTrack(tt);
+
+  player.currentTime(2);
+  player.tech_.trigger('playing');
+
+  assert.equal(tt.activeCues[0].displayState.getAttribute('lang'), 'en', 'the lang should be set to en');
+
+  player.dispose();
+});
+
 QUnit.test('removes cuechange event when text track is hidden for emulated tracks', function(assert) {
   const player = TestHelpers.makePlayer();
   const tt = new TextTrack({
@@ -347,7 +388,7 @@ QUnit.test('removes cuechange event when text track is hidden for emulated track
     numTextTrackChanges++;
   });
 
-  tt.mode = 'showing';
+  tt.mode = 'disabled';
   this.clock.tick(1);
   assert.equal(
     numTextTrackChanges, 1,
@@ -363,7 +404,7 @@ QUnit.test('removes cuechange event when text track is hidden for emulated track
   player.tech_.currentTime = function() {
     return 3;
   };
-  player.tech_.trigger('timeupdate');
+  player.tech_.trigger('playing');
   assert.equal(
     numTextTrackChanges, 3,
     'texttrackchange should be triggered once for the cuechange'

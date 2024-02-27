@@ -52,7 +52,7 @@ class TimeTooltip extends Component {
    *        from the left edge of the {@link SeekBar}
    */
   update(seekBarRect, seekBarPoint, content) {
-    const tooltipRect = Dom.getBoundingClientRect(this.el_);
+    const tooltipRect = Dom.findPosition(this.el_);
     const playerRect = Dom.getBoundingClientRect(this.player_.el());
     const seekBarPointPx = seekBarRect.width * seekBarPoint;
 
@@ -95,6 +95,12 @@ class TimeTooltip extends Component {
     } else if (pullTooltipBy > tooltipRect.width) {
       pullTooltipBy = tooltipRect.width;
     }
+
+    // prevent small width fluctuations within 0.4px from
+    // changing the value below.
+    // This really helps for live to prevent the play
+    // progress time tooltip from jittering
+    pullTooltipBy = Math.round(pullTooltipBy);
 
     this.el_.style.right = `-${pullTooltipBy}px`;
     this.write(content);

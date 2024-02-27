@@ -7,7 +7,6 @@ import window from 'global/window';
 import evented from './mixins/evented';
 import stateful from './mixins/stateful';
 import * as Dom from './utils/dom.js';
-import DomData from './utils/dom-data';
 import * as Fn from './utils/fn.js';
 import * as Guid from './utils/guid.js';
 import {toTitleCase, toLowerCase} from './utils/string-cases.js';
@@ -15,6 +14,7 @@ import mergeOptions from './utils/merge-options.js';
 import computedStyle from './utils/computed-style';
 import Map from './utils/map.js';
 import Set from './utils/set.js';
+import keycode from 'keycode';
 
 /**
  * Base class for all UI Components.
@@ -41,12 +41,15 @@ class Component {
    *        The `Player` that this class should be attached to.
    *
    * @param {Object} [options]
-   *        The key/value store of player options.
+   *        The key/value store of component options.
    *
    * @param {Object[]} [options.children]
    *        An array of children objects to intialize this component with. Children objects have
    *        a name property that will be used if more than one component of the same type needs to be
    *        added.
+   *
+   * @param  {string} [options.className]
+   *         A class or space separated list of classes to add the component
    *
    * @param {Component~ReadyCallback} [ready]
    *        Function that gets called when the `Component` is ready.
@@ -91,10 +94,17 @@ class Component {
       this.el_ = this.createEl();
     }
 
+    if (options.className && this.el_) {
+      options.className.split(' ').forEach(c => this.addClass(c));
+    }
+
     // if evented is anything except false, we want to mixin in evented
     if (options.evented !== false) {
       // Make this an evented object and use `el_`, if available, as its event bus
       evented(this, {eventBusKey: this.el_ ? 'el_' : null});
+
+      this.handleLanguagechange = this.handleLanguagechange.bind(this);
+      this.on(this.player_, 'languagechange', this.handleLanguagechange);
     }
     stateful(this, this.constructor.defaultState);
 
@@ -113,25 +123,33 @@ class Component {
       this.initChildren();
     }
 
-    this.ready(ready);
-    // Don't want to trigger ready here or it will before init is actually
+    // Don't want to trigger ready here or it will go before init is actually
     // finished for all children that run this constructor
+    this.ready(ready);
 
     if (options.reportTouchActivity !== false) {
       this.enableTouchActivity();
     }
+
   }
 
   /**
    * Dispose of the `Component` and all child components.
    *
    * @fires Component#dispose
+   *
+   * @param {Object} options
+   * @param {Element} options.originalEl element with which to replace player element
    */
-  dispose() {
+  dispose(options = {}) {
 
     // Bail out if the component has already been disposed.
     if (this.isDisposed_) {
       return;
+    }
+
+    if (this.readyQueue_) {
+      this.readyQueue_.length = 0;
     }
 
     /**
@@ -167,12 +185,13 @@ class Component {
     if (this.el_) {
       // Remove element from DOM
       if (this.el_.parentNode) {
-        this.el_.parentNode.removeChild(this.el_);
+        if (options.restoreEl) {
+          this.el_.parentNode.replaceChild(options.restoreEl, this.el_);
+        } else {
+          this.el_.parentNode.removeChild(this.el_);
+        }
       }
 
-      if (DomData.has(this.el_)) {
-        DomData.delete(this.el_);
-      }
       this.el_ = null;
     }
 
@@ -288,6 +307,7 @@ class Component {
    *         The localized string or if no localization exists the english string.
    */
   localize(string, tokens, defaultValue = string) {
+
     const code = this.player_.language && this.player_.language();
     const languages = this.player_.languages && this.player_.languages();
     const language = languages && languages[code];
@@ -317,6 +337,13 @@ class Component {
 
     return localizedString;
   }
+
+  /**
+   * Handles language change for the player in components. Should be overriden by sub-components.
+   *
+   * @abstract
+   */
+  handleLanguagechange() {}
 
   /**
    * Return the `Component`s DOM element. This is where children get inserted.
@@ -1149,8 +1176,10 @@ class Component {
     if (this.player_) {
 
       // We only stop propagation here because we want unhandled events to fall
-      // back to the browser.
-      event.stopPropagation();
+      // back to the browser. Exclude Tab for focus trapping.
+      if (!keycode.isEventKey(event, 'Tab')) {
+        event.stopPropagation();
+      }
       this.player_.handleKeyDown(event);
     }
   }
@@ -1694,11 +1723,6 @@ class Component {
    *
    * @return {Component}
    *         The `Component` that got registered under the given name.
-   *
-   * @deprecated In `videojs` 6 this will not return `Component`s that were not
-   *             registered using {@link Component.registerComponent}. Currently we
-   *             check the global `videojs` object for a `Component` name and
-   *             return that if it exists.
    */
   static getComponent(name) {
     if (!name || !Component.components_) {

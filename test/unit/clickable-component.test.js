@@ -111,3 +111,46 @@ QUnit.test('handleClick should use handler from options', function(assert) {
   testClickableComponent.dispose();
   player.dispose();
 });
+
+QUnit.test('language change should localize its text', function(assert) {
+  assert.expect(2);
+
+  const player = TestHelpers.makePlayer({
+    languages: {
+      es: {
+        Play: 'Juego'
+      },
+      en: {
+        Play: 'Play'
+      }
+    }
+  });
+
+  const testClickableComponent = new ClickableComponent(player);
+
+  testClickableComponent.controlText_ = 'Play';
+  const el = testClickableComponent.createEl();
+
+  player.language('en');
+  assert.equal(el.querySelector('.vjs-control-text').textContent, 'Play', 'text localized');
+
+  player.language('es');
+  assert.equal(el.querySelector('.vjs-control-text').textContent, 'Juego', 'text localized');
+
+  testClickableComponent.dispose();
+  player.dispose();
+});
+
+QUnit.test('class and text should be settable from options', function(assert) {
+  const player = TestHelpers.makePlayer({});
+  const testClickableComponent = new ClickableComponent(player, {
+    className: 'class1',
+    controlText: 'some text'
+  });
+
+  assert.equal(testClickableComponent.controlText(), 'some text', 'text was set');
+  assert.ok(testClickableComponent.hasClass('class1'), 'class was set');
+
+  testClickableComponent.dispose();
+  player.dispose();
+});

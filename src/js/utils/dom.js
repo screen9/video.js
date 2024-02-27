@@ -4,9 +4,11 @@
  */
 import document from 'global/document';
 import window from 'global/window';
+import fs from '../fullscreen-api';
 import log from './log.js';
 import {isObject} from './obj';
 import computedStyle from './computed-style';
+import * as browser from './browser';
 
 /**
  * Detect if a value is a string with any non-whitespace characters.
@@ -165,7 +167,7 @@ export function createEl(tagName = 'div', properties = {}, attributes = {}, cont
     // method for it.
     } else if (propName === 'textContent') {
       textContent(el, val);
-    } else if (el[propName] !== val) {
+    } else if (el[propName] !== val || propName === 'tabIndex') {
       el[propName] = val;
     }
   });
@@ -280,6 +282,11 @@ export function addClass(element, classToAdd) {
  *         The DOM element with class name removed.
  */
 export function removeClass(element, classToRemove) {
+  // Protect in case the player gets disposed
+  if (!element) {
+    log.warn("removeClass was called with an element that doesn't exist");
+    return null;
+  }
   if (element.classList) {
     element.classList.remove(classToRemove);
   } else {
@@ -551,34 +558,31 @@ export function getBoundingClientRect(el) {
  *         The position of the element that was passed in.
  */
 export function findPosition(el) {
-  let box;
-
-  if (el.getBoundingClientRect && el.parentNode) {
-    box = el.getBoundingClientRect();
-  }
-
-  if (!box) {
+  if (!el || (el && !el.offsetParent)) {
     return {
       left: 0,
-      top: 0
+      top: 0,
+      width: 0,
+      height: 0
     };
   }
+  const width = el.offsetWidth;
+  const height = el.offsetHeight;
+  let left = 0;
+  let top = 0;
 
-  const docEl = document.documentElement;
-  const body = document.body;
+  while (el.offsetParent && el !== document[fs.fullscreenElement]) {
+    left += el.offsetLeft;
+    top += el.offsetTop;
 
-  const clientLeft = docEl.clientLeft || body.clientLeft || 0;
-  const scrollLeft = window.pageXOffset || body.scrollLeft;
-  const left = box.left + scrollLeft - clientLeft;
+    el = el.offsetParent;
+  }
 
-  const clientTop = docEl.clientTop || body.clientTop || 0;
-  const scrollTop = window.pageYOffset || body.scrollTop;
-  const top = box.top + scrollTop - clientTop;
-
-  // Android sometimes returns slightly off decimal values, so need to round
   return {
-    left: Math.round(left),
-    top: Math.round(top)
+    left,
+    top,
+    width,
+    height
   };
 }
 
@@ -610,24 +614,52 @@ export function findPosition(el) {
  *
  */
 export function getPointerPosition(el, event) {
-  const position = {};
-  const box = findPosition(el);
-  const boxW = el.offsetWidth;
-  const boxH = el.offsetHeight;
+  const translated = {
+    x: 0,
+    y: 0
+  };
 
-  const boxY = box.top;
-  const boxX = box.left;
-  let pageY = event.pageY;
-  let pageX = event.pageX;
+  if (browser.IS_IOS) {
+    let item = el;
 
-  if (event.changedTouches) {
-    pageX = event.changedTouches[0].pageX;
-    pageY = event.changedTouches[0].pageY;
+    while (item && item.nodeName.toLowerCase() !== 'html') {
+      const transform = computedStyle(item, 'transform');
+
+      if (/^matrix/.test(transform)) {
+        const values = transform.slice(7, -1).split(/,\s/).map(Number);
+
+        translated.x += values[4];
+        translated.y += values[5];
+      } else if (/^matrix3d/.test(transform)) {
+        const values = transform.slice(9, -1).split(/,\s/).map(Number);
+
+        translated.x += values[12];
+        translated.y += values[13];
+      }
+
+      item = item.parentNode;
+    }
   }
 
-  position.y = Math.max(0, Math.min(1, ((boxY - pageY) + boxH) / boxH));
-  position.x = Math.max(0, Math.min(1, (pageX - boxX) / boxW));
+  const position = {};
+  const boxTarget = findPosition(event.target);
+  const box = findPosition(el);
+  const boxW = box.width;
+  const boxH = box.height;
+  let offsetY = event.offsetY - (box.top - boxTarget.top);
+  let offsetX = event.offsetX - (box.left - boxTarget.left);
 
+  if (event.changedTouches) {
+    offsetX = event.changedTouches[0].pageX - box.left;
+    offsetY = event.changedTouches[0].pageY + box.top;
+    if (browser.IS_IOS) {
+      offsetX -= translated.x;
+      offsetY -= translated.y;
+    }
+  }
+
+  position.y = (1 - Math.max(0, Math.min(1, offsetY / boxH)));
+  position.x = Math.max(0, Math.min(1, offsetX / boxW));
   return position;
 }
 

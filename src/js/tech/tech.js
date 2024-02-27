@@ -15,6 +15,7 @@ import {isPlain} from '../utils/obj';
 import * as TRACK_TYPES from '../tracks/track-types';
 import {toTitleCase, toLowerCase} from '../utils/string-cases.js';
 import vtt from 'videojs-vtt.js';
+import * as Guid from '../utils/guid.js';
 
 /**
  * An Object containing a structure like: `{src: 'url', type: 'mimetype'}` or string
@@ -76,7 +77,7 @@ function createTrackHelper(self, kind, label, language, options = {}) {
 
 /**
  * This is the base class for media playback technology controllers, such as
- * {@link Flash} and {@link HTML5}
+ * {@link HTML5}
  *
  * @extends Component
  */
@@ -97,6 +98,14 @@ class Tech extends Component {
     options.reportTouchActivity = false;
     super(null, options, ready);
 
+    this.onDurationChange_ = (e) => this.onDurationChange(e);
+    this.trackProgress_ = (e) => this.trackProgress(e);
+    this.trackCurrentTime_ = (e) => this.trackCurrentTime(e);
+    this.stopTrackingCurrentTime_ = (e) => this.stopTrackingCurrentTime(e);
+    this.disposeSourceHandler_ = (e) => this.disposeSourceHandler(e);
+
+    this.queuedHanders_ = new Set();
+
     // keep track of whether the current source has played at all to
     // implement a very limited played()
     this.hasStarted_ = false;
@@ -115,12 +124,12 @@ class Tech extends Component {
       }
     });
 
-    // Manually track progress in cases where the browser/flash player doesn't report it.
+    // Manually track progress in cases where the browser/tech doesn't report it.
     if (!this.featuresProgressEvents) {
       this.manualProgressOn();
     }
 
-    // Manually track timeupdates in cases where the browser/flash player doesn't report it.
+    // Manually track timeupdates in cases where the browser/tech doesn't report it.
     if (!this.featuresTimeupdateEvents) {
       this.manualTimeUpdatesOn();
     }
@@ -194,12 +203,12 @@ class Tech extends Component {
    * @see {@link Tech#trackProgress}
    */
   manualProgressOn() {
-    this.on('durationchange', this.onDurationChange);
+    this.on('durationchange', this.onDurationChange_);
 
     this.manualProgress = true;
 
     // Trigger progress watching when a source begins loading
-    this.one('ready', this.trackProgress);
+    this.one('ready', this.trackProgress_);
   }
 
   /**
@@ -210,7 +219,7 @@ class Tech extends Component {
     this.manualProgress = false;
     this.stopTrackingProgress();
 
-    this.off('durationchange', this.onDurationChange);
+    this.off('durationchange', this.onDurationChange_);
   }
 
   /**
@@ -304,8 +313,8 @@ class Tech extends Component {
   manualTimeUpdatesOn() {
     this.manualTimeUpdates = true;
 
-    this.on('play', this.trackCurrentTime);
-    this.on('pause', this.stopTrackingCurrentTime);
+    this.on('play', this.trackCurrentTime_);
+    this.on('pause', this.stopTrackingCurrentTime_);
   }
 
   /**
@@ -315,8 +324,8 @@ class Tech extends Component {
   manualTimeUpdatesOff() {
     this.manualTimeUpdates = false;
     this.stopTrackingCurrentTime();
-    this.off('play', this.trackCurrentTime);
-    this.off('pause', this.stopTrackingCurrentTime);
+    this.off('play', this.trackCurrentTime_);
+    this.off('pause', this.stopTrackingCurrentTime_);
   }
 
   /**
@@ -484,6 +493,15 @@ class Tech extends Component {
   }
 
   /**
+   * Start playback
+   *
+   * @abstract
+   *
+   * @see {Html5#play}
+   */
+  play() {}
+
+  /**
    * Set whether we are scrubbing or not
    *
    * @abstract
@@ -491,6 +509,15 @@ class Tech extends Component {
    * @see {Html5#setScrubbing}
    */
   setScrubbing() {}
+
+  /**
+   * Get whether we are scrubbing or not
+   *
+   * @abstract
+   *
+   * @see {Html5#scrubbing}
+   */
+  scrubbing() {}
 
   /**
    * Causes a manual time update to occur if {@link Tech#manualTimeUpdatesOn} was
@@ -834,6 +861,43 @@ class Tech extends Component {
   setDisablePictureInPicture() {}
 
   /**
+   * A fallback implementation of requestVideoFrameCallback using requestAnimationFrame
+   *
+   * @param {function} cb
+   * @return {number} request id
+   */
+  requestVideoFrameCallback(cb) {
+    const id = Guid.newGUID();
+
+    if (!this.isReady_ || this.paused()) {
+      this.queuedHanders_.add(id);
+      this.one('playing', () => {
+        if (this.queuedHanders_.has(id)) {
+          this.queuedHanders_.delete(id);
+          cb();
+        }
+      });
+    } else {
+      this.requestNamedAnimationFrame(id, cb);
+    }
+
+    return id;
+  }
+
+  /**
+   * A fallback implementation of cancelVideoFrameCallback
+   *
+   * @param {number} id id of callback to be cancelled
+   */
+  cancelVideoFrameCallback(id) {
+    if (this.queuedHanders_.has(id)) {
+      this.queuedHanders_.delete(id);
+    } else {
+      this.cancelNamedAnimationFrame(id);
+    }
+  }
+
+  /**
    * A method to set a poster from a `Tech`.
    *
    * @abstract
@@ -1148,6 +1212,14 @@ Tech.prototype.featuresTimeupdateEvents = false;
 Tech.prototype.featuresNativeTextTracks = false;
 
 /**
+ * Boolean indicating whether the `Tech` supports `requestVideoFrameCallback`.
+ *
+ * @type {boolean}
+ * @default
+ */
+Tech.prototype.featuresVideoFrameCallback = false;
+
+/**
  * A functional mixin for techs that want to use the Source Handler pattern.
  * Source handlers are scripts for handling specific formats.
  * The source handler pattern is used for adaptive formats (HLS, DASH) that
@@ -1324,14 +1396,14 @@ Tech.withSourceHandlers = function(_Tech) {
 
     // Dispose any existing source handler
     this.disposeSourceHandler();
-    this.off('dispose', this.disposeSourceHandler);
+    this.off('dispose', this.disposeSourceHandler_);
 
     if (sh !== _Tech.nativeSourceHandler) {
       this.currentSource_ = source;
     }
 
     this.sourceHandler_ = sh.handleSource(source, this, this.options_);
-    this.one('dispose', this.disposeSourceHandler);
+    this.one('dispose', this.disposeSourceHandler_);
   };
 
   /**

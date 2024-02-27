@@ -240,6 +240,7 @@ class TextTrackDisplay extends Component {
     return super.createEl('div', {
       className: 'vjs-text-track-display'
     }, {
+      'translate': 'yes',
       'aria-live': 'off',
       'aria-atomic': 'true'
     });
@@ -418,7 +419,6 @@ class TextTrackDisplay extends Component {
         cueDiv.style.fontSize = (fontSize * overrides.fontPercent) + 'px';
         cueDiv.style.height = 'auto';
         cueDiv.style.top = 'auto';
-        cueDiv.style.bottom = '2px';
       }
       if (overrides.fontFamily && overrides.fontFamily !== 'default') {
         if (overrides.fontFamily === 'small-caps') {
@@ -470,6 +470,9 @@ class TextTrackDisplay extends Component {
 
         Dom.addClass(cueEl, 'vjs-text-track-cue');
         Dom.addClass(cueEl, 'vjs-text-track-cue-' + ((track.language) ? track.language : i));
+        if (track.language) {
+          Dom.setAttribute(cueEl, 'lang', track.language);
+        }
       }
       if (this.player_.textTrackSettings) {
         this.updateDisplayState(track);

@@ -56,6 +56,11 @@
   color: $primary-background-color;
 }
 
+.video-js .vjs-menu *:not(.vjs-selected):focus:not(:focus-visible),
+.js-focus-visible .vjs-menu *:not(.vjs-selected):focus:not(.focus-visible) {
+  background: none;
+}
+
 .vjs-menu li.vjs-menu-title {
   text-align: center;
   text-transform: uppercase;

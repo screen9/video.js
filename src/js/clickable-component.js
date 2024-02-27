@@ -22,13 +22,30 @@ class ClickableComponent extends Component {
    *         The `Player` that this class should be attached to.
    *
    * @param  {Object} [options]
-   *         The key/value store of player options.
+   *         The key/value store of component options.
    *
    * @param  {function} [options.clickHandler]
    *         The function to call when the button is clicked / activated
+   *
+   * @param  {string} [options.controlText]
+   *         The text to set on the button
+   *
+   * @param  {string} [options.className]
+   *         A class or space separated list of classes to add the component
+   *
    */
   constructor(player, options) {
+
     super(player, options);
+
+    if (this.options_.controlText) {
+      this.controlText(this.options_.controlText);
+    }
+
+    this.handleMouseOver_ = (e) => this.handleMouseOver(e);
+    this.handleMouseOut_ = (e) => this.handleMouseOut(e);
+    this.handleClick_ = (e) => this.handleClick(e);
+    this.handleKeyDown_ = (e) => this.handleKeyDown(e);
 
     this.emitTapEvents();
 
@@ -52,7 +69,6 @@ class ClickableComponent extends Component {
    */
   createEl(tag = 'div', props = {}, attributes = {}) {
     props = assign({
-      innerHTML: '<span aria-hidden="true" class="vjs-icon-placeholder"></span>',
       className: this.buildCSSClass(),
       tabIndex: 0
     }, props);
@@ -68,7 +84,13 @@ class ClickableComponent extends Component {
 
     this.tabIndex_ = props.tabIndex;
 
-    const el = super.createEl(tag, props, attributes);
+    const el = Dom.createEl(tag, props, attributes);
+
+    el.appendChild(Dom.createEl('span', {
+      className: 'vjs-icon-placeholder'
+    }, {
+      'aria-hidden': true
+    }));
 
     this.createControlTextEl(el);
 
@@ -129,7 +151,7 @@ class ClickableComponent extends Component {
 
     this.controlText_ = text;
     Dom.textContent(this.controlTextEl_, localizedText);
-    if (!this.nonIconControl) {
+    if (!this.nonIconControl && !this.player_.options_.noUITitleAttributes) {
       // Set title attribute if only an icon is shown
       el.setAttribute('title', localizedText);
     }
@@ -156,8 +178,8 @@ class ClickableComponent extends Component {
       if (typeof this.tabIndex_ !== 'undefined') {
         this.el_.setAttribute('tabIndex', this.tabIndex_);
       }
-      this.on(['tap', 'click'], this.handleClick);
-      this.on('keydown', this.handleKeyDown);
+      this.on(['tap', 'click'], this.handleClick_);
+      this.on('keydown', this.handleKeyDown_);
     }
   }
 
@@ -171,10 +193,19 @@ class ClickableComponent extends Component {
     if (typeof this.tabIndex_ !== 'undefined') {
       this.el_.removeAttribute('tabIndex');
     }
-    this.off('mouseover', this.handleMouseOver);
-    this.off('mouseout', this.handleMouseOut);
-    this.off(['tap', 'click'], this.handleClick);
-    this.off('keydown', this.handleKeyDown);
+    this.off('mouseover', this.handleMouseOver_);
+    this.off('mouseout', this.handleMouseOut_);
+    this.off(['tap', 'click'], this.handleClick_);
+    this.off('keydown', this.handleKeyDown_);
+  }
+
+  /**
+   * Handles language change in ClickableComponent for the player in components
+   *
+   *
+   */
+  handleLanguagechange() {
+    this.controlText(this.controlText_);
   }
 
   /**

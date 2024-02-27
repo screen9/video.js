@@ -5,6 +5,7 @@ import document from 'global/document';
 import Component from '../../component.js';
 import * as Dom from '../../utils/dom.js';
 import formatTime from '../../utils/format-time.js';
+import log from '../../utils/log.js';
 
 /**
  * Displays time information about the video
@@ -25,7 +26,7 @@ class TimeDisplay extends Component {
   constructor(player, options) {
     super(player, options);
 
-    this.on(player, ['timeupdate', 'ended'], this.updateContent);
+    this.on(player, ['timeupdate', 'ended'], (e) => this.updateContent(e));
     this.updateTextNode_();
   }
 
@@ -38,9 +39,16 @@ class TimeDisplay extends Component {
   createEl() {
     const className = this.buildCSSClass();
     const el = super.createEl('div', {
-      className: `${className} vjs-time-control vjs-control`,
-      innerHTML: `<span class="vjs-control-text" role="presentation">${this.localize(this.labelText_)}\u00a0</span>`
+      className: `${className} vjs-time-control vjs-control`
     });
+    const span = Dom.createEl('span', {
+      className: 'vjs-control-text',
+      textContent: `${this.localize(this.labelText_)}\u00a0`
+    }, {
+      role: 'presentation'
+    });
+
+    el.appendChild(span);
 
     this.contentEl_ = Dom.createEl('span', {
       className: `${className}-display`
@@ -86,7 +94,13 @@ class TimeDisplay extends Component {
         return;
       }
 
-      const oldNode = this.textNode_;
+      let oldNode = this.textNode_;
+
+      if (oldNode && this.contentEl_.firstChild !== oldNode) {
+        oldNode = null;
+
+        log.warn('TimeDisplay#updateTextnode_: Prevented replacement of text node element since it was no longer a child of this node. Appending a new node instead.');
+      }
 
       this.textNode_ = document.createTextNode(this.formattedTime_);
 

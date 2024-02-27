@@ -255,6 +255,7 @@ QUnit.test('can only remove one cue at a time', function(assert) {
 
 QUnit.test('does not fire cuechange before Tech is ready', function(assert) {
   const done = assert.async();
+  const clock = sinon.useFakeTimers();
   const player = TestHelpers.makePlayer({techfaker: {autoReady: false}});
   let changes = 0;
   const tt = new TextTrack({
@@ -278,6 +279,8 @@ QUnit.test('does not fire cuechange before Tech is ready', function(assert) {
     return 0;
   };
 
+  // `playing` would trigger rvfc or raf, `timeupdate` for fallback
+  player.tech_.trigger('playing');
   player.tech_.trigger('timeupdate');
   assert.equal(changes, 0, 'a cuechange event is not triggered');
 
@@ -286,15 +289,23 @@ QUnit.test('does not fire cuechange before Tech is ready', function(assert) {
       return 0.2;
     };
 
-    player.tech_.trigger('timeupdate');
+    player.tech_.trigger('playing');
+    clock.tick(1);
 
     assert.equal(changes, 2, 'a cuechange event trigger addEventListener and oncuechange');
 
+    player.tech_.trigger('timeupdate');
+    clock.tick(1);
+
+    assert.equal(changes, 2, 'a cuechange event trigger not duplicated by timeupdate');
+
     tt.off();
     player.dispose();
+    clock.restore();
     done();
   });
   player.tech_.triggerReady();
+  clock.tick(1);
 });
 
 QUnit.test('fires cuechange when cues become active and inactive', function(assert) {
@@ -307,31 +318,45 @@ QUnit.test('fires cuechange when cues become active and inactive', function(asse
   const cuechangeHandler = function() {
     changes++;
   };
+  let fakeCurrentTime = 0;
+
+  player.tech_.currentTime = function() {
+    return fakeCurrentTime;
+  };
 
   tt.addCue({
     id: '1',
     startTime: 1,
     endTime: 5
   });
+  tt.addCue({
+    id: '2',
+    startTime: 11,
+    endTime: 14
+  });
 
   tt.oncuechange = cuechangeHandler;
   tt.addEventListener('cuechange', cuechangeHandler);
 
-  player.tech_.currentTime = function() {
-    return 2;
-  };
+  fakeCurrentTime = 2;
+  player.tech_.trigger('playing');
 
+  assert.equal(changes, 2, 'a cuechange event trigger addEventListener and oncuechange (rvfc/raf)');
+
+  fakeCurrentTime = 7;
+  player.tech_.trigger('playing');
+
+  assert.equal(changes, 4, 'a cuechange event trigger addEventListener and oncuechange (rvfc/raf)');
+
+  fakeCurrentTime = 12;
   player.tech_.trigger('timeupdate');
 
-  assert.equal(changes, 2, 'a cuechange event trigger addEventListener and oncuechange');
+  assert.equal(changes, 6, 'a cuechange event trigger addEventListener and oncuechange (timeupdate)');
 
-  player.tech_.currentTime = function() {
-    return 7;
-  };
-
+  fakeCurrentTime = 17;
   player.tech_.trigger('timeupdate');
 
-  assert.equal(changes, 4, 'a cuechange event trigger addEventListener and oncuechange');
+  assert.equal(changes, 8, 'a cuechange event trigger addEventListener and oncuechange (timeupdate)');
 
   tt.off();
   player.dispose();
@@ -360,16 +385,19 @@ QUnit.test('enabled and disabled cuechange handler when changing mode to hidden'
   player.tech_.currentTime = function() {
     return 2;
   };
+  player.tech_.trigger('playing');
   player.tech_.trigger('timeupdate');
 
   assert.equal(changes, 1, 'a cuechange event trigger');
 
   changes = 0;
+  // debugger;
   tt.mode = 'disabled';
 
   player.tech_.currentTime = function() {
     return 7;
   };
+  player.tech_.trigger('playing');
   player.tech_.trigger('timeupdate');
 
   assert.equal(changes, 0, 'NO cuechange event trigger');
@@ -379,6 +407,7 @@ QUnit.test('enabled and disabled cuechange handler when changing mode to hidden'
 });
 
 QUnit.test('enabled and disabled cuechange handler when changing mode to showing', function(assert) {
+  const clock = sinon.useFakeTimers();
   const player = TestHelpers.makePlayer();
   let changes = 0;
   const tt = new TextTrack({
@@ -401,7 +430,8 @@ QUnit.test('enabled and disabled cuechange handler when changing mode to showing
   player.tech_.currentTime = function() {
     return 2;
   };
-  player.tech_.trigger('timeupdate');
+  player.tech_.trigger('playing');
+  clock.tick(10);
 
   assert.equal(changes, 1, 'a cuechange event trigger');
 
@@ -411,12 +441,59 @@ QUnit.test('enabled and disabled cuechange handler when changing mode to showing
   player.tech_.currentTime = function() {
     return 7;
   };
-  player.tech_.trigger('timeupdate');
+  player.tech_.trigger('playing');
 
   assert.equal(changes, 0, 'NO cuechange event trigger');
 
   tt.off();
   player.dispose();
+  clock.restore();
+});
+
+QUnit.test('if preloadTextTracks is false, default tracks are not parsed until mode is showing', function(assert) {
+  this.tech.preloadTextTracks = false;
+  const clock = sinon.useFakeTimers();
+  const oldVTT = window.WebVTT;
+  let parserCreated = false;
+  const reqs = [];
+
+  this.xhr.onCreate = function(req) {
+    reqs.push(req);
+  };
+
+  window.WebVTT = () => {};
+  window.WebVTT.StringDecoder = () => {};
+  window.WebVTT.Parser = () => {
+    parserCreated = true;
+    return {
+      oncue() {},
+      onparsingerror() {},
+      onflush() {},
+      parse() {},
+      flush() {}
+    };
+  };
+
+  const tt = new TextTrack({
+    tech: this.tech,
+    src: 'http://example.com',
+    default: true
+  });
+
+  assert.notOk(reqs.length, 'Default track is not requested');
+  assert.notOk(parserCreated, 'Parser is not created');
+
+  tt.mode = 'showing';
+
+  const req = reqs.pop();
+
+  req.respond(200, null, 'WEBVTT\n');
+
+  assert.ok(parserCreated, 'Parser is created after track is showing');
+
+  clock.restore();
+  tt.off();
+  window.WebVTT = oldVTT;
 });
 
 QUnit.test('tracks are parsed if vttjs is loaded', function(assert) {

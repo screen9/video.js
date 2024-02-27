@@ -39,6 +39,8 @@ class Html5 extends Tech {
     const source = options.source;
     let crossoriginTracks = false;
 
+    this.featuresVideoFrameCallback = this.featuresVideoFrameCallback && this.el_.tagName === 'VIDEO';
+
     // Set the source if one is provided
     // 1) Check if the source is new (if not, we want to keep the original so playback isn't interrupted)
     // 2) Check to see if the network state of the tag was failed at init, and if so, reset the source
@@ -53,6 +55,8 @@ class Html5 extends Tech {
     if (options.enableSourceset) {
       this.setupSourcesetHandling_();
     }
+
+    this.isScrubbing_ = false;
 
     if (this.el_.hasChildNodes()) {
 
@@ -538,6 +542,17 @@ class Html5 extends Tech {
   }
 
   /**
+   * Get whether we are scrubbing or not.
+   *
+   * @return {boolean} isScrubbing
+   *                  - true for we are currently scrubbing
+   *                  - false for we are no longer scrubbing
+   */
+  scrubbing() {
+    return this.isScrubbing_;
+  }
+
+  /**
    * Set current time for the `HTML5` tech.
    *
    * @param {number} seconds
@@ -628,11 +643,14 @@ class Html5 extends Tech {
 
     const endFn = function() {
       this.trigger('fullscreenchange', { isFullscreen: false });
+      // Safari will sometimes set contols on the videoelement when existing fullscreen.
+      if (this.el_.controls && !this.options_.nativeControlsForTouch && this.controls()) {
+        this.el_.controls = false;
+      }
     };
 
     const beginFn = function() {
-      if ('webkitPresentationMode' in this.el_ &&
-        this.el_.webkitPresentationMode !== 'picture-in-picture') {
+      if ('webkitPresentationMode' in this.el_ && this.el_.webkitPresentationMode !== 'picture-in-picture') {
         this.one('webkitendfullscreen', endFn);
 
         this.trigger('fullscreenchange', {
@@ -723,6 +741,35 @@ class Html5 extends Tech {
    */
   requestPictureInPicture() {
     return this.el_.requestPictureInPicture();
+  }
+
+  /**
+   * Native requestVideoFrameCallback if supported by browser/tech, or fallback
+   * Don't use rVCF on Safari when DRM is playing, as it doesn't fire
+   * Needs to be checked later than the constructor
+   * This will be a false positive for clear sources loaded after a Fairplay source
+   *
+   * @param {function} cb function to call
+   * @return {number} id of request
+   */
+  requestVideoFrameCallback(cb) {
+    if (this.featuresVideoFrameCallback && !this.el_.webkitKeys) {
+      return this.el_.requestVideoFrameCallback(cb);
+    }
+    return super.requestVideoFrameCallback(cb);
+  }
+
+  /**
+   * Native or fallback requestVideoFrameCallback
+   *
+   * @param {number} id request id to cancel
+   */
+  cancelVideoFrameCallback(id) {
+    if (this.featuresVideoFrameCallback && !this.el_.webkitKeys) {
+      this.el_.cancelVideoFrameCallback(id);
+    } else {
+      super.cancelVideoFrameCallback(id);
+    }
   }
 
   /**
@@ -1019,7 +1066,26 @@ Html5.canControlVolume = function() {
     const volume = Html5.TEST_VID.volume;
 
     Html5.TEST_VID.volume = (volume / 2) + 0.1;
-    return volume !== Html5.TEST_VID.volume;
+
+    const canControl = volume !== Html5.TEST_VID.volume;
+
+    // With the introduction of iOS 15, there are cases where the volume is read as
+    // changed but reverts back to its original state at the start of the next tick.
+    // To determine whether volume can be controlled on iOS,
+    // a timeout is set and the volume is checked asynchronously.
+    // Since `features` doesn't currently work asynchronously, the value is manually set.
+    if (canControl && browser.IS_IOS) {
+      window.setTimeout(() => {
+        if (Html5 && Html5.prototype) {
+          Html5.prototype.featuresVolumeControl = volume !== Html5.TEST_VID.volume;
+        }
+      });
+
+      // default iOS to false, which will be updated in the timeout above.
+      return false;
+    }
+
+    return canControl;
   } catch (e) {
     return false;
   }
@@ -1214,7 +1280,6 @@ Html5.Events = [
  * @default {@link Html5.supportsNativeAudioTracks}
  */
 [
-  ['featuresVolumeControl', 'canControlVolume'],
   ['featuresMuteControl', 'canMuteVolume'],
   ['featuresPlaybackRate', 'canControlPlaybackRate'],
   ['featuresSourceset', 'canOverrideAttributes'],
@@ -1224,6 +1289,8 @@ Html5.Events = [
 ].forEach(function([key, fn]) {
   defineLazyProperty(Html5.prototype, key, () => Html5[fn](), true);
 });
+
+Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
 
 /**
  * Boolean indicating whether the `HTML5` tech currently supports the media element
@@ -1262,6 +1329,13 @@ Html5.prototype.featuresProgressEvents = true;
  * @default
  */
 Html5.prototype.featuresTimeupdateEvents = true;
+
+/**
+ * Whether the HTML5 el supports `requestVideoFrameCallback`
+ *
+ * @type {boolean}
+ */
+Html5.prototype.featuresVideoFrameCallback = !!(Html5.TEST_VID && Html5.TEST_VID.requestVideoFrameCallback);
 
 // HTML5 Feature detection and Device Fixes --------------------------------- //
 let canPlayType;
@@ -1475,7 +1549,7 @@ Html5.resetMediaElement = function(el) {
 
   /**
    * Set the value of `defaultMuted` on the media element. `defaultMuted` indicates that the current
-   * audio level should be silent, but will only effect the muted level on intial playback..
+   * audio level should be silent, but will only effect the muted level on initial playback..
    *
    * @method Html5.prototype.setDefaultMuted
    * @param {boolean} defaultMuted

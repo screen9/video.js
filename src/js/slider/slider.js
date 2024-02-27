@@ -28,6 +28,13 @@ class Slider extends Component {
   constructor(player, options) {
     super(player, options);
 
+    this.handleMouseDown_ = (e) => this.handleMouseDown(e);
+    this.handleMouseUp_ = (e) => this.handleMouseUp(e);
+    this.handleKeyDown_ = (e) => this.handleKeyDown(e);
+    this.handleClick_ = (e) => this.handleClick(e);
+    this.handleMouseMove_ = (e) => this.handleMouseMove(e);
+    this.update_ = (e) => this.update(e);
+
     // Set property names to bar to match with the child Slider class is looking for
     this.bar = this.getChild(this.options_.barName);
 
@@ -55,10 +62,10 @@ class Slider extends Component {
       return;
     }
 
-    this.on('mousedown', this.handleMouseDown);
-    this.on('touchstart', this.handleMouseDown);
-    this.on('keydown', this.handleKeyDown);
-    this.on('click', this.handleClick);
+    this.on('mousedown', this.handleMouseDown_);
+    this.on('touchstart', this.handleMouseDown_);
+    this.on('keydown', this.handleKeyDown_);
+    this.on('click', this.handleClick_);
 
     // TODO: deprecated, controlsvisible does not seem to be fired
     this.on(this.player_, 'controlsvisible', this.update);
@@ -82,15 +89,15 @@ class Slider extends Component {
     }
     const doc = this.bar.el_.ownerDocument;
 
-    this.off('mousedown', this.handleMouseDown);
-    this.off('touchstart', this.handleMouseDown);
-    this.off('keydown', this.handleKeyDown);
-    this.off('click', this.handleClick);
-    this.off(this.player_, 'controlsvisible', this.update);
-    this.off(doc, 'mousemove', this.handleMouseMove);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchmove', this.handleMouseMove);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off('mousedown', this.handleMouseDown_);
+    this.off('touchstart', this.handleMouseDown_);
+    this.off('keydown', this.handleKeyDown_);
+    this.off('click', this.handleClick_);
+    this.off(this.player_, 'controlsvisible', this.update_);
+    this.off(doc, 'mousemove', this.handleMouseMove_);
+    this.off(doc, 'mouseup', this.handleMouseUp_);
+    this.off(doc, 'touchmove', this.handleMouseMove_);
+    this.off(doc, 'touchend', this.handleMouseUp_);
     this.removeAttribute('tabindex');
 
     this.addClass('disabled');
@@ -168,12 +175,12 @@ class Slider extends Component {
      */
     this.trigger('slideractive');
 
-    this.on(doc, 'mousemove', this.handleMouseMove);
-    this.on(doc, 'mouseup', this.handleMouseUp);
-    this.on(doc, 'touchmove', this.handleMouseMove);
-    this.on(doc, 'touchend', this.handleMouseUp);
+    this.on(doc, 'mousemove', this.handleMouseMove_);
+    this.on(doc, 'mouseup', this.handleMouseUp_);
+    this.on(doc, 'touchmove', this.handleMouseMove_);
+    this.on(doc, 'touchend', this.handleMouseUp_);
 
-    this.handleMouseMove(event);
+    this.handleMouseMove(event, true);
   }
 
   /**
@@ -185,6 +192,7 @@ class Slider extends Component {
    * @param {EventTarget~Event} event
    *        `mousedown`, `mousemove`, `touchstart`, or `touchmove` event that triggered
    *        this function
+   * @param {boolean} mouseDown this is a flag that should be set to true if `handleMouseMove` is called directly. It allows us to skip things that should not happen if coming from mouse down but should happen on regular mouse move handler. Defaults to false.
    *
    * @listens mousemove
    * @listens touchmove
@@ -215,10 +223,10 @@ class Slider extends Component {
      */
     this.trigger('sliderinactive');
 
-    this.off(doc, 'mousemove', this.handleMouseMove);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchmove', this.handleMouseMove);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off(doc, 'mousemove', this.handleMouseMove_);
+    this.off(doc, 'mouseup', this.handleMouseUp_);
+    this.off(doc, 'touchmove', this.handleMouseMove_);
+    this.off(doc, 'touchend', this.handleMouseUp_);
 
     this.update();
   }

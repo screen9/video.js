@@ -1,6 +1,9 @@
+@use "sass:math";
+
 .video-js {
   // display:inline-block would be closer to the video el's display:inline
   // but it results in flash reloading when going into fullscreen [#2205]
+  // TODO: Still needed?
   display: block;
   // Make video.js videos align top when next to video elements
   vertical-align: top;
@@ -62,28 +65,45 @@
 // Fill the width of the containing element and use padding to create the
 // desired aspect ratio. Default to 16x9 unless another ratio is given.
 @mixin apply-aspect-ratio($width, $height) {
-  padding-top: 100% * ($height/$width);
+  padding-top: 100% * math.div($height, $width);
 }
 
 // Not including a default AR in vjs-fluid because it would override
 // the user set AR injected into the header.
 .video-js.vjs-fluid,
 .video-js.vjs-16-9,
-.video-js.vjs-4-3 {
+.video-js.vjs-4-3,
+.video-js.vjs-9-16,
+.video-js.vjs-1-1 {
   width: 100%;
   max-width: 100%;
+}
+
+.video-js.vjs-fluid:not(.vjs-audio-only-mode),
+.video-js.vjs-16-9:not(.vjs-audio-only-mode),
+.video-js.vjs-4-3:not(.vjs-audio-only-mode),
+.video-js.vjs-9-16:not(.vjs-audio-only-mode),
+.video-js.vjs-1-1:not(.vjs-audio-only-mode) {
   height: 0;
 }
 
-.video-js.vjs-16-9 {
+.video-js.vjs-16-9:not(.vjs-audio-only-mode) {
   @include apply-aspect-ratio(16, 9);
 }
 
-.video-js.vjs-4-3 {
+.video-js.vjs-4-3:not(.vjs-audio-only-mode) {
   @include apply-aspect-ratio(4, 3);
 }
 
-.video-js.vjs-fill {
+.video-js.vjs-9-16:not(.vjs-audio-only-mode) {
+  @include apply-aspect-ratio(9, 16);
+}
+
+.video-js.vjs-1-1:not(.vjs-audio-only-mode) {
+  @include apply-aspect-ratio(1, 1);
+}
+
+.video-js.vjs-fill:not(.vjs-audio-only-mode) {
   width: 100%;
   height: 100%;
 }
@@ -96,6 +116,10 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.video-js.vjs-audio-only-mode .vjs-tech {
+  display: none;
 }
 
 // Fullscreen Styles
@@ -144,8 +168,8 @@ body.vjs-full-window {
 
 .vjs-lock-showing {
   display: block !important;
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 // This optional paragraph inside the video tag can provide a message to users

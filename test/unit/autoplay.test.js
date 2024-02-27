@@ -29,18 +29,25 @@ QUnit.module('autoplay', {
 
     fixture.appendChild(videoTag);
 
-    // this promise fake will act right away
-    // it will also only act on catch calls
+    // These mock promises immediately execute,
+    // effectively synchronising promise chains for testing
+
+    // This will only act on catch calls
     this.rejectPromise = {
       then(fn) {
         return this;
       },
       catch(fn) {
-        fn();
+        try {
+          fn();
+        } catch (err) {
+          return this;
+        }
         return this;
       }
     };
 
+    // This will only act on then calls
     this.resolvePromise = {
       then(fn) {
         fn();
@@ -189,6 +196,28 @@ QUnit.test('option = "play" play, no muted', function(assert) {
   assert.equal(this.counts.failure, 0, 'failure count');
 });
 
+QUnit.test('option = true w/ normalizeAutoplay = true play, no muted', function(assert) {
+  this.createPlayer({
+    autoplay: true,
+    normalizeAutoplay: true
+  }, {}, this.resolvePromise);
+
+  assert.equal(this.player.autoplay(), true, 'player.autoplay getter');
+  assert.equal(this.player.tech_.autoplay(), false, 'tech.autoplay getter');
+
+  this.player.tech_.trigger('loadstart');
+  assert.equal(this.counts.play, 1, 'play count');
+  assert.equal(this.counts.muted, 0, 'muted count');
+  assert.equal(this.counts.success, 1, 'success count');
+  assert.equal(this.counts.failure, 0, 'failure count');
+
+  this.player.tech_.trigger('loadstart');
+  assert.equal(this.counts.play, 2, 'play count');
+  assert.equal(this.counts.muted, 0, 'muted count');
+  assert.equal(this.counts.success, 2, 'success count');
+  assert.equal(this.counts.failure, 0, 'failure count');
+});
+
 QUnit.test('option = "any" play, no muted', function(assert) {
   this.createPlayer({autoplay: 'any'}, {}, this.resolvePromise);
 
@@ -252,7 +281,10 @@ QUnit.test('option = "any" play, no muted, rejection leads to muted then play', 
   assert.equal(this.player.autoplay(), 'any', 'player.autoplay getter');
   assert.equal(this.player.tech_.autoplay(), false, 'tech.autoplay getter');
 
-  // muted called twice here, as muted is value is restored on failure.
+  // The workflow described here:
+  // Call play() -> on rejection, attempt to set mute to true ->
+  // call play() again -> on rejection, set original mute value ->
+  // catch failure at the end of promise chain
   this.player.tech_.trigger('loadstart');
   assert.equal(this.counts.play, 2, 'play count');
   assert.equal(this.counts.muted, 2, 'muted count');
