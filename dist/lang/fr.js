@@ -9,6 +9,8 @@ videojs.addLanguage('fr', {
   "Remaining Time": "Temps restant",
   "Stream Type": "Type de flux",
   "LIVE": "EN DIRECT",
+  "Seek to live, currently behind live": "Rechercher le direct, actuellement après le direct",
+  "Seek to live, currently playing live": "Rechercher le direct, le direct actuellement en cours de lecture",
   "Loaded": "Chargé",
   "Progress": "Progression",
   "Progress Bar": "Barre de progression",
@@ -80,5 +82,9 @@ videojs.addLanguage('fr', {
   "Done": "Terminé",
   "Caption Settings Dialog": "Boîte de dialogue des paramètres des sous-titres transcrits",
   "Beginning of dialog window. Escape will cancel and close the window.": "Début de la fenêtre de dialogue. La touche d'échappement annulera et fermera la fenêtre.",
-  "End of dialog window.": "Fin de la fenêtre de dialogue."
+  "End of dialog window.": "Fin de la fenêtre de dialogue.",
+  "Exit Picture-in-Picture": "Quitter le mode image dans l'image",
+  "Picture-in-Picture": "Image dans l'image",
+  "{1} is loading.": "{1} en cours de chargement.",
+  "No content": "Aucun contenu"
 });
