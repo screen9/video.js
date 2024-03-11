@@ -13717,7 +13717,8 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
 
     this.update_ = bind(this, this.update);
     this.update = throttle(this.update_, UPDATE_REFRESH_INTERVAL);
-    this.on(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
+    this.on(this.player_, ['durationchange', 'timeupdate'], this.update);
+    this.on(this.player_, ['ended'], this.update_);
 
     if (this.player_.liveTracker) {
       this.on(this.player_.liveTracker, 'liveedgechange', this.update);
@@ -14154,7 +14155,8 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
 
   _proto.dispose = function dispose() {
     this.disableInterval_();
-    this.off(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
+    this.off(this.player_, ['durationchange', 'timeupdate'], this.update);
+    this.off(this.player_, ['ended'], this.update_);
 
     if (this.player_.liveTracker) {
       this.off(this.player_.liveTracker, 'liveedgechange', this.update);
