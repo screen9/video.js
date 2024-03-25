@@ -28316,7 +28316,6 @@ Player.prototype.hasPlugin = function (name) {
  * @file extend.js
  * @module extend
  */
-var hasLogged = false;
 /**
  * Used to subclass an existing class by emulating ES subclassing using the
  * `extends` keyword.
@@ -28343,14 +28342,6 @@ var hasLogged = false;
 var extend = function extend(superClass, subClassMethods) {
   if (subClassMethods === void 0) {
     subClassMethods = {};
-  }
-
-  // Log a warning the first time extend is called to note that it is deprecated
-  // It was previously deprecated in our documentation (guides, specifically),
-  // but was never formally deprecated in code.
-  if (!hasLogged) {
-    log.warn('videojs.extend is deprecated as of Video.js 7.22.0 and will be removed in Video.js 8.0.0');
-    hasLogged = true;
   }
 
   var subClass = function subClass() {
