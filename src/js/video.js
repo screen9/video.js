@@ -159,7 +159,7 @@ function videojs(id, options, ready) {
   if (typeof id === 'string') {
     const nId = normalizeId(id);
 
-    el = isFirstCharDigit(nId) ? Dom.g(nId) : Dom.$(nId);
+    el = isFirstCharDigit(nId) ? Dom.g(nId) : Dom.$('#' + nId);
   }
 
   if (!Dom.isEl(el)) {
