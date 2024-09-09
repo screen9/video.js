@@ -31078,7 +31078,7 @@
 
     if (typeof id === 'string') {
       var nId = normalizeId(id);
-      el = isFirstCharDigit(nId) ? g(nId) : $(nId);
+      el = isFirstCharDigit(nId) ? g(nId) : $('#' + nId);
     }
 
     if (!isEl(el)) {
