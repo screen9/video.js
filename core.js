@@ -1759,6 +1759,24 @@ var $ = createQuerier('querySelector');
  */
 
 var $$ = createQuerier('querySelectorAll');
+/**
+ * Finds a single DOM element matching `selector` within the optional
+ * `context` of another DOM element (defaulting to `document`).
+ *
+ * @param  {string} selector
+ *         A valid id, which will be passed to `getElementById`.
+ *
+ * @param  {Element|String} [context=document]
+ *         A DOM element within which to query. Can also be a selector
+ *         string in which case the first matching element will be used
+ *         as context. If missing (or no element matches selector), falls
+ *         back to `document`.
+ *
+ * @return {Element|null}
+ *         The element that was found or null.
+ */
+
+var g = createQuerier('getElementById');
 
 var Dom = /*#__PURE__*/Object.freeze({
   __proto__: null,
@@ -1789,7 +1807,8 @@ var Dom = /*#__PURE__*/Object.freeze({
   insertContent: insertContent,
   isSingleLeftClick: isSingleLeftClick,
   $: $,
-  $$: $$
+  $$: $$,
+  g: g
 });
 
 /**
@@ -28396,6 +28415,19 @@ var normalizeId = function normalizeId(id) {
   return id.indexOf('#') === 0 ? id.slice(1) : id;
 };
 /**
+ * Whether `id` value starts from a digit.
+ *
+ * @private
+ * @param   {string} id
+ *          A string
+ *
+ */
+
+
+var isFirstCharDigit = function isFirstCharDigit(str) {
+  return !isNaN(str.charAt(0));
+};
+/**
  * The `videojs()` function doubles as the main function for users to create a
  * {@link Player} instance as well as the main library namespace.
  *
@@ -28491,7 +28523,12 @@ function videojs(id, options, ready) {
     return player;
   }
 
-  var el = typeof id === 'string' ? $('#' + normalizeId(id)) : id;
+  var el = id;
+
+  if (typeof id === 'string') {
+    var nId = normalizeId(id);
+    el = isFirstCharDigit(nId) ? g(nId) : $(nId);
+  }
 
   if (!isEl(el)) {
     throw new TypeError('The element or ID supplied is not valid. (videojs)');
@@ -28612,7 +28649,7 @@ videojs.getPlayer = function (id) {
       return player;
     }
 
-    tag = $('#' + nId);
+    tag = isFirstCharDigit(nId) ? g(nId) : $('#' + nId);
   } else {
     tag = id;
   }
