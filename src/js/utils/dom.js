@@ -879,3 +879,20 @@ export const $ = createQuerier('querySelector');
  *
  */
 export const $$ = createQuerier('querySelectorAll');
+/**
+ * Finds a single DOM element matching `selector` within the optional
+ * `context` of another DOM element (defaulting to `document`).
+ *
+ * @param  {string} selector
+ *         A valid id, which will be passed to `getElementById`.
+ *
+ * @param  {Element|String} [context=document]
+ *         A DOM element within which to query. Can also be a selector
+ *         string in which case the first matching element will be used
+ *         as context. If missing (or no element matches selector), falls
+ *         back to `document`.
+ *
+ * @return {Element|null}
+ *         The element that was found or null.
+ */
+export const g = createQuerier('getElementById');

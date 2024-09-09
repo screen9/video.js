@@ -53,6 +53,16 @@ import defineLazyProperty from './utils/define-lazy-property.js';
 const normalizeId = (id) => id.indexOf('#') === 0 ? id.slice(1) : id;
 
 /**
+ * Whether `id` value starts from a digit.
+ *
+ * @private
+ * @param   {string} id
+ *          A string
+ *
+ */
+const isFirstCharDigit = (str) => !isNaN(str.charAt(0));
+
+/**
  * The `videojs()` function doubles as the main function for users to create a
  * {@link Player} instance as well as the main library namespace.
  *
@@ -144,7 +154,13 @@ function videojs(id, options, ready) {
     return player;
   }
 
-  const el = (typeof id === 'string') ? Dom.$('#' + normalizeId(id)) : id;
+  let el = id;
+
+  if (typeof id === 'string') {
+    const nId = normalizeId(id);
+
+    el = isFirstCharDigit(nId) ? Dom.g(nId) : Dom.$(nId);
+  }
 
   if (!Dom.isEl(el)) {
     throw new TypeError('The element or ID supplied is not valid. (videojs)');
@@ -274,7 +290,7 @@ videojs.getPlayer = (id) => {
       return player;
     }
 
-    tag = Dom.$('#' + nId);
+    tag = isFirstCharDigit(nId) ? Dom.g(nId) : Dom.$('#' + nId);
   } else {
     tag = id;
   }
