@@ -26,7 +26,7 @@ class AudioTrackMenuItem extends MenuItem {
     const tracks = player.audioTracks();
 
     // Modify options for parent MenuItem class's init.
-    options.label = track.label || track.language || 'Unknown';
+    options.label = this.sanitizeLabel(track, track.label || track.language || 'Unknown');
     options.selected = track.enabled;
 
     super(player, options);
@@ -109,6 +109,22 @@ class AudioTrackMenuItem extends MenuItem {
    */
   handleTracksChange(event) {
     this.selected(this.track.enabled);
+  }
+
+  /**
+   * Removes the trailing " AD" from the label if the track is of kind "main-desc".
+   *
+   * @param {AudioTrack} track The media track to check.
+   * @param {string} label The label to be processed.
+   *
+   * @return {string} The processed label, with " AD" removed if track.kind is "main-desc"; otherwise,
+   *                   returns the original label.
+   */
+  sanitizeLabel(track, label) {
+    if (track.kind !== 'main-desc' || !this.player_.tech_.featuresNativeAudioTracks) {
+      return label;
+    }
+    return label.replace(/\sAD$/, '');
   }
 }
 
