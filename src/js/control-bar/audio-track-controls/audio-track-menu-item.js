@@ -21,10 +21,10 @@ import * as Dom from '../../utils/dom.js';
    *        The processed label, with " AD" removed if track.kind is "main-desc"; otherwise, returns the original label.
    */
 const sanitizeLabel = (player, track, label) => {
-  if (track.kind !== 'main-desc' || !player.tech_.featuresNativeAudioTracks) {
-    return label;
+  if (track.kind === 'main-desc' && !player.tech_.featuresNativeAudioTracks) {
+    return label.replace(/\sAD$/, '');
   }
-  return label.replace(/\sAD$/, '');
+  return label;
 };
 
 /**

@@ -17918,11 +17918,11 @@ Component.registerComponent('SubsCapsButton', SubsCapsButton);
    */
 
 var sanitizeLabel = function sanitizeLabel(player, track, label) {
-  if (track.kind !== 'main-desc' || !player.tech_.featuresNativeAudioTracks) {
-    return label;
+  if (track.kind === 'main-desc' && !player.tech_.featuresNativeAudioTracks) {
+    return label.replace(/\sAD$/, '');
   }
 
-  return label.replace(/\sAD$/, '');
+  return label;
 };
 /**
  * An {@link AudioTrack} {@link MenuItem}
