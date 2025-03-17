@@ -18530,10 +18530,34 @@
   Component.registerComponent('SubsCapsButton', SubsCapsButton);
 
   /**
+     * Removes the trailing " AD" from the label if the track is of kind "main-desc".
+     *
+     * @param {Player} player
+     *        The `Player` that this class should be attached to.
+     *
+     * @param {AudioTrack} track
+     *        The media track to check.
+     *
+     * @param {string} label
+     *        The label to be processed.
+     *
+     * @return {string}
+     *        The processed label, with " AD" removed if track.kind is "main-desc"; otherwise, returns the original label.
+     */
+
+  var sanitizeLabel = function sanitizeLabel(player, track, label) {
+    if (track.kind !== 'main-desc' || !player.tech_.featuresNativeAudioTracks) {
+      return label;
+    }
+
+    return label.replace(/\sAD$/, '');
+  };
+  /**
    * An {@link AudioTrack} {@link MenuItem}
    *
    * @extends MenuItem
    */
+
 
   var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
     inheritsLoose(AudioTrackMenuItem, _MenuItem);
@@ -18553,7 +18577,7 @@
       var track = options.track;
       var tracks = player.audioTracks(); // Modify options for parent MenuItem class's init.
 
-      options.label = _this.sanitizeLabel(track, track.label || track.language || 'Unknown');
+      options.label = sanitizeLabel(player, track, track.label || track.language || 'Unknown');
       options.selected = track.enabled;
       _this = _MenuItem.call(this, player, options) || this;
       _this.track = track;
@@ -18644,24 +18668,6 @@
 
     _proto.handleTracksChange = function handleTracksChange(event) {
       this.selected(this.track.enabled);
-    }
-    /**
-     * Removes the trailing " AD" from the label if the track is of kind "main-desc".
-     *
-     * @param {AudioTrack} track The media track to check.
-     * @param {string} label The label to be processed.
-     *
-     * @returns {string} The processed label, with " AD" removed if track.kind is "main-desc"; otherwise,
-     *                   returns the original label.
-     */
-    ;
-
-    _proto.sanitizeLabel = function sanitizeLabel(track, label) {
-      if (track.kind !== 'main-desc' || !this.player_.tech_.featuresNativeAudioTracks) {
-        return label;
-      }
-
-      return label.replace(/\sAD$/, '');
     };
 
     return AudioTrackMenuItem;
