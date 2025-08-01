@@ -2276,25 +2276,25 @@ class Player extends Component {
    * @param {string} [method]
    *        the method to call
    *
-   * @param {Object} arg
-   *        the argument to pass
+   * @param {...Object} args
+   *        The arguments to pass to the tech
    *
    * @private
    */
-  techCall_(method, arg) {
+  techCall_(method, ...args) {
     // If it's not ready yet, call method when it is
 
     this.ready(function() {
       if (method in middleware.allowedSetters) {
-        return middleware.set(this.middleware_, this.tech_, method, arg);
+        return middleware.set(this.middleware_, this.tech_, method, args[0]);
 
       } else if (method in middleware.allowedMediators) {
-        return middleware.mediate(this.middleware_, this.tech_, method, arg);
+        return middleware.mediate(this.middleware_, this.tech_, method, args[0]);
       }
 
       try {
         if (this.tech_) {
-          this.tech_[method](arg);
+          this.tech_[method](...args);
         }
       } catch (e) {
         log(e);
@@ -3443,7 +3443,7 @@ class Player extends Component {
 
       this.updateSourceCaches_(middlewareSource);
 
-      const err = this.src_(middlewareSource);
+      const err = this.src_(middlewareSource, sources);
 
       if (err) {
         if (sources.length > 1) {
@@ -3521,7 +3521,7 @@ class Player extends Component {
    *
    * @private
    */
-  src_(source) {
+  src_(source, sources) {
     const sourceTech = this.selectSource([source]);
 
     if (!sourceTech) {
@@ -3547,7 +3547,7 @@ class Player extends Component {
       // We need to check the direct prototype for the case where subclasses
       // of the tech do not support source handlers
       if (this.tech_.constructor.prototype.hasOwnProperty('setSource')) {
-        this.techCall_('setSource', source);
+        this.techCall_('setSource', source, sources);
       } else {
         this.techCall_('src', source.src);
       }

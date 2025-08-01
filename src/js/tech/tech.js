@@ -1381,8 +1381,8 @@ Tech.withSourceHandlers = function(_Tech) {
    * @param {Tech~SourceObject} source
    *        A source object with src and type keys
    */
-  _Tech.prototype.setSource = function(source) {
-    let sh = _Tech.selectSourceHandler(source, this.options_);
+  _Tech.prototype.setSource = function(...sources) {
+    let sh = _Tech.selectSourceHandler(sources[0], this.options_);
 
     if (!sh) {
       // Fall back to a native source hander when unsupported sources are
@@ -1399,10 +1399,10 @@ Tech.withSourceHandlers = function(_Tech) {
     this.off('dispose', this.disposeSourceHandler_);
 
     if (sh !== _Tech.nativeSourceHandler) {
-      this.currentSource_ = source;
+      this.currentSource_ = sources[0];
     }
 
-    this.sourceHandler_ = sh.handleSource(source, this, this.options_);
+    this.sourceHandler_ = sh.handleSource(sources[0], this, this.options_, sources[1]);
     this.one('dispose', this.disposeSourceHandler_);
   };
 
