@@ -9936,8 +9936,8 @@ Tech.withSourceHandlers = function (_Tech) {
    *        A source object with src and type keys
    */
 
-  _Tech.prototype.setSource = function (source) {
-    var sh = _Tech.selectSourceHandler(source, this.options_);
+  _Tech.prototype.setSource = function () {
+    var sh = _Tech.selectSourceHandler(arguments.length <= 0 ? undefined : arguments[0], this.options_);
 
     if (!sh) {
       // Fall back to a native source hander when unsupported sources are
@@ -9954,10 +9954,10 @@ Tech.withSourceHandlers = function (_Tech) {
     this.off('dispose', this.disposeSourceHandler_);
 
     if (sh !== _Tech.nativeSourceHandler) {
-      this.currentSource_ = source;
+      this.currentSource_ = arguments.length <= 0 ? undefined : arguments[0];
     }
 
-    this.sourceHandler_ = sh.handleSource(source, this, this.options_);
+    this.sourceHandler_ = sh.handleSource(arguments.length <= 0 ? undefined : arguments[0], this, this.options_, arguments.length <= 1 ? undefined : arguments[1]);
     this.one('dispose', this.disposeSourceHandler_);
   };
   /**
@@ -24568,25 +24568,31 @@ var Player = /*#__PURE__*/function (_Component) {
    * @param {string} [method]
    *        the method to call
    *
-   * @param {Object} arg
-   *        the argument to pass
+   * @param {...Object} args
+   *        The arguments to pass to the tech
    *
    * @private
    */
   ;
 
-  _proto.techCall_ = function techCall_(method, arg) {
+  _proto.techCall_ = function techCall_(method) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
     // If it's not ready yet, call method when it is
     this.ready(function () {
       if (method in allowedSetters) {
-        return set(this.middleware_, this.tech_, method, arg);
+        return set(this.middleware_, this.tech_, method, args[0]);
       } else if (method in allowedMediators) {
-        return mediate(this.middleware_, this.tech_, method, arg);
+        return mediate(this.middleware_, this.tech_, method, args[0]);
       }
 
       try {
         if (this.tech_) {
-          this.tech_[method](arg);
+          var _this$tech_;
+
+          (_this$tech_ = this.tech_)[method].apply(_this$tech_, args);
         }
       } catch (e) {
         log(e);
@@ -25782,7 +25788,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
       _this15.updateSourceCaches_(middlewareSource);
 
-      var err = _this15.src_(middlewareSource);
+      var err = _this15.src_(middlewareSource, sources);
 
       if (err) {
         if (sources.length > 1) {
@@ -25865,7 +25871,7 @@ var Player = /*#__PURE__*/function (_Component) {
    */
   ;
 
-  _proto.src_ = function src_(source) {
+  _proto.src_ = function src_(source, sources) {
     var _this16 = this;
 
     var sourceTech = this.selectSource([source]);
@@ -25892,7 +25898,7 @@ var Player = /*#__PURE__*/function (_Component) {
       // We need to check the direct prototype for the case where subclasses
       // of the tech do not support source handlers
       if (this.tech_.constructor.prototype.hasOwnProperty('setSource')) {
-        this.techCall_('setSource', source);
+        this.techCall_('setSource', source, sources);
       } else {
         this.techCall_('src', source.src);
       }
