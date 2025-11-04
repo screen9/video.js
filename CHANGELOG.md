@@ -1,3 +1,37 @@
+<a name="7.21.5"></a>
+## [7.21.5](https://github.com/videojs/video.js/compare/v7.21.4...v7.21.5) (2025-11-04)
+
+### Features
+
+* adds aria-label to reset button ([869af2a](https://github.com/videojs/video.js/commit/869af2a))
+* adds mouse tooltip to volume control. ([1d5bdcd](https://github.com/videojs/video.js/commit/1d5bdcd))
+* improves setSource method ([eb29b84](https://github.com/videojs/video.js/commit/eb29b84))
+* menu supports navigation through menu items via tab key ([90a1d9d](https://github.com/videojs/video.js/commit/90a1d9d))
+* text track display overlays a video ([1e0f4ed](https://github.com/videojs/video.js/commit/1e0f4ed))
+
+### Bug Fixes
+
+* ad icon is not visible on audio description track list element on Safari ([443f793](https://github.com/videojs/video.js/commit/443f793))
+* add missing '#' ([aa98f42](https://github.com/videojs/video.js/commit/aa98f42))
+* error message should not be localized from the player class ([2c37e43](https://github.com/videojs/video.js/commit/2c37e43))
+* handles ID starting from the digit. ([afc678f](https://github.com/videojs/video.js/commit/afc678f))
+* sanitizes audio track AD label ([ae7dc35](https://github.com/videojs/video.js/commit/ae7dc35))
+* the seek bar shouldn't throttle the update function on the ended event. ([d3b61de](https://github.com/videojs/video.js/commit/d3b61de))
+
+### Chores
+
+* update dist dir ([e116a57](https://github.com/videojs/video.js/commit/e116a57))
+* update dist dir ([748e2aa](https://github.com/videojs/video.js/commit/748e2aa))
+* update dist dir ([473941f](https://github.com/videojs/video.js/commit/473941f))
+* update dist dir ([75cdf50](https://github.com/videojs/video.js/commit/75cdf50))
+* update dist dir ([240a685](https://github.com/videojs/video.js/commit/240a685))
+* update dist dir ([e2761ca](https://github.com/videojs/video.js/commit/e2761ca))
+* update dist dir ([5d890f8](https://github.com/videojs/video.js/commit/5d890f8))
+* update dist dir ([bab5184](https://github.com/videojs/video.js/commit/bab5184))
+* update dist dir ([478f2ef](https://github.com/videojs/video.js/commit/478f2ef))
+* update dist dir ([1b25edb](https://github.com/videojs/video.js/commit/1b25edb))
+* updates dist dir ([a13380e](https://github.com/videojs/video.js/commit/a13380e))
+
 <a name="7.21.4"></a>
 ## [7.21.4](https://github.com/videojs/video.js/compare/v7.21.3...v7.21.4) (2023-03-15)
 
