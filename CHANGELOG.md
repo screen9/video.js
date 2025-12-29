@@ -1,3 +1,15 @@
+<a name="7.21.6"></a>
+## [7.21.6](https://github.com/videojs/video.js/compare/v7.21.5...v7.21.6) (2025-12-29)
+
+### Features
+
+* hasBeenReset should be copied over from original cue ([3eba17c](https://github.com/videojs/video.js/commit/3eba17c))
+* scale captions on narrow aspect videos to 70% base size ([8e5cb98](https://github.com/videojs/video.js/commit/8e5cb98))
+
+### Chores
+
+* update dist dir ([e8309eb](https://github.com/videojs/video.js/commit/e8309eb))
+
 <a name="7.21.5"></a>
 ## [7.21.5](https://github.com/videojs/video.js/compare/v7.21.4...v7.21.5) (2025-11-04)
 
