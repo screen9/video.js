@@ -352,6 +352,15 @@ class TextTrackDisplay extends Component {
    */
   updateDisplayState(track) {
     const overrides = this.player_.textTrackSettings.getValues();
+    let baseFontScale = 1;
+
+    if (this.player_.videoHeight() > 0) {
+      const videoHeight = this.player_.videoHeight();
+      const videoWidth = this.player_.videoWidth();
+      const aspectRatio = videoWidth / videoHeight;
+
+      baseFontScale = aspectRatio < 1.3 ? 0.7 : baseFontScale;
+    }
     const cues = track.activeCues;
 
     let i = cues.length;
@@ -413,10 +422,13 @@ class TextTrackDisplay extends Component {
           cueDiv.firstChild.style.textShadow = `0 0 4px ${darkGray}, 0 0 4px ${darkGray}, 0 0 4px ${darkGray}, 0 0 4px ${darkGray}`;
         }
       }
-      if (overrides.fontPercent && overrides.fontPercent !== 1) {
+      const userFontScale = overrides.fontPercent && overrides.fontPercent !== 1 ? overrides.fontPercent : 1;
+      const appliedFontScale = baseFontScale * userFontScale;
+
+      if (appliedFontScale !== 1) {
         const fontSize = window.parseFloat(cueDiv.style.fontSize);
 
-        cueDiv.style.fontSize = (fontSize * overrides.fontPercent) + 'px';
+        cueDiv.style.fontSize = (fontSize * appliedFontScale) + 'px';
         cueDiv.style.height = 'auto';
         cueDiv.style.top = 'auto';
       }
