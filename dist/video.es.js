@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.21.4 <http://videojs.com/>
+ * Video.js 7.21.5 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -33,7 +33,7 @@ import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 import _wrapNativeSuper from '@babel/runtime/helpers/wrapNativeSuper';
 
-var version$5 = "7.21.4";
+var version$5 = "7.21.5";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
@@ -8043,8 +8043,9 @@ var TextTrack = /*#__PURE__*/function (_Track) {
         if (!(prop in cue)) {
           cue[prop] = originalCue[prop];
         }
-      } // make sure that `id` is copied over
+      }
 
+      cue.hasBeenReset = originalCue.hasBeenReset || false; // make sure that `id` is copied over
 
       cue.id = originalCue.id;
       cue.originalCue_ = originalCue;
@@ -8077,7 +8078,16 @@ var TextTrack = /*#__PURE__*/function (_Track) {
 
       if (cue === _removeCue || cue.originalCue_ && cue.originalCue_ === _removeCue) {
         this.cues_.splice(i, 1);
-        this.cues.setCues_(this.cues_);
+        this.cues.setCues_(this.cues_); // Keep the active list in sync when removing an active cue
+
+        var activeIndex = this.activeCues_.indexOf(cue);
+
+        if (activeIndex !== -1) {
+          this.activeCues_.splice(activeIndex, 1);
+          this.activeCues.setCues_(this.activeCues_);
+          this.trigger('cuechange');
+        }
+
         break;
       }
     }
@@ -11343,6 +11353,15 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
 
   _proto.updateDisplayState = function updateDisplayState(track) {
     var overrides = this.player_.textTrackSettings.getValues();
+    var baseFontScale = 1;
+
+    if (this.player_.videoHeight() > 0) {
+      var videoHeight = this.player_.videoHeight();
+      var videoWidth = this.player_.videoWidth();
+      var aspectRatio = videoWidth / videoHeight;
+      baseFontScale = aspectRatio < 1.3 ? 0.7 : baseFontScale;
+    }
+
     var cues = track.activeCues;
     var i = cues.length;
 
@@ -11391,9 +11410,12 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
         }
       }
 
-      if (overrides.fontPercent && overrides.fontPercent !== 1) {
+      var userFontScale = overrides.fontPercent && overrides.fontPercent !== 1 ? overrides.fontPercent : 1;
+      var appliedFontScale = baseFontScale * userFontScale;
+
+      if (appliedFontScale !== 1) {
         var fontSize = window$1.parseFloat(cueDiv.style.fontSize);
-        cueDiv.style.fontSize = fontSize * overrides.fontPercent + 'px';
+        cueDiv.style.fontSize = fontSize * appliedFontScale + 'px';
         cueDiv.style.height = 'auto';
         cueDiv.style.top = 'auto';
       }
