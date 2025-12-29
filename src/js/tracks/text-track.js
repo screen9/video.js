@@ -403,7 +403,7 @@ class TextTrack extends Track {
           cue[prop] = originalCue[prop];
         }
       }
-
+      cue.hasBeenReset = originalCue.hasBeenReset || false;
       // make sure that `id` is copied over
       cue.id = originalCue.id;
       cue.originalCue_ = originalCue;
@@ -436,6 +436,14 @@ class TextTrack extends Track {
       if (cue === removeCue || (cue.originalCue_ && cue.originalCue_ === removeCue)) {
         this.cues_.splice(i, 1);
         this.cues.setCues_(this.cues_);
+        // Keep the active list in sync when removing an active cue
+        const activeIndex = this.activeCues_.indexOf(cue);
+
+        if (activeIndex !== -1) {
+          this.activeCues_.splice(activeIndex, 1);
+          this.activeCues.setCues_(this.activeCues_);
+          this.trigger('cuechange');
+        }
         break;
       }
     }
