@@ -9,6 +9,57 @@
   touch-action: none;
 }
 
+// Native <input type="range"> overlaid on the seek bar to provide accessible
+// adjust action for TalkBack on Android. Visually transparent (Chrome on Android
+// excludes opacity:0 from a11y tree, so we use transparent track/thumb instead).
+// pointer-events: none so mouse/touch scrubbing still goes to the SeekBar div.
+.video-js .vjs-progress-control .vjs-seek-bar-input {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+  z-index: 2;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    border: 0;
+  }
+
+  &::-moz-range-thumb {
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    border: 0;
+  }
+
+  &::-webkit-slider-runnable-track {
+    background: transparent;
+    border: 0;
+  }
+
+  &::-moz-range-track {
+    background: transparent;
+    border: 0;
+  }
+}
+
 .video-js .vjs-progress-control.disabled {
   cursor: default;
 }

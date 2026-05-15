@@ -41,6 +41,10 @@ class SeekBar extends Slider {
   constructor(player, options) {
     super(player, options);
     this.setEventHandlers_();
+
+    if (IS_ANDROID) {
+      this.setupA11yInput_();
+    }
   }
 
   /**
@@ -127,6 +131,79 @@ class SeekBar extends Slider {
   }
 
   /**
+   * Use a native range input as the Android accessibility control. TalkBack
+   * handles native range adjustment more reliably than a div with role=slider.
+   *
+   * @private
+   */
+  setupA11yInput_() {
+    this.el_.removeAttribute('role');
+    this.el_.removeAttribute('aria-valuenow');
+    this.el_.removeAttribute('aria-valuemin');
+    this.el_.removeAttribute('aria-valuemax');
+    this.el_.removeAttribute('aria-valuetext');
+    this.el_.removeAttribute('aria-orientation');
+    this.el_.removeAttribute('aria-label');
+    this.el_.removeAttribute('tabindex');
+
+    this.children().forEach((child) => {
+      if (child.el_) {
+        child.el_.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    this.a11yInputEl_ = Dom.createEl('input', {
+      className: 'vjs-seek-bar-input'
+    }, {
+      'type': 'range',
+      'min': '0',
+      'max': '100',
+      'step': '1',
+      'value': '0',
+      'aria-label': this.localize('Progress Bar')
+    });
+
+    this.el_.appendChild(this.a11yInputEl_);
+
+    this.on(this.a11yInputEl_, ['focus', 'click', 'dblclick'], (event) => {
+      if (event.type !== 'focus') {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      this.syncA11yInput_();
+    });
+
+    this.on(this.a11yInputEl_, 'input', () => {
+      const newPercent = Number(this.a11yInputEl_.value);
+      const currentPercent = this.getProgress() * 100;
+      const currentTime = this.getCurrentTime_();
+      let newTime;
+
+      if (!isNaN(newPercent)) {
+        if (newPercent === 0 && currentPercent > 1) {
+          this.syncA11yInput_();
+          return;
+        }
+
+        newTime = this.getTimeForDistance_(newPercent / 100);
+
+        if (newTime === null) {
+          return;
+        }
+
+        if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
+          newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
+        }
+
+        this.userSeek_(newTime);
+      }
+    });
+
+    this.syncA11yInput_();
+  }
+
+  /**
    * This function updates the play progress bar and accessibility
    * attributes to whatever is passed in.
    *
@@ -158,21 +235,28 @@ class SeekBar extends Slider {
 
       if (this.percent_ !== percent) {
         // machine readable value of progress bar (percentage complete)
-        this.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+        if (!this.a11yInputEl_) {
+          this.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+        } else {
+          this.a11yInputEl_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+        }
         this.percent_ = percent;
       }
 
       if (this.currentTime_ !== currentTime || this.duration_ !== duration) {
         // human readable value of progress bar (time complete)
-        this.el_.setAttribute(
-          'aria-valuetext',
-          this.localize(
-            'progress bar timing: currentTime={1} duration={2}',
-            [formatTime(currentTime, duration),
-              formatTime(duration, duration)],
-            '{1} of {2}'
-          )
+        const ariaValueText = this.localize(
+          'progress bar timing: currentTime={1} duration={2}',
+          [formatTime(currentTime, duration),
+            formatTime(duration, duration)],
+          '{1} of {2}'
         );
+
+        if (this.a11yInputEl_) {
+          this.syncA11yInput_(percent, ariaValueText);
+        } else {
+          this.el_.setAttribute('aria-valuetext', ariaValueText);
+        }
 
         this.currentTime_ = currentTime;
         this.duration_ = duration;
@@ -185,6 +269,46 @@ class SeekBar extends Slider {
     });
 
     return percent;
+  }
+
+  /**
+   * Sync the native Android accessibility range with the player state.
+   *
+   * @param {number} [percent]
+   *        The current progress percentage from 0 to 1.
+   * @param {string} [ariaValueText]
+   *        The formatted time text announced by screen readers.
+   *
+   * @private
+   */
+  syncA11yInput_(percent, ariaValueText) {
+    if (!this.a11yInputEl_) {
+      return;
+    }
+
+    const liveTracker = this.player_.liveTracker;
+    const currentTime = this.player_.ended() ?
+      this.player_.duration() : this.getCurrentTime_();
+    let duration = this.player_.duration();
+
+    percent = percent === undefined ? this.getProgress() : percent;
+
+    if (liveTracker && liveTracker.isLive()) {
+      duration = liveTracker.liveCurrentTime();
+    }
+
+    ariaValueText = ariaValueText || this.localize(
+      'progress bar timing: currentTime={1} duration={2}',
+      [formatTime(currentTime, duration),
+        formatTime(duration, duration)],
+      '{1} of {2}'
+    );
+
+    const value = (percent * 100).toFixed(2);
+
+    this.a11yInputEl_.setAttribute('aria-valuenow', value);
+    this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
+    this.a11yInputEl_.value = value;
   }
 
   /**
@@ -243,6 +367,63 @@ class SeekBar extends Slider {
   }
 
   /**
+   * Get the time represented by a seek bar distance from 0 to 1.
+   *
+   * @param {number} distance
+   *        Current position of the seek bar.
+   *
+   * @return {number|null}
+   *         Time represented by the distance, or null if the live edge was used.
+   *
+   * @private
+   */
+  getTimeForDistance_(distance) {
+    let newTime;
+    const liveTracker = this.player_.liveTracker;
+
+    if (!liveTracker || !liveTracker.isLive()) {
+      newTime = distance * this.player_.duration();
+
+      // Don't let video end while scrubbing.
+      if (newTime === this.player_.duration()) {
+        newTime = newTime - 0.1;
+      }
+
+      return newTime;
+    }
+
+    if (distance >= 0.99) {
+      liveTracker.seekToLiveEdge();
+      return null;
+    }
+
+    const seekableStart = liveTracker.seekableStart();
+    const seekableEnd = liveTracker.liveCurrentTime();
+
+    newTime = seekableStart + (distance * liveTracker.liveWindow());
+
+    // Don't let video end while scrubbing.
+    if (newTime >= seekableEnd) {
+      newTime = seekableEnd;
+    }
+
+    // Compensate for precision differences so that currentTime is not less
+    // than seekable start
+    if (newTime <= seekableStart) {
+      newTime = seekableStart + 0.1;
+    }
+
+    // On android seekableEnd can be Infinity sometimes,
+    // this will cause newTime to be Infinity, which is
+    // not a valid currentTime.
+    if (newTime === Infinity) {
+      return null;
+    }
+
+    return newTime;
+  }
+
+  /**
    * Handle mouse down on seek bar
    *
    * @param {EventTarget~Event} event
@@ -282,45 +463,11 @@ class SeekBar extends Slider {
       this.player_.scrubbing(true);
     }
 
-    let newTime;
     const distance = this.calculateDistance(event);
-    const liveTracker = this.player_.liveTracker;
+    const newTime = this.getTimeForDistance_(distance);
 
-    if (!liveTracker || !liveTracker.isLive()) {
-      newTime = distance * this.player_.duration();
-
-      // Don't let video end while scrubbing.
-      if (newTime === this.player_.duration()) {
-        newTime = newTime - 0.1;
-      }
-    } else {
-
-      if (distance >= 0.99) {
-        liveTracker.seekToLiveEdge();
-        return;
-      }
-      const seekableStart = liveTracker.seekableStart();
-      const seekableEnd = liveTracker.liveCurrentTime();
-
-      newTime = seekableStart + (distance * liveTracker.liveWindow());
-
-      // Don't let video end while scrubbing.
-      if (newTime >= seekableEnd) {
-        newTime = seekableEnd;
-      }
-
-      // Compensate for precision differences so that currentTime is not less
-      // than seekable start
-      if (newTime <= seekableStart) {
-        newTime = seekableStart + 0.1;
-      }
-
-      // On android seekableEnd can be Infinity sometimes,
-      // this will cause newTime to be Infinity, which is
-      // not a valid currentTime.
-      if (newTime === Infinity) {
-        return;
-      }
+    if (newTime === null) {
+      return;
     }
 
     // Set new time (tell player to seek to new time)
@@ -329,6 +476,12 @@ class SeekBar extends Slider {
 
   enable() {
     super.enable();
+
+    if (this.a11yInputEl_) {
+      this.el_.removeAttribute('tabindex');
+      this.a11yInputEl_.disabled = false;
+    }
+
     const mouseTimeDisplay = this.getChild('mouseTimeDisplay');
 
     if (!mouseTimeDisplay) {
@@ -340,6 +493,11 @@ class SeekBar extends Slider {
 
   disable() {
     super.disable();
+
+    if (this.a11yInputEl_) {
+      this.a11yInputEl_.disabled = true;
+    }
+
     const mouseTimeDisplay = this.getChild('mouseTimeDisplay');
 
     if (!mouseTimeDisplay) {
