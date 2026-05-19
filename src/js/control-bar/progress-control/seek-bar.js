@@ -131,76 +131,53 @@ class SeekBar extends Slider {
   }
 
   /**
-   * Use a native range input as the Android accessibility control. TalkBack
-   * handles native range adjustment more reliably than a div with role=slider.
+   * Map percent from the a11y input (TalkBack adjust gesture) onto seek
+   * time. Long videos would jump by more than STEP_SECONDS per 1% step, so
+   * clamp the seek delta to STEP_SECONDS for consistent UX.
    *
-   * @private
+   * @param {number} newPct       New slider position, 0..1.
+   * @param {number} currentPct   Previous slider position, 0..1.
+   *
+   * @protected
    */
-  setupA11yInput_() {
-    this.el_.removeAttribute('role');
-    this.el_.removeAttribute('aria-valuenow');
-    this.el_.removeAttribute('aria-valuemin');
-    this.el_.removeAttribute('aria-valuemax');
-    this.el_.removeAttribute('aria-valuetext');
-    this.el_.removeAttribute('aria-orientation');
-    this.el_.removeAttribute('aria-label');
-    this.el_.removeAttribute('tabindex');
+  applyA11yInputValue_(newPct, currentPct) {
+    const currentTime = this.getCurrentTime_();
+    let newTime = this.getTimeForDistance_(newPct);
 
-    this.children().forEach((child) => {
-      if (child.el_) {
-        child.el_.setAttribute('aria-hidden', 'true');
-      }
-    });
+    if (newTime === null) {
+      return;
+    }
 
-    this.a11yInputEl_ = Dom.createEl('input', {
-      className: 'vjs-seek-bar-input'
-    }, {
-      'type': 'range',
-      'min': '0',
-      'max': '100',
-      'step': '1',
-      'value': '0',
-      'aria-label': this.localize('Progress Bar')
-    });
+    if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
+      newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
+    }
 
-    this.el_.appendChild(this.a11yInputEl_);
+    this.userSeek_(newTime);
+  }
 
-    this.on(this.a11yInputEl_, ['focus', 'click', 'dblclick'], (event) => {
-      if (event.type !== 'focus') {
-        event.preventDefault();
-        event.stopPropagation();
-      }
+  /**
+   * Human-readable text announced by screen readers for the current
+   * playback position.
+   *
+   * @return {string} Localized "{currentTime} of {duration}" string.
+   * @protected
+   */
+  formatA11yValueText_() {
+    const liveTracker = this.player_.liveTracker;
+    const currentTime = this.player_.ended() ?
+      this.player_.duration() : this.getCurrentTime_();
+    let duration = this.player_.duration();
 
-      this.syncA11yInput_();
-    });
+    if (liveTracker && liveTracker.isLive()) {
+      duration = liveTracker.liveCurrentTime();
+    }
 
-    this.on(this.a11yInputEl_, 'input', () => {
-      const newPercent = Number(this.a11yInputEl_.value);
-      const currentPercent = this.getProgress() * 100;
-      const currentTime = this.getCurrentTime_();
-      let newTime;
-
-      if (!isNaN(newPercent)) {
-        if (newPercent === 0 && currentPercent > 1) {
-          this.syncA11yInput_();
-          return;
-        }
-
-        newTime = this.getTimeForDistance_(newPercent / 100);
-
-        if (newTime === null) {
-          return;
-        }
-
-        if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
-          newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
-        }
-
-        this.userSeek_(newTime);
-      }
-    });
-
-    this.syncA11yInput_();
+    return this.localize(
+      'progress bar timing: currentTime={1} duration={2}',
+      [formatTime(currentTime, duration),
+        formatTime(duration, duration)],
+      '{1} of {2}'
+    );
   }
 
   /**
@@ -237,8 +214,6 @@ class SeekBar extends Slider {
         // machine readable value of progress bar (percentage complete)
         if (!this.a11yInputEl_) {
           this.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
-        } else {
-          this.a11yInputEl_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
         }
         this.percent_ = percent;
       }
@@ -269,46 +244,6 @@ class SeekBar extends Slider {
     });
 
     return percent;
-  }
-
-  /**
-   * Sync the native Android accessibility range with the player state.
-   *
-   * @param {number} [percent]
-   *        The current progress percentage from 0 to 1.
-   * @param {string} [ariaValueText]
-   *        The formatted time text announced by screen readers.
-   *
-   * @private
-   */
-  syncA11yInput_(percent, ariaValueText) {
-    if (!this.a11yInputEl_) {
-      return;
-    }
-
-    const liveTracker = this.player_.liveTracker;
-    const currentTime = this.player_.ended() ?
-      this.player_.duration() : this.getCurrentTime_();
-    let duration = this.player_.duration();
-
-    percent = percent === undefined ? this.getProgress() : percent;
-
-    if (liveTracker && liveTracker.isLive()) {
-      duration = liveTracker.liveCurrentTime();
-    }
-
-    ariaValueText = ariaValueText || this.localize(
-      'progress bar timing: currentTime={1} duration={2}',
-      [formatTime(currentTime, duration),
-        formatTime(duration, duration)],
-      '{1} of {2}'
-    );
-
-    const value = (percent * 100).toFixed(2);
-
-    this.a11yInputEl_.setAttribute('aria-valuenow', value);
-    this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
-    this.a11yInputEl_.value = value;
   }
 
   /**
@@ -477,11 +412,6 @@ class SeekBar extends Slider {
   enable() {
     super.enable();
 
-    if (this.a11yInputEl_) {
-      this.el_.removeAttribute('tabindex');
-      this.a11yInputEl_.disabled = false;
-    }
-
     const mouseTimeDisplay = this.getChild('mouseTimeDisplay');
 
     if (!mouseTimeDisplay) {
@@ -493,10 +423,6 @@ class SeekBar extends Slider {
 
   disable() {
     super.disable();
-
-    if (this.a11yInputEl_) {
-      this.a11yInputEl_.disabled = true;
-    }
 
     const mouseTimeDisplay = this.getChild('mouseTimeDisplay');
 

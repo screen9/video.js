@@ -78,6 +78,13 @@ class Slider extends Component {
     this.setAttribute('tabindex', 0);
 
     this.enabled_ = true;
+
+    if (this.a11yInputEl_) {
+      // The wrapper must stay out of the tab order; focus belongs on the
+      // native <input> overlay.
+      this.removeAttribute('tabindex');
+      this.a11yInputEl_.disabled = false;
+    }
   }
 
   /**
@@ -106,6 +113,146 @@ class Slider extends Component {
       this.off(this.player_, this.playerEvent, this.update);
     }
     this.enabled_ = false;
+
+    if (this.a11yInputEl_) {
+      this.a11yInputEl_.disabled = true;
+    }
+  }
+
+  /**
+   * Insert a hidden native `<input type="range">` overlay that acts as the
+   * accessibility widget for the slider. Used to work around Chrome on
+   * Android not reliably emitting adjust actions on ARIA-only sliders
+   * (`<div role="slider">`). Subclasses opt-in by calling this method,
+   * typically gated by `IS_ANDROID`. Subclasses must override
+   * {@link Slider#applyA11yInputValue_} (and optionally
+   * {@link Slider#formatA11yValueText_}) to translate the input's 0–100
+   * percent value into a player-side value.
+   *
+   * Strips role, aria-value*, aria-orientation, aria-label and tabindex from
+   * the wrapper so TalkBack focuses the input instead, and marks existing
+   * child components `aria-hidden` so they don't pollute the slider's a11y
+   * tree.
+   *
+   * @protected
+   */
+  setupA11yInput_() {
+    // Preserve the existing accessible name set on the wrapper before stripping.
+    const ariaLabel = this.el_.getAttribute('aria-label') || this.localize('Slider');
+
+    this.el_.removeAttribute('role');
+    this.el_.removeAttribute('aria-valuenow');
+    this.el_.removeAttribute('aria-valuemin');
+    this.el_.removeAttribute('aria-valuemax');
+    this.el_.removeAttribute('aria-valuetext');
+    this.el_.removeAttribute('aria-orientation');
+    this.el_.removeAttribute('aria-label');
+    this.el_.removeAttribute('tabindex');
+
+    this.children().forEach((child) => {
+      if (child.el_) {
+        child.el_.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    this.a11yInputEl_ = Dom.createEl('input', {
+      className: 'vjs-slider-a11y-input'
+    }, {
+      'type': 'range',
+      'min': '0',
+      'max': '100',
+      'step': '1',
+      'value': '0',
+      'aria-label': ariaLabel
+    });
+
+    this.el_.appendChild(this.a11yInputEl_);
+
+    this.on(this.a11yInputEl_, ['focus', 'click', 'dblclick'], (event) => {
+      if (event.type !== 'focus') {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      this.syncA11yInput_();
+    });
+
+    this.on(this.a11yInputEl_, 'input', () => {
+      const newPercent = Number(this.a11yInputEl_.value);
+      const currentPercent = this.getProgress() * 100;
+
+      if (isNaN(newPercent)) {
+        return;
+      }
+
+      // TalkBack double-tap occasionally snaps the input to 0 even though
+      // the user wasn't trying to seek to start. Detect this and rewind.
+      if (newPercent === 0 && currentPercent > 1) {
+        this.syncA11yInput_();
+        return;
+      }
+
+      this.applyA11yInputValue_(newPercent / 100, currentPercent / 100);
+    });
+
+    this.syncA11yInput_();
+  }
+
+  /**
+   * Sync the a11y input's value and announced text with current player state.
+   * Safe to call even when {@link Slider#setupA11yInput_} was never invoked.
+   *
+   * @param {number} [percent]
+   *        Current progress 0..1. Defaults to {@link Slider#getProgress}.
+   * @param {string} [ariaValueText]
+   *        Localized text for screen readers. Defaults to subclass-provided
+   *        {@link Slider#formatA11yValueText_}.
+   *
+   * @protected
+   */
+  syncA11yInput_(percent, ariaValueText) {
+    if (!this.a11yInputEl_) {
+      return;
+    }
+
+    if (percent === undefined) {
+      percent = this.getProgress();
+    }
+    if (ariaValueText === undefined) {
+      ariaValueText = this.formatA11yValueText_(percent);
+    }
+
+    const value = (percent * 100).toFixed(2);
+
+    this.a11yInputEl_.setAttribute('aria-valuenow', value);
+    this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
+    this.a11yInputEl_.value = value;
+  }
+
+  /**
+   * Apply a value coming from the a11y input (mainly screen reader adjust
+   * gestures). Subclasses override this to map the 0..1 slider percent to
+   * their player-side value (seek time, volume, etc).
+   *
+   * @param {number} newPct       New slider position, 0..1.
+   * @param {number} currentPct   Previous slider position, 0..1.
+   *
+   * @protected
+   */
+  applyA11yInputValue_(newPct, currentPct) {}
+
+  /**
+   * Return the localized text announced by screen readers for the current
+   * slider value. Subclasses typically override to read out time, volume,
+   * etc. Base implementation returns the percent.
+   *
+   * @param {number} percent  Current slider position, 0..1.
+   * @return {string} Text suitable for `aria-valuetext`.
+   *
+   * @protected
+   */
+  formatA11yValueText_(percent) {
+    return Math.round(percent * 100) + '%';
   }
 
   /**

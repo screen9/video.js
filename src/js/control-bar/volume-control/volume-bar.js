@@ -32,6 +32,10 @@ class VolumeBar extends Slider {
     this.on('slideractive', (e) => this.updateLastVolume_(e));
     this.on(player, 'volumechange', (e) => this.updateARIAAttributes(e));
     player.ready(() => this.updateARIAAttributes());
+
+    if (IS_ANDROID) {
+      this.setupA11yInput_();
+    }
   }
 
   /**
@@ -148,8 +152,37 @@ class VolumeBar extends Slider {
   updateARIAAttributes(event) {
     const ariaValue = this.player_.muted() ? 0 : this.volumeAsPercentage_();
 
-    this.el_.setAttribute('aria-valuenow', ariaValue);
-    this.el_.setAttribute('aria-valuetext', ariaValue + '%');
+    if (this.a11yInputEl_) {
+      this.syncA11yInput_(ariaValue / 100, ariaValue + '%');
+    } else {
+      this.el_.setAttribute('aria-valuenow', ariaValue);
+      this.el_.setAttribute('aria-valuetext', ariaValue + '%');
+    }
+  }
+
+  /**
+   * Apply a volume change coming from the a11y input (TalkBack adjust).
+   *
+   * @param {number} newPct  New slider position, 0..1 (= new volume).
+   *
+   * @return {void}
+   * @protected
+   */
+  applyA11yInputValue_(newPct) {
+    this.checkMuted();
+    this.player_.volume(newPct);
+  }
+
+  /**
+   * Human-readable text announced by screen readers for the current volume.
+   *
+   * @return {string} Localized "X%" string.
+   * @protected
+   */
+  formatA11yValueText_() {
+    const ariaValue = this.player_.muted() ? 0 : this.volumeAsPercentage_();
+
+    return ariaValue + '%';
   }
 
   /**
