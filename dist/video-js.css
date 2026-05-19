@@ -1011,6 +1011,49 @@ body.vjs-full-window {
   box-shadow: 0 0 1em #fff;
 }
 
+.video-js .vjs-slider .vjs-slider-a11y-input {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  pointer-events: none;
+  z-index: 2;
+}
+.video-js .vjs-slider .vjs-slider-a11y-input:focus {
+  outline: none;
+}
+.video-js .vjs-slider .vjs-slider-a11y-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  border: 0;
+}
+.video-js .vjs-slider .vjs-slider-a11y-input::-moz-range-thumb {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  border: 0;
+}
+.video-js .vjs-slider .vjs-slider-a11y-input::-webkit-slider-runnable-track {
+  background: transparent;
+  border: 0;
+}
+.video-js .vjs-slider .vjs-slider-a11y-input::-moz-range-track {
+  background: transparent;
+  border: 0;
+}
+
 .video-js .vjs-mute-control {
   cursor: pointer;
   flex: none;

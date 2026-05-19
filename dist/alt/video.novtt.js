@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.21.5 <http://videojs.com/>
+ * Video.js 7.21.7 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -16,7 +16,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.videojs = factory());
 }(this, (function () { 'use strict';
 
-  var version$5 = "7.21.5";
+  var version$5 = "7.21.7";
 
   /**
    * An Object that contains lifecycle hooks as keys which point to an array
@@ -13555,6 +13555,13 @@
       this.removeClass('disabled');
       this.setAttribute('tabindex', 0);
       this.enabled_ = true;
+
+      if (this.a11yInputEl_) {
+        // The wrapper must stay out of the tab order; focus belongs on the
+        // native <input> overlay.
+        this.removeAttribute('tabindex');
+        this.a11yInputEl_.disabled = false;
+      }
     }
     /**
      * Disable controls for this slider if they are enabled
@@ -13584,6 +13591,146 @@
       }
 
       this.enabled_ = false;
+
+      if (this.a11yInputEl_) {
+        this.a11yInputEl_.disabled = true;
+      }
+    }
+    /**
+     * Insert a hidden native `<input type="range">` overlay that acts as the
+     * accessibility widget for the slider. Used to work around Chrome on
+     * Android not reliably emitting adjust actions on ARIA-only sliders
+     * (`<div role="slider">`). Subclasses opt-in by calling this method,
+     * typically gated by `IS_ANDROID`. Subclasses must override
+     * {@link Slider#applyA11yInputValue_} (and optionally
+     * {@link Slider#formatA11yValueText_}) to translate the input's 0–100
+     * percent value into a player-side value.
+     *
+     * Strips role, aria-value*, aria-orientation, aria-label and tabindex from
+     * the wrapper so TalkBack focuses the input instead, and marks existing
+     * child components `aria-hidden` so they don't pollute the slider's a11y
+     * tree.
+     *
+     * @protected
+     */
+    ;
+
+    _proto.setupA11yInput_ = function setupA11yInput_() {
+      var _this2 = this;
+
+      // Preserve the existing accessible name set on the wrapper before stripping.
+      var ariaLabel = this.el_.getAttribute('aria-label') || this.localize('Slider');
+      this.el_.removeAttribute('role');
+      this.el_.removeAttribute('aria-valuenow');
+      this.el_.removeAttribute('aria-valuemin');
+      this.el_.removeAttribute('aria-valuemax');
+      this.el_.removeAttribute('aria-valuetext');
+      this.el_.removeAttribute('aria-orientation');
+      this.el_.removeAttribute('aria-label');
+      this.el_.removeAttribute('tabindex');
+      this.children().forEach(function (child) {
+        if (child.el_) {
+          child.el_.setAttribute('aria-hidden', 'true');
+        }
+      });
+      this.a11yInputEl_ = createEl('input', {
+        className: 'vjs-slider-a11y-input'
+      }, {
+        'type': 'range',
+        'min': '0',
+        'max': '100',
+        'step': '1',
+        'value': '0',
+        'aria-label': ariaLabel
+      });
+      this.el_.appendChild(this.a11yInputEl_);
+      this.on(this.a11yInputEl_, ['focus', 'click', 'dblclick'], function (event) {
+        if (event.type !== 'focus') {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        _this2.syncA11yInput_();
+      });
+      this.on(this.a11yInputEl_, 'input', function () {
+        var newPercent = Number(_this2.a11yInputEl_.value);
+        var currentPercent = _this2.getProgress() * 100;
+
+        if (isNaN(newPercent)) {
+          return;
+        } // TalkBack double-tap occasionally snaps the input to 0 even though
+        // the user wasn't trying to seek to start. Detect this and rewind.
+
+
+        if (newPercent === 0 && currentPercent > 1) {
+          _this2.syncA11yInput_();
+
+          return;
+        }
+
+        _this2.applyA11yInputValue_(newPercent / 100, currentPercent / 100);
+      });
+      this.syncA11yInput_();
+    }
+    /**
+     * Sync the a11y input's value and announced text with current player state.
+     * Safe to call even when {@link Slider#setupA11yInput_} was never invoked.
+     *
+     * @param {number} [percent]
+     *        Current progress 0..1. Defaults to {@link Slider#getProgress}.
+     * @param {string} [ariaValueText]
+     *        Localized text for screen readers. Defaults to subclass-provided
+     *        {@link Slider#formatA11yValueText_}.
+     *
+     * @protected
+     */
+    ;
+
+    _proto.syncA11yInput_ = function syncA11yInput_(percent, ariaValueText) {
+      if (!this.a11yInputEl_) {
+        return;
+      }
+
+      if (percent === undefined) {
+        percent = this.getProgress();
+      }
+
+      if (ariaValueText === undefined) {
+        ariaValueText = this.formatA11yValueText_(percent);
+      }
+
+      var value = (percent * 100).toFixed(2);
+      this.a11yInputEl_.setAttribute('aria-valuenow', value);
+      this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
+      this.a11yInputEl_.value = value;
+    }
+    /**
+     * Apply a value coming from the a11y input (mainly screen reader adjust
+     * gestures). Subclasses override this to map the 0..1 slider percent to
+     * their player-side value (seek time, volume, etc).
+     *
+     * @param {number} newPct       New slider position, 0..1.
+     * @param {number} currentPct   Previous slider position, 0..1.
+     *
+     * @protected
+     */
+    ;
+
+    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct, currentPct) {}
+    /**
+     * Return the localized text announced by screen readers for the current
+     * slider value. Subclasses typically override to read out time, volume,
+     * etc. Base implementation returns the percent.
+     *
+     * @param {number} percent  Current slider position, 0..1.
+     * @return {string} Text suitable for `aria-valuetext`.
+     *
+     * @protected
+     */
+    ;
+
+    _proto.formatA11yValueText_ = function formatA11yValueText_(percent) {
+      return Math.round(percent * 100) + '%';
     }
     /**
      * Create the `Slider`s DOM element.
@@ -13725,7 +13872,7 @@
     ;
 
     _proto.update = function update() {
-      var _this2 = this;
+      var _this3 = this;
 
       // In VolumeBar init we have a setTimeout for update that pops and update
       // to the end of the execution stack. The player is destroyed before then
@@ -13746,9 +13893,9 @@
       this.progress_ = progress;
       this.requestNamedAnimationFrame('Slider#update', function () {
         // Set the new bar width or height
-        var sizeKey = _this2.vertical() ? 'height' : 'width'; // Convert to a percentage for css value
+        var sizeKey = _this3.vertical() ? 'height' : 'width'; // Convert to a percentage for css value
 
-        _this2.bar.el().style[sizeKey] = (progress * 100).toFixed(2) + '%';
+        _this3.bar.el().style[sizeKey] = (progress * 100).toFixed(2) + '%';
       });
       return progress;
     }
@@ -14359,6 +14506,10 @@
 
       _this.setEventHandlers_();
 
+      if (IS_ANDROID) {
+        _this.setupA11yInput_();
+      }
+
       return _this;
     }
     /**
@@ -14454,6 +14605,52 @@
       });
     }
     /**
+     * Map percent from the a11y input (TalkBack adjust gesture) onto seek
+     * time. Long videos would jump by more than STEP_SECONDS per 1% step, so
+     * clamp the seek delta to STEP_SECONDS for consistent UX.
+     *
+     * @param {number} newPct       New slider position, 0..1.
+     * @param {number} currentPct   Previous slider position, 0..1.
+     *
+     * @protected
+     */
+    ;
+
+    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct, currentPct) {
+      var currentTime = this.getCurrentTime_();
+      var newTime = this.getTimeForDistance_(newPct);
+
+      if (newTime === null) {
+        return;
+      }
+
+      if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
+        newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
+      }
+
+      this.userSeek_(newTime);
+    }
+    /**
+     * Human-readable text announced by screen readers for the current
+     * playback position.
+     *
+     * @return {string} Localized "{currentTime} of {duration}" string.
+     * @protected
+     */
+    ;
+
+    _proto.formatA11yValueText_ = function formatA11yValueText_() {
+      var liveTracker = this.player_.liveTracker;
+      var currentTime = this.player_.ended() ? this.player_.duration() : this.getCurrentTime_();
+      var duration = this.player_.duration();
+
+      if (liveTracker && liveTracker.isLive()) {
+        duration = liveTracker.liveCurrentTime();
+      }
+
+      return this.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}');
+    }
+    /**
      * This function updates the play progress bar and accessibility
      * attributes to whatever is passed in.
      *
@@ -14489,14 +14686,22 @@
 
         if (_this3.percent_ !== percent) {
           // machine readable value of progress bar (percentage complete)
-          _this3.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+          if (!_this3.a11yInputEl_) {
+            _this3.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+          }
 
           _this3.percent_ = percent;
         }
 
         if (_this3.currentTime_ !== currentTime || _this3.duration_ !== duration) {
           // human readable value of progress bar (time complete)
-          _this3.el_.setAttribute('aria-valuetext', _this3.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}'));
+          var ariaValueText = _this3.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}');
+
+          if (_this3.a11yInputEl_) {
+            _this3.syncA11yInput_(percent, ariaValueText);
+          } else {
+            _this3.el_.setAttribute('aria-valuetext', ariaValueText);
+          }
 
           _this3.currentTime_ = currentTime;
           _this3.duration_ = duration;
@@ -14565,6 +14770,61 @@
       return percent;
     }
     /**
+     * Get the time represented by a seek bar distance from 0 to 1.
+     *
+     * @param {number} distance
+     *        Current position of the seek bar.
+     *
+     * @return {number|null}
+     *         Time represented by the distance, or null if the live edge was used.
+     *
+     * @private
+     */
+    ;
+
+    _proto.getTimeForDistance_ = function getTimeForDistance_(distance) {
+      var newTime;
+      var liveTracker = this.player_.liveTracker;
+
+      if (!liveTracker || !liveTracker.isLive()) {
+        newTime = distance * this.player_.duration(); // Don't let video end while scrubbing.
+
+        if (newTime === this.player_.duration()) {
+          newTime = newTime - 0.1;
+        }
+
+        return newTime;
+      }
+
+      if (distance >= 0.99) {
+        liveTracker.seekToLiveEdge();
+        return null;
+      }
+
+      var seekableStart = liveTracker.seekableStart();
+      var seekableEnd = liveTracker.liveCurrentTime();
+      newTime = seekableStart + distance * liveTracker.liveWindow(); // Don't let video end while scrubbing.
+
+      if (newTime >= seekableEnd) {
+        newTime = seekableEnd;
+      } // Compensate for precision differences so that currentTime is not less
+      // than seekable start
+
+
+      if (newTime <= seekableStart) {
+        newTime = seekableStart + 0.1;
+      } // On android seekableEnd can be Infinity sometimes,
+      // this will cause newTime to be Infinity, which is
+      // not a valid currentTime.
+
+
+      if (newTime === Infinity) {
+        return null;
+      }
+
+      return newTime;
+    }
+    /**
      * Handle mouse down on seek bar
      *
      * @param {EventTarget~Event} event
@@ -14610,42 +14870,11 @@
         this.player_.scrubbing(true);
       }
 
-      var newTime;
       var distance = this.calculateDistance(event);
-      var liveTracker = this.player_.liveTracker;
+      var newTime = this.getTimeForDistance_(distance);
 
-      if (!liveTracker || !liveTracker.isLive()) {
-        newTime = distance * this.player_.duration(); // Don't let video end while scrubbing.
-
-        if (newTime === this.player_.duration()) {
-          newTime = newTime - 0.1;
-        }
-      } else {
-        if (distance >= 0.99) {
-          liveTracker.seekToLiveEdge();
-          return;
-        }
-
-        var seekableStart = liveTracker.seekableStart();
-        var seekableEnd = liveTracker.liveCurrentTime();
-        newTime = seekableStart + distance * liveTracker.liveWindow(); // Don't let video end while scrubbing.
-
-        if (newTime >= seekableEnd) {
-          newTime = seekableEnd;
-        } // Compensate for precision differences so that currentTime is not less
-        // than seekable start
-
-
-        if (newTime <= seekableStart) {
-          newTime = seekableStart + 0.1;
-        } // On android seekableEnd can be Infinity sometimes,
-        // this will cause newTime to be Infinity, which is
-        // not a valid currentTime.
-
-
-        if (newTime === Infinity) {
-          return;
-        }
+      if (newTime === null) {
+        return;
       } // Set new time (tell player to seek to new time)
 
 
@@ -15668,6 +15897,11 @@
       player.ready(function () {
         return _this.updateARIAAttributes();
       });
+
+      if (IS_ANDROID) {
+        _this.setupA11yInput_();
+      }
+
       return _this;
     }
     /**
@@ -15793,8 +16027,39 @@
 
     _proto.updateARIAAttributes = function updateARIAAttributes(event) {
       var ariaValue = this.player_.muted() ? 0 : this.volumeAsPercentage_();
-      this.el_.setAttribute('aria-valuenow', ariaValue);
-      this.el_.setAttribute('aria-valuetext', ariaValue + '%');
+
+      if (this.a11yInputEl_) {
+        this.syncA11yInput_(ariaValue / 100, ariaValue + '%');
+      } else {
+        this.el_.setAttribute('aria-valuenow', ariaValue);
+        this.el_.setAttribute('aria-valuetext', ariaValue + '%');
+      }
+    }
+    /**
+     * Apply a volume change coming from the a11y input (TalkBack adjust).
+     *
+     * @param {number} newPct  New slider position, 0..1 (= new volume).
+     *
+     * @return {void}
+     * @protected
+     */
+    ;
+
+    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct) {
+      this.checkMuted();
+      this.player_.volume(newPct);
+    }
+    /**
+     * Human-readable text announced by screen readers for the current volume.
+     *
+     * @return {string} Localized "X%" string.
+     * @protected
+     */
+    ;
+
+    _proto.formatA11yValueText_ = function formatA11yValueText_() {
+      var ariaValue = this.player_.muted() ? 0 : this.volumeAsPercentage_();
+      return ariaValue + '%';
     }
     /**
      * Returns the current value of the player volume as a percentage
