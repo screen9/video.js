@@ -124,10 +124,10 @@ class Slider extends Component {
    * accessibility widget for the slider. Used to work around Chrome on
    * Android not reliably emitting adjust actions on ARIA-only sliders
    * (`<div role="slider">`). Subclasses opt-in by calling this method,
-   * typically gated by `IS_ANDROID`. Subclasses must override
+   * typically gated by `IS_ANDROID`. Subclasses can override
    * {@link Slider#applyA11yInputValue_} (and optionally
-   * {@link Slider#formatA11yValueText_}) to translate the input's 0–100
-   * percent value into a player-side value.
+   * {@link Slider#formatA11yValueText_}) to customize how the input's
+   * 0–100 percent value maps to a player-side value.
    *
    * Strips role, aria-value*, aria-orientation, aria-label and tabindex from
    * the wrapper so TalkBack focuses the input instead, and marks existing
@@ -180,6 +180,7 @@ class Slider extends Component {
     this.on(this.a11yInputEl_, 'input', () => {
       const newPercent = Number(this.a11yInputEl_.value);
       const currentPercent = this.getProgress() * 100;
+      const previousInputPercent = Number(this.a11yInputValue_);
 
       if (isNaN(newPercent)) {
         return;
@@ -192,7 +193,13 @@ class Slider extends Component {
         return;
       }
 
-      this.applyA11yInputValue_(newPercent / 100, currentPercent / 100);
+      // Native range inputs change in percent steps. Track that value so
+      // domain-specific slider steps do not invert a later input direction.
+      this.a11yInputValue_ = newPercent;
+      this.applyA11yInputValue_(
+        newPercent / 100,
+        (isNaN(previousInputPercent) ? currentPercent : previousInputPercent) / 100
+      );
     });
 
     this.syncA11yInput_();
@@ -227,19 +234,28 @@ class Slider extends Component {
     this.a11yInputEl_.setAttribute('aria-valuenow', value);
     this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
     this.a11yInputEl_.value = value;
+    this.a11yInputValue_ = Number(value);
   }
 
   /**
    * Apply a value coming from the a11y input (mainly screen reader adjust
-   * gestures). Subclasses override this to map the 0..1 slider percent to
-   * their player-side value (seek time, volume, etc).
+   * gestures). Default implementation delegates to {@link Slider#stepForward}
+   * / {@link Slider#stepBack} based on direction, so screen-reader adjust
+   * matches arrow-key step (e.g. ±5 s for seek bar, ±10 % for volume).
+   * Subclasses can override for custom mapping.
    *
    * @param {number} newPct       New slider position, 0..1.
    * @param {number} currentPct   Previous slider position, 0..1.
    *
    * @protected
    */
-  applyA11yInputValue_(newPct, currentPct) {}
+  applyA11yInputValue_(newPct, currentPct) {
+    if (newPct > currentPct) {
+      this.stepForward();
+    } else if (newPct < currentPct) {
+      this.stepBack();
+    }
+  }
 
   /**
    * Return the localized text announced by screen readers for the current

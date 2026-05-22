@@ -144,6 +144,36 @@ QUnit.test('calculateDistance should use changedTouches, if available', function
   slider.dispose();
 });
 
+QUnit.test('a11y range input uses its previous value for repeated slider steps', function(assert) {
+  const player = TestHelpers.makePlayer();
+  const slider = new Slider(player);
+  let percent = 0.5;
+  let forwardSteps = 0;
+  let backSteps = 0;
+
+  slider.getPercent = () => percent;
+  slider.stepForward = () => {
+    percent += 0.05;
+    forwardSteps++;
+  };
+  slider.stepBack = () => {
+    percent -= 0.05;
+    backSteps++;
+  };
+  slider.setupA11yInput_();
+
+  slider.a11yInputEl_.value = 51;
+  TestHelpers.triggerDomEvent(slider.a11yInputEl_, 'input');
+  slider.a11yInputEl_.value = 52;
+  TestHelpers.triggerDomEvent(slider.a11yInputEl_, 'input');
+
+  assert.equal(forwardSteps, 2, 'both range input increases step forward');
+  assert.equal(backSteps, 0, 'range input increase does not step back');
+
+  player.dispose();
+  slider.dispose();
+});
+
 QUnit.test("SeekBar doesn't set scrubbing on mouse down, only on mouse move", function(assert) {
   const player = TestHelpers.makePlayer();
   const scrubbingSpy = sinon.spy(player, 'scrubbing');

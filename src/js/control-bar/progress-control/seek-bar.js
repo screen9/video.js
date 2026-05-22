@@ -131,31 +131,6 @@ class SeekBar extends Slider {
   }
 
   /**
-   * Map percent from the a11y input (TalkBack adjust gesture) onto seek
-   * time. Long videos would jump by more than STEP_SECONDS per 1% step, so
-   * clamp the seek delta to STEP_SECONDS for consistent UX.
-   *
-   * @param {number} newPct       New slider position, 0..1.
-   * @param {number} currentPct   Previous slider position, 0..1.
-   *
-   * @protected
-   */
-  applyA11yInputValue_(newPct, currentPct) {
-    const currentTime = this.getCurrentTime_();
-    let newTime = this.getTimeForDistance_(newPct);
-
-    if (newTime === null) {
-      return;
-    }
-
-    if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
-      newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
-    }
-
-    this.userSeek_(newTime);
-  }
-
-  /**
    * Human-readable text announced by screen readers for the current
    * playback position.
    *

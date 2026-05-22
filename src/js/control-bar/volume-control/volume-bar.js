@@ -161,19 +161,6 @@ class VolumeBar extends Slider {
   }
 
   /**
-   * Apply a volume change coming from the a11y input (TalkBack adjust).
-   *
-   * @param {number} newPct  New slider position, 0..1 (= new volume).
-   *
-   * @return {void}
-   * @protected
-   */
-  applyA11yInputValue_(newPct) {
-    this.checkMuted();
-    this.player_.volume(newPct);
-  }
-
-  /**
    * Human-readable text announced by screen readers for the current volume.
    *
    * @return {string} Localized "X%" string.
