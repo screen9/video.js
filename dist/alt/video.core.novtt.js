@@ -13601,10 +13601,10 @@
      * accessibility widget for the slider. Used to work around Chrome on
      * Android not reliably emitting adjust actions on ARIA-only sliders
      * (`<div role="slider">`). Subclasses opt-in by calling this method,
-     * typically gated by `IS_ANDROID`. Subclasses must override
+     * typically gated by `IS_ANDROID`. Subclasses can override
      * {@link Slider#applyA11yInputValue_} (and optionally
-     * {@link Slider#formatA11yValueText_}) to translate the input's 0–100
-     * percent value into a player-side value.
+     * {@link Slider#formatA11yValueText_}) to customize how the input's
+     * 0–100 percent value maps to a player-side value.
      *
      * Strips role, aria-value*, aria-orientation, aria-label and tabindex from
      * the wrapper so TalkBack focuses the input instead, and marks existing
@@ -13655,6 +13655,7 @@
       this.on(this.a11yInputEl_, 'input', function () {
         var newPercent = Number(_this2.a11yInputEl_.value);
         var currentPercent = _this2.getProgress() * 100;
+        var previousInputPercent = Number(_this2.a11yInputValue_);
 
         if (isNaN(newPercent)) {
           return;
@@ -13666,9 +13667,13 @@
           _this2.syncA11yInput_();
 
           return;
-        }
+        } // Native range inputs change in percent steps. Track that value so
+        // domain-specific slider steps do not invert a later input direction.
 
-        _this2.applyA11yInputValue_(newPercent / 100, currentPercent / 100);
+
+        _this2.a11yInputValue_ = newPercent;
+
+        _this2.applyA11yInputValue_(newPercent / 100, (isNaN(previousInputPercent) ? currentPercent : previousInputPercent) / 100);
       });
       this.syncA11yInput_();
     }
@@ -13703,11 +13708,14 @@
       this.a11yInputEl_.setAttribute('aria-valuenow', value);
       this.a11yInputEl_.setAttribute('aria-valuetext', ariaValueText);
       this.a11yInputEl_.value = value;
+      this.a11yInputValue_ = Number(value);
     }
     /**
      * Apply a value coming from the a11y input (mainly screen reader adjust
-     * gestures). Subclasses override this to map the 0..1 slider percent to
-     * their player-side value (seek time, volume, etc).
+     * gestures). Default implementation delegates to {@link Slider#stepForward}
+     * / {@link Slider#stepBack} based on direction, so screen-reader adjust
+     * matches arrow-key step (e.g. ±5 s for seek bar, ±10 % for volume).
+     * Subclasses can override for custom mapping.
      *
      * @param {number} newPct       New slider position, 0..1.
      * @param {number} currentPct   Previous slider position, 0..1.
@@ -13716,7 +13724,13 @@
      */
     ;
 
-    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct, currentPct) {}
+    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct, currentPct) {
+      if (newPct > currentPct) {
+        this.stepForward();
+      } else if (newPct < currentPct) {
+        this.stepBack();
+      }
+    }
     /**
      * Return the localized text announced by screen readers for the current
      * slider value. Subclasses typically override to read out time, volume,
@@ -14603,32 +14617,6 @@
       }, {
         'aria-label': this.localize('Progress Bar')
       });
-    }
-    /**
-     * Map percent from the a11y input (TalkBack adjust gesture) onto seek
-     * time. Long videos would jump by more than STEP_SECONDS per 1% step, so
-     * clamp the seek delta to STEP_SECONDS for consistent UX.
-     *
-     * @param {number} newPct       New slider position, 0..1.
-     * @param {number} currentPct   Previous slider position, 0..1.
-     *
-     * @protected
-     */
-    ;
-
-    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct, currentPct) {
-      var currentTime = this.getCurrentTime_();
-      var newTime = this.getTimeForDistance_(newPct);
-
-      if (newTime === null) {
-        return;
-      }
-
-      if (Math.abs(newTime - currentTime) > STEP_SECONDS * 2) {
-        newTime = currentTime + (newTime > currentTime ? STEP_SECONDS : -STEP_SECONDS);
-      }
-
-      this.userSeek_(newTime);
     }
     /**
      * Human-readable text announced by screen readers for the current
@@ -16034,20 +16022,6 @@
         this.el_.setAttribute('aria-valuenow', ariaValue);
         this.el_.setAttribute('aria-valuetext', ariaValue + '%');
       }
-    }
-    /**
-     * Apply a volume change coming from the a11y input (TalkBack adjust).
-     *
-     * @param {number} newPct  New slider position, 0..1 (= new volume).
-     *
-     * @return {void}
-     * @protected
-     */
-    ;
-
-    _proto.applyA11yInputValue_ = function applyA11yInputValue_(newPct) {
-      this.checkMuted();
-      this.player_.volume(newPct);
     }
     /**
      * Human-readable text announced by screen readers for the current volume.
