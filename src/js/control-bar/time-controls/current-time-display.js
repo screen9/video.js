@@ -12,6 +12,21 @@ import Component from '../../component.js';
 class CurrentTimeDisplay extends TimeDisplay {
 
   /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The `Player` that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        The key/value store of player options.
+   */
+  constructor(player, options) {
+    super(player, options);
+
+    this.on(player, 'durationchange', (e) => this.updateContent(e));
+  }
+
+  /**
    * Builds the default DOM `className`.
    *
    * @return {string}

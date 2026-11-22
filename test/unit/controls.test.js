@@ -11,6 +11,7 @@ import FullscreenToggle from '../../src/js/control-bar/fullscreen-toggle.js';
 import ControlBar from '../../src/js/control-bar/control-bar.js';
 import SeekBar from '../../src/js/control-bar/progress-control/seek-bar.js';
 import RemainingTimeDisplay from '../../src/js/control-bar/time-controls/remaining-time-display.js';
+import CurrentTimeDisplay from '../../src/js/control-bar/time-controls/current-time-display.js';
 import TestHelpers from './test-helpers.js';
 import document from 'global/document';
 import sinon from 'sinon';
@@ -502,5 +503,35 @@ QUnit.test('Remaing time negative sign can be optional', function(assert) {
 
   rtd1.dispose();
   rtd2.dispose();
+  player.dispose();
+});
+
+QUnit.test('CurrentTimeDisplay keeps the length of the duration format', function(assert) {
+  const player = TestHelpers.makePlayer();
+  const ctd = new CurrentTimeDisplay(player);
+  let currentTime = 0;
+  const textAt = (time, duration) => {
+    currentTime = time;
+    player.duration(duration);
+    player.trigger('timeupdate');
+    // The text is written in an animation frame.
+    this.clock.tick(20);
+    return ctd.contentEl().textContent;
+  };
+
+  player.currentTime = () => currentTime;
+
+  assert.equal(textAt(0, 3900), '0:00:00', 'shows hours from the start of a video longer than an hour');
+  assert.equal(textAt(1950, 3900), '0:32:30', 'pads minutes while hours are shown');
+  assert.equal(textAt(65, 1950), '01:05', 'pads minutes in a video longer than ten minutes');
+  assert.equal(textAt(65, 300), '1:05', 'keeps the short format in a video shorter than ten minutes');
+  assert.equal(textAt(65, Infinity), '1:05', 'keeps the short format for live streams');
+
+  currentTime = 65;
+  player.duration(7800);
+  this.clock.tick(20);
+  assert.equal(ctd.contentEl().textContent, '0:01:05', 'formats the time again when the duration changes');
+
+  ctd.dispose();
   player.dispose();
 });

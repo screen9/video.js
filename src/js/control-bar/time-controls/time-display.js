@@ -81,7 +81,9 @@ class TimeDisplay extends Component {
    * @private
    */
   updateTextNode_(time = 0) {
-    time = formatTime(time);
+    const duration = this.player_.duration();
+
+    time = (isFinite(duration) && duration > 0) ? formatTime(time, duration) : formatTime(time);
 
     if (this.formattedTime_ === time) {
       return;
