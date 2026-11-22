@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.21.7 <http://videojs.com/>
+ * Video.js 7.21.8 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -33,7 +33,7 @@ import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 import _wrapNativeSuper from '@babel/runtime/helpers/wrapNativeSuper';
 
-var version$5 = "7.21.7";
+var version$5 = "7.21.8";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
