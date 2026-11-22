@@ -14720,7 +14720,8 @@
         time = 0;
       }
 
-      time = formatTime(time);
+      var duration = this.player_.duration();
+      time = isFinite(duration) && duration > 0 ? formatTime(time, duration) : formatTime(time);
 
       if (this.formattedTime_ === time) {
         return;
@@ -14797,18 +14798,36 @@
   var CurrentTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
     inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
 
-    function CurrentTimeDisplay() {
-      return _TimeDisplay.apply(this, arguments) || this;
+    /**
+     * Creates an instance of this class.
+     *
+     * @param {Player} player
+     *        The `Player` that this class should be attached to.
+     *
+     * @param {Object} [options]
+     *        The key/value store of player options.
+     */
+    function CurrentTimeDisplay(player, options) {
+      var _this;
+
+      _this = _TimeDisplay.call(this, player, options) || this;
+
+      _this.on(player, 'durationchange', function (e) {
+        return _this.updateContent(e);
+      });
+
+      return _this;
     }
-
-    var _proto = CurrentTimeDisplay.prototype;
-
     /**
      * Builds the default DOM `className`.
      *
      * @return {string}
      *         The DOM `className` for this object.
      */
+
+
+    var _proto = CurrentTimeDisplay.prototype;
+
     _proto.buildCSSClass = function buildCSSClass() {
       return 'vjs-current-time';
     }
